@@ -1,14 +1,20 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS stores;
 DROP TABLE IF EXISTS store_reviews;
+DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS profile_picture;
 DROP TABLE IF EXISTS jwt;
 
-DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS product_reviews;
-DROP TABLE IF EXISTS parent_categories;
-DROP TABLE IF EXISTS child_categories;
-DROP TABLE IF EXISTS grandchild_categories;
+DROP TABLE IF EXISTS product_pictures;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS product_review;
+DROP TABLE IF EXISTS parent_category;
+DROP TABLE IF EXISTS child_category;
+DROP TABLE IF EXISTS grandchild_category;
+DROP TABLE IF EXISTS product_tag;
+DROP TABLE IF EXISTS tag;
+
 
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS cart;
@@ -54,37 +60,76 @@ CREATE TABLE stores(
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
-CREATE TABLE products(
+CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
-  product_name VARCHAR(250) NOT NULL,
+  title VARCHAR(250) NOT NULL,
+  metaTitle VARCHAR(100),
+  sku VARCHAR(100),
+  discount BOOLEAN DEFAULT FALSE,
+  dicount_rate FLOAT DEFAULT '0',
   price REAL NOT NULL,
   currency VARCHAR(10),
   brand_name VARCHAR(250),
-  discrption text NOT NULL,
+  description text NOT NULL,
   product_rating REAL NOT NULL DEFAULT '0',
-  quantity VARCHAR(250) NOT NULL DEFAULT 'OUT OF STOCK'
+  quantity INT NOT NULL DEFAULT '0',
+  product_review text NOT NULL,
   created_at timestamp not null default current_timestamp,
+  status VARCHAR(250) DEFAULT 'Pending',
 
   FOREIGN KEY (store_id) REFERENCES stores(id)
 );
-CREATE TABLE products_sizes(
+
+CREATE TABLE tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  product_id uuid NOT NULL,
-  size VARCHAR(150),
-  FOREIGN KEY (product_id) REFERENCES products(id)
+  tag_id uuid NOT NULL,
+  title VARCHAR(75),
+  metaTitle VARCHAR(100),
+  slug VARCHAR(100),
+  content TEXT,
+  FOREIGN KEY (tag_id) REFERENCES product_tag(id)
 );
-CREATE TABLE products_colors(
+CREATE TABLE product_tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
   color VARCHAR(150),
-  FOREIGN KEY (product_id) REFERENCES products(id)
+  FOREIGN KEY (product_id) REFERENCES product(id)
 );
-CREATE TABLE products_pictures(
+CREATE TABLE parent_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  child_id uuid NOT NULL,
+  title VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (child_id) REFERENCES child_category(id)
+);
+CREATE TABLE child_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  child_id uuid,
+  product_id uuid,
+  title VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (child_id) REFERENCES grandchild_category(id)
+  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+CREATE TABLE grandchild_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  title VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+CREATE TABLE product_pictures(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
   product_picture uuid NOT NULL,
-  FOREIGN KEY (product_id) REFERENCES products(id)
+  FOREIGN KEY (product_id) REFERENCES product(id)
   FOREIGN KEY (product_picture) REFERENCES user_file(id)
 );
 CREATE TABLE profile_picture(
@@ -102,7 +147,7 @@ CREATE TABLE store_picture(
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
-CREATE TABLE product_reviews(
+CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   product_id uuid NOT NULL UNIQUE,
@@ -112,7 +157,7 @@ CREATE TABLE product_reviews(
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (product_id) REFERENCES products(id)
+  FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
 CREATE TABLE store_reviews(
