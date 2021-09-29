@@ -4,18 +4,20 @@ DROP TABLE IF EXISTS store_reviews;
 DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS jwt;
 
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS product_reviews;
-
 DROP TABLE IF EXISTS parent_categories;
 DROP TABLE IF EXISTS child_categories;
 DROP TABLE IF EXISTS grandchild_categories;
 
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS cart;
+
+DROP TABLE IF EXISTS notification;
+
+
 DROP TABLE IF EXISTS attachments;
 DROP TABLE IF EXISTS user_file;
-DROP TABLE IF EXISTS notification;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -45,10 +47,58 @@ CREATE TABLE stores(
   caption VARCHAR(250),
   about VARCHAR(250),
   store_picture uuid,
-  reviews_rate REAL NOT NULL DEFAULT '0',
+  store_rating REAL NOT NULL DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+);
+
+CREATE TABLE products(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL,
+  product_name VARCHAR(250) NOT NULL,
+  price REAL NOT NULL,
+  currency VARCHAR(10),
+  brand_name VARCHAR(250),
+  discrption text NOT NULL,
+  product_rating REAL NOT NULL DEFAULT '0',
+  quantity VARCHAR(250) NOT NULL DEFAULT 'OUT OF STOCK'
+  created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (store_id) REFERENCES stores(id)
+);
+CREATE TABLE products_sizes(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  size VARCHAR(150),
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+CREATE TABLE products_colors(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  color VARCHAR(150),
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+CREATE TABLE products_pictures(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  product_picture uuid NOT NULL,
+  FOREIGN KEY (product_id) REFERENCES products(id)
+  FOREIGN KEY (product_picture) REFERENCES user_file(id)
+);
+CREATE TABLE profile_picture(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL,
+  profile_picture uuid NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+);
+CREATE TABLE store_picture(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL,
+  store_picture uuid NOT NULL,
+  FOREIGN KEY (store_id) REFERENCES stores(id)
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
@@ -70,7 +120,7 @@ CREATE TABLE store_reviews(
   user_id uuid NOT NULL UNIQUE,
   store_id uuid NOT NULL UNIQUE,
   review VARCHAR(250) NOT NULL,
-  rate INT(1) NOT NULL,
+  rate INT(1) NOT NULL DEFAULT '0',
   votes INT(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
@@ -85,13 +135,14 @@ CREATE TABLE profiles(
   last_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
   mobile BIGINT(20) NOT NULL UNIQUE,
-  caption VARCHAR(250),
   profile_picture uuid,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
+
+
 
 CREATE TABLE jwt(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -137,16 +188,7 @@ CREATE TABLE category(
 );
 
 
-CREATE TABLE post(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL,
-  category_id int NOT NULL,
-  text text NOT NULL,
-  created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profile(id),
-  FOREIGN KEY (category_id) REFERENCES category(id)
-);
 
 CREATE TABLE attachment(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
