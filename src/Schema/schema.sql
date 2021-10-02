@@ -1,29 +1,39 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS stores;
-DROP TABLE IF EXISTS store_reviews;
-DROP TABLE IF EXISTS store_picture;
-DROP TABLE IF EXISTS profiles;
-DROP TABLE IF EXISTS profile_picture;
-DROP TABLE IF EXISTS jwt;
 
-DROP TABLE IF EXISTS product_pictures;
-DROP TABLE IF EXISTS product;
-DROP TABLE IF EXISTS product_review;
-DROP TABLE IF EXISTS parent_category;
-DROP TABLE IF EXISTS child_category;
-DROP TABLE IF EXISTS grandchild_category;
+
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
+DROP TABLE IF EXISTS parent_category;
+DROP TABLE IF EXISTS child_category;
+DROP TABLE IF EXISTS grandchild_category;
 
-DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS product_pictures;
+DROP TABLE IF EXISTS profile_picture;
+
+DROP TABLE IF EXISTS store_picture;
+DROP TABLE IF EXISTS product_review;
+DROP TABLE IF EXISTS store_reviews;
+
+DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS new_order;
+
+
+DROP TABLE IF EXISTS tracsaction;
+DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS cart;
-
-DROP TABLE IF EXISTS notification;
-
+DROP TABLE IF EXISTS cart_item;
+DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS jwt;
+DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS comment;
+DROP TABLE IF EXISTS offer_notification;
+DROP TABLE IF EXISTS order_notification;
 
 DROP TABLE IF EXISTS attachments;
 DROP TABLE IF EXISTS user_file;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS stores;
+DROP TABLE IF EXISTS users;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -32,7 +42,7 @@ CREATE TABLE users(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   email VARCHAR(150) NOT NULL UNIQUE,
   user_password VARCHAR(250) NOT NULL,
-  mobile BIGINT(20) NOT NULL UNIQUE,
+  mobile VARCHAR (15) NOT NULL UNIQUE,
   country VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
   first_name VARCHAR (250) NOT NULL,
@@ -49,7 +59,7 @@ CREATE TABLE stores(
   store_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
   address VARCHAR (250) DEFAULT 'Remote',
-  mobile BIGINT(20) NOT NULL UNIQUE,
+  mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
   store_picture uuid,
@@ -59,6 +69,7 @@ CREATE TABLE stores(
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
+
 
 CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -80,7 +91,6 @@ CREATE TABLE product(
 
   FOREIGN KEY (store_id) REFERENCES stores(id)
 );
-
 CREATE TABLE tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   tag_id uuid NOT NULL,
@@ -113,7 +123,7 @@ CREATE TABLE child_category(
   metaTitle VARCHAR(100),
   content TEXT,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (child_id) REFERENCES grandchild_category(id)
+  FOREIGN KEY (child_id) REFERENCES grandchild_category(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 CREATE TABLE grandchild_category(
@@ -125,35 +135,36 @@ CREATE TABLE grandchild_category(
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
+
+
 CREATE TABLE product_pictures(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
   product_picture uuid NOT NULL,
-  FOREIGN KEY (product_id) REFERENCES product(id)
+  FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (product_picture) REFERENCES user_file(id)
 );
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL,
   profile_picture uuid NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 CREATE TABLE store_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
   store_picture uuid NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES stores(id)
+  FOREIGN KEY (store_id) REFERENCES stores(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
-
 CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   product_id uuid NOT NULL UNIQUE,
   review VARCHAR(250) NOT NULL,
-  rate INT(1) NOT NULL,
-  votes INT(250) DEFAULT '0',
+  rate VARCHAR(1) NOT NULL,
+  votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -165,8 +176,8 @@ CREATE TABLE store_reviews(
   user_id uuid NOT NULL UNIQUE,
   store_id uuid NOT NULL UNIQUE,
   review VARCHAR(250) NOT NULL,
-  rate INT(1) NOT NULL DEFAULT '0',
-  votes INT(250) DEFAULT '0',
+  rate VARCHAR(1) NOT NULL DEFAULT '0',
+  votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -179,15 +190,105 @@ CREATE TABLE profiles(
   first_name VARCHAR (250) NOT NULL,
   last_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
-  mobile BIGINT(20) NOT NULL UNIQUE,
+  country VARCHAR (250) NOT NULL,
+  mobile VARCHAR (15) NOT NULL UNIQUE,
   profile_picture uuid,
   created_at timestamp not null default current_timestamp,
+  
 
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
+CREATE TABLE new_order(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  first_name VARCHAR (250) NOT NULL,
+  last_name VARCHAR (250) NOT NULL,
+  status VARCHAR (250) NOT NULL,
+  tax FLOAT,
+  shipping FLOAT,
+  discount FLOAT,
+  sub_total FLOAT NOT NULL,
+  grand_total FLOAT NOT NULL,
+  mobile VARCHAR (15) NOT NULL, 
+  city VARCHAR (250) NOT NULL,
+  country VARCHAR (250) NOT NULL,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+  );
 
+
+
+
+
+CREATE TABLE order_item (
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  order_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  price FLOAT NOT NULL,
+  discount FLOAT,
+  quantity VARCHAR(6) DEFAULT '1',
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+CREATE TABLE tracsaction(
+   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+   profile_id uuid NOT NULL,
+   order_id uuid NOT NULL,
+   code VARCHAR(100),
+   type VARCHAR(6),
+   mode VARCHAR(6),
+   status VARCHAR (100),
+   created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (order_id) REFERENCES new_order(id)
+
+);
+
+
+CREATE TABLE cart(
+     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+     product_id uuid NOT NULL,
+     address_id uuid NOT NULL,
+     first_name VARCHAR (250) NOT NULL,
+     last_name VARCHAR (250) NOT NULL,
+     mobile VARCHAR (15) NOT NULL, 
+     created_at timestamp not null default current_timestamp,
+
+     FOREIGN KEY (profile_id) REFERENCES profiles(id),
+     FOREIGN KEY (address_id) REFERENCES address(id)
+);
+
+CREATE TABLE cart_item(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  cart_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  price FLOAT NOT NULL,
+  discount FLOAT,
+  quantity VARCHAR(6) DEFAULT '1',
+  created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (cart_id) REFERENCES cart(id),
+  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+CREATE TABLE address(
+   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+   profile_id uuid NOT NULL,
+   country VARCHAR (250) NOT NULL DEFAULT 'jordan',
+   city VARCHAR(250) NOT NULL,
+   first_name VARCHAR (250) NOT NULL,
+   last_name VARCHAR (250) NOT NULL,
+   mobile VARCHAR (15) NOT NULL,
+   street_name VARCHAR(250) NOT NULL,
+   building_number VARCHAR (250) NOT NULL,
+   apartment_number VARCHAR (250),
+   FOREIGN KEY (profile_id) REFERENCES profiles(id)
+);
 
 CREATE TABLE jwt(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -207,33 +308,14 @@ CREATE TABLE user_file(
 
 CREATE TABLE follow(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL,
   follower uuid NOT NULL,
-  following uuid NOT NULL, -- search in the name to find the id ?
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (follower) REFERENCES profile(id),
-  FOREIGN KEY (following) REFERENCES profile(id)
+  FOREIGN KEY (store_id) REFERENCES stores(id)
 );
-
-CREATE TABLE message(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  sender_id uuid NOT NULL,
-  receiver_id uuid NOT NULL,
-  message text NOT NULL ,
-  seen boolean DEFAULT false,
-  created_at timestamp not null default current_timestamp,
-
-  FOREIGN KEY (sender_id) REFERENCES profile(id),
-  FOREIGN KEY (receiver_id) REFERENCES profile(id)
-);
-
-CREATE TABLE category(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(20) NOT NULL UNIQUE
-);
-
-
-
+ 
 
 CREATE TABLE attachment(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -246,32 +328,41 @@ CREATE TABLE attachment(
 CREATE TABLE comment(
     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
     comment text NOT NULL,
-    post_id uuid NOT NULL,
+    product_id uuid NOT NULL,
     profile_id uuid NOT NULL,
-    created_at timestamp not null default current_timestamp
+    store_id uuid NOT NULL,
+    created_at timestamp not null default current_timestamp,
 
+    FOREIGN KEY (product_id) REFERENCES product(id),
+    FOREIGN KEY (store_id) REFERENCES store(id),
+    FOREIGN KEY (profile_id) REFERENCES profiles(id)
 );
 
-CREATE TABLE notification(
+CREATE TABLE offer_notification(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   receiver_id uuid NOT NULL,
   message text NOT NULL,
-  post_id uuid,
+  store_id uuid,
+  profile_id uuid,
   seen boolean DEFAULT false,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (receiver_id) REFERENCES profile(id)
+  FOREIGN KEY (receiver_id) REFERENCES profiles(id),
+  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
-DROP TABLE IF EXISTS interaction;
-CREATE TABLE interaction( 
-    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,   
-    profile_id uuid ,
-    post_id uuid NOT NULL,
-    interaction_type VARCHAR(20) DEFAULT 'like',
-    created_at timestamp not null default current_timestamp
 
+CREATE TABLE order_notification(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  receiver_id uuid NOT NULL,
+  order_id uuid NOT NULL,
+  message text NOT NULL,
+
+  FOREIGN KEY (receiver_id) REFERENCES stores(id),
+  FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
+
 
 -- idea : add count interaction to post tabel
 -- TD:fix seed and add inserts for interaction table done
