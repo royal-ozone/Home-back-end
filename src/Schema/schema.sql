@@ -15,8 +15,8 @@ DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS store_reviews;
 
 
-
-DROP TABLE IF EXISTS tracsaction;
+DROP TABLE IF EXISTS return;
+DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS cart_item;
 DROP TABLE IF EXISTS cart;
@@ -106,15 +106,15 @@ CREATE TABLE product(
   product_rating REAL NOT NULL DEFAULT '0',
   quantity INT NOT NULL DEFAULT '0',
   product_review text NOT NULL,
-  created_at timestamp not null default current_timestamp,
   status VARCHAR(250) DEFAULT 'Pending',
+  created_at timestamp not null default current_timestamp,
+  
 
   FOREIGN KEY (store_id) REFERENCES stores(id)
 );
 CREATE TABLE product_tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  color VARCHAR(150),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 CREATE TABLE tag(
@@ -180,8 +180,8 @@ CREATE TABLE store_picture(
 );
 CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
-  product_id uuid NOT NULL UNIQUE,
+  user_id uuid NOT NULL ,
+  product_id uuid NOT NULL ,
   review VARCHAR(250) NOT NULL,
   rate VARCHAR(1) NOT NULL,
   votes VARCHAR(250) DEFAULT '0',
@@ -196,7 +196,7 @@ CREATE TABLE store_reviews(
   user_id uuid NOT NULL UNIQUE,
   store_id uuid NOT NULL UNIQUE,
   review VARCHAR(250) NOT NULL,
-  rate VARCHAR(1) NOT NULL DEFAULT '0',
+  rate FLOAT NOT NULL DEFAULT '0',
   votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
@@ -213,7 +213,7 @@ CREATE TABLE new_order(
   status VARCHAR (250) NOT NULL,
   tax FLOAT,
   shipping FLOAT,
-  discount FLOAT,
+  discount FLOAT DEFAULT '0',
   sub_total FLOAT NOT NULL,
   grand_total FLOAT NOT NULL,
   mobile VARCHAR (15) NOT NULL, 
@@ -232,20 +232,20 @@ CREATE TABLE order_item (
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
   price FLOAT NOT NULL,
-  discount FLOAT,
+  discount FLOAT DEFAULT '0',
   quantity VARCHAR(6) DEFAULT '1',
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
-CREATE TABLE tracsaction(
+CREATE TABLE transaction(
    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
    profile_id uuid NOT NULL,
    order_id uuid NOT NULL,
    code VARCHAR(100),
-   type VARCHAR(6),
-   mode VARCHAR(6),
+   type VARCHAR(50),
+   mode VARCHAR(50),
    status VARCHAR (100),
    created_at timestamp not null default current_timestamp,
 
@@ -286,7 +286,7 @@ CREATE TABLE cart_item(
   cart_id uuid NOT NULL,
   product_id uuid NOT NULL,
   price FLOAT NOT NULL,
-  discount FLOAT,
+  discount FLOAT DEFAULT '0',
   quantity VARCHAR(6) DEFAULT '1',
   created_at timestamp not null default current_timestamp,
 
@@ -319,10 +319,9 @@ CREATE TABLE follow(
 
 CREATE TABLE attachment(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  post_id uuid NOT NULL,
   file_id uuid NOT NULL,
-  created_at timestamp not null default current_timestamp
-
+  created_at timestamp not null default current_timestamp,
+   FOREIGN KEY (file_id) REFERENCES user_file(id)
 );
 
 CREATE TABLE comment(
@@ -360,6 +359,21 @@ CREATE TABLE order_notification(
   message text NOT NULL,
 
   FOREIGN KEY (receiver_id) REFERENCES stores(id),
+  FOREIGN KEY (order_id) REFERENCES new_order(id)
+);
+
+
+CREATE TABLE return(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  store_id uuid NOT NULL,
+  order_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  message text NOT NULL,
+
+  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
 

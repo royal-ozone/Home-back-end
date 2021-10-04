@@ -25,15 +25,15 @@ const  HomePage = (req,res,next) =>{
 app.get('/' , HomePage);
 
 
-client.query('select * from company',(err,res)=>{
-    if(!err){
-        console.log(res.rows);
+// client.query('select * from company',(err,res)=>{
+//     if(!err){
+//         console.log(res.rows);
 
-    }else{
-        console.log('ahmad',err.message);
-    }
-    client.end();
-})  
+//     }else{
+//         console.log('ahmad',err.message);
+//     }
+//     client.end();
+// })  
 
 
 
