@@ -4,7 +4,7 @@
 
 const client = require('./db'); 
 
-
+const authRouter = require('./auth/routes')
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
@@ -12,10 +12,11 @@ const cors = require('cors');
 /// server ///
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); ///
 app.use(express.static('./public'));
 app.use(cors());
-
+app.use('/api/v1', authRouter);
 
 
 /// routers /// 
