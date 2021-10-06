@@ -48,11 +48,22 @@ const getUserByMobile = async mobile =>{
         let SQL = `SELECT * FROM users WHERE mobile=$1;`;
         let safeValue = [mobile];
         let result = await client.query(SQL,safeValue);
-        return result;
+        return result.rows[0];
     } catch (error) {
         console.log(error)
     }
 };
 
+const updateUserVerification = async id =>{
+    try {
+        let SQL = `UPDATE users SET verified = true WHERE id =$1 RETURNING *;`;
+        let safeValue =[id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0];
+    } catch (error) {
+        return error.message;
+    }
+}
 
-module.exports = { signup, getUserById, getUserByEmail, getUserByMobile}
+
+module.exports = { signup, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification}
