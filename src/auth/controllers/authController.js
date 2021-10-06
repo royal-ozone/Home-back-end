@@ -1,15 +1,26 @@
 'use strict';
 
 const { signup, getUserById, getUserByEmail, getUserByMobile} = require('../models/user')
-
+const {createToken} = require('../models/jwt')
 const signupHandler = async (req,res, next) => {
     try {
-        console.log("🚀 ~ file: authController.js ~ line 8 ~ signupHandler ~ req.body", req.body)
       let result = await signup(req.body)
-        res.json(result)
+      let userTokens = await createToken(result.id)
+        res.status(200).json({accessToken:userTokens.access_token,refreshToken:userTokens.refresh_token, result} )
     } catch (error) {
         res.send(error.message)
     }
+};
+
+
+const signinHandler = async (req, res, next) =>{
+try {
+    
+} catch (error) {
+    
+}
 }
 
-module.exports = {signupHandler}
+
+
+module.exports = {signupHandler, signinHandler}
