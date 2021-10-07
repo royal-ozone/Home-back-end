@@ -1,24 +1,33 @@
 'use strict';
 
-const {updateUserVerification,getUserByMobile} = require('../models/user');
+const {updateUserVerification,getUserByMobile,getUserIdFromToken,getMobileById} = require('../models/user');
 
 const clientForVerification = require('twilio')(process.env.ACCOUNT_SID ,process.env.AUTH_TOKEN);
 
 
-const sendVerificationCodeHandler = (req, res, next) => {
-  if(req.body.mobile){
+const sendVerificationCodeHandler = async (req, res, next) => {
+    let token = req.headers.authorization.split(' ').pop();
+   
+    let userId = await getUserIdFromToken(token);
+    console.log("🚀 ~ file: verification.js ~ line 12 ~ sendVerificationCodeHandler ~ userId", userId)
+    
+    let userData = await getMobileById(userId);
+   
+    
+   console.log(typeof(userData.country_code),'aaaaaaaaaaaaaaaaaaaaaaaaaaa')
+  if(userData){
     clientForVerification
     .verify
     .services(process.env.SERVICE_ID)
     .verifications
     .create({
-        to:`+${req.body.mobile}`,
-        channel:req.body.channel ==='call'?"call":"sms"
+        to:'+'+userData.country_code+userData.mobile,
+        channel:'sms'
     })
     .then((data) => {
         res.status(200).send({
             message:"Verification is send !!",
-            mobile: req.body.mobile,
+            mobile: userData.mobile,
             data
         });
     })
@@ -35,21 +44,27 @@ const sendVerificationCodeHandler = (req, res, next) => {
 }
 
 const verifyUserHandler = async (req, res, next) => {
+    let token = req.headers.authorization.split(' ').pop();
+   
+    let userId = await getUserIdFromToken(token);
+    
+    let userData = await getMobileById(userId);
+
     clientForVerification
     .verify
     .services(process.env.SERVICE_ID)
     .verificationChecks
     .create({
-        to:`+962${req.body.mobile}`,
+        to:'+'+userData.country_code+userData.mobile,
         code:req.body.code
     }) 
     .then(async(data) => {
         if(data.status==='approved'){
             
-          let userData= await getUserByMobile(req.body.mobile);
-          console.log(userData.id);
+        //   let userData= await getUserByMobile(userData.mobile);
+        //   console.log(userData?userData.id:null);
 
-          let updateUser = await updateUserVerification(userData.id);
+          let updateUser = await updateUserVerification(userId);
           
             res.status(200).send({
                 message:"User is Verified!!",
@@ -69,7 +84,29 @@ const verifyUserHandler = async (req, res, next) => {
 
 }
 
+const sendMessageHandler = (req, res, next) => {
+    clientForVerification
+    .messages
+    .create({
+        body: req.body.message,
+        to: `+${req.body.mobile}`,
+        from: "+13512474291"
+       
+    })
+    .then(message => {
+        res.status(200).send({
+            message: message.body,
+            message
+        })
+        console.log(message)
+    })
+  // here you can implement your fallback code
+  .catch(error => console.log(error))
+
+}
+
 module.exports ={
     sendVerificationCodeHandler,
-    verifyUserHandler
+    verifyUserHandler,
+    sendMessageHandler
 }
