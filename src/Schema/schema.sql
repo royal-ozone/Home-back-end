@@ -42,6 +42,7 @@ CREATE TABLE users(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   email VARCHAR(150) NOT NULL UNIQUE,
   user_password VARCHAR(250) NOT NULL,
+  country_code VARCHAR(10) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
   country VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
