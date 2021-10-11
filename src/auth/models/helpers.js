@@ -46,4 +46,20 @@ let getToken = (userId, tokenType = 'access') => {
 
 }
 
-module.exports = { getToken,authenticateBasic};
+let authenticateWithToken = async (token,tokenType='access')=>{
+    try {
+        let parsedToken = jwt.verify(token,process.env.SECRET);
+
+        if(parsedToken.tokenType !== tokenType) {
+            throw new Error('Invalid token');
+        }
+        
+         const user = await getUserById(parsedToken.userId);
+         if(user) return user;
+         next();
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+module.exports = { getToken,authenticateBasic,authenticateWithToken};
