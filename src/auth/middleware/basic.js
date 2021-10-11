@@ -1,19 +1,29 @@
 'use strict';
-
+const { createToken, deleteToken } = require('../models/jwt');
 const base64 = require('base-64');
+const { authenticateBasic } = require('../models/helpers');
 
+module.exports = async (req, res, next) => {
+  if (!req.headers.authorization) {
+    return _authError();
+  }
+  let basic = req.headers.authorization.split(' ').pop();
+  let [email, password] = base64.decode(basic).split(':');
 
-module.exports = async (req,res,next) => {
-    if(!req.headers.authorization){
-        next('authorization header is not provided')
-        return;
-    }
+  try {
+    let userData = await authenticateBasic(email, password);
+    await deleteToken(userData.id);
+    const userTokens = await createToken(userData.id);
+    delete userTokens.id;
+    delete userTokens.user_id;
+    req.user = userData;
+    req.tokens = userTokens;
+    next();
+  } catch (e) {
+    _authError();
+  }
 
-    try {
-        const basic = req.headers.authorization.split(' ').pop();
-
-        const [email,password] = base64.decode(basic).split(';');
-
-
-    } catch (err) {console.log(err);}
-}
+  function _authError() {
+    res.status(403).send('Either email or password is wrong!');
+  }
+};
