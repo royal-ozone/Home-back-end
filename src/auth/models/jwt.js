@@ -19,7 +19,38 @@ let createToken = async user_id =>{
     }
 }
 
+let getTokenRecord = async (token,tokenType = 'access') =>{
 
-module.exports = {createToken}
+    try {
+        let SQL = 'SELECT * from jwt WHERE access_token = $1;';
+        if(tokenType ==='refresh') {
+            SQL = 'SELECT * FROM jwt WHERE access_token=$1;';
+        }
+        let safeValue = [token];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0];
+        
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+
+// This function is used for deleting tokens for users:
+
+async function deleteToken(user_id) {
+    try {
+      let SQL = `DELETE FROM JWT WHERE user_id=$1;`;
+      let removeToken = [user_id];
+      let tokenQuery = await client.query(SQL, removeToken);
+      return tokenQuery;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+  
+
+
+module.exports = {createToken,deleteToken,getTokenRecord}
 
 

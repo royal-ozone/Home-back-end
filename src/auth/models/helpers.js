@@ -2,23 +2,42 @@
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { getUserById, getUserByEmail } = require('./user');
 require('dotenv').config();
-let getToken = (userId , tokenType = 'access') =>{
+
+// BASIC AUTH
+
+async function authenticateBasic(email, password) {
+    try {
+        let user = await getUserByEmail(email);
+        const valid = await bcrypt.compare(password, user.user_password);
+        if (valid) {
+            return user;
+        }
+        const error = new Error('Invalid User');
+        error.statusCode = 403;
+        throw error;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+let getToken = (userId, tokenType = 'access') => {
 
     try {
-        
+
         let payload = {
-        userId: userId,
-        tokenType: tokenType
+            userId: userId,
+            tokenType: tokenType
         };
-    
+
         let expireDate = 3600;
-    
-        if(tokenType === 'refresh') {
+
+        if (tokenType === 'refresh') {
             expireDate = 86400;
         }
-    
-        return jwt.sign(payload, process.env.SECRET, {expiresIn: expireDate});
+
+        return jwt.sign(payload, process.env.SECRET, { expiresIn: expireDate });
     } catch (error) {
         throw new Error(error.message);
     }
@@ -27,4 +46,20 @@ let getToken = (userId , tokenType = 'access') =>{
 
 }
 
-module.exports = {getToken};
+let authenticateWithToken = async (token,tokenType='access')=>{
+    try {
+        let parsedToken = jwt.verify(token,process.env.SECRET);
+
+        if(parsedToken.tokenType !== tokenType) {
+            throw new Error('Invalid token');
+        }
+        
+         const user = await getUserById(parsedToken.userId);
+         if(user) return user;
+         next();
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+module.exports = { getToken,authenticateBasic,authenticateWithToken};

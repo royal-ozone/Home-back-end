@@ -16,7 +16,7 @@ const signup =  async data =>{
         let result = await client.query(SQL,safeValues);
         return result.rows[0];
     } catch (error) {
-       return error.message;
+       throw new Error (error.message);
     }
 };
 
@@ -25,10 +25,10 @@ const getUserByEmail = async email =>{
         let SQL = `SELECT * FROM users WHERE email=$1;`;
         let safeValue = [email];
         let result = await client.query(SQL,safeValue);
-        return result;
+        return result.rows[0];
 
     } catch (error) {
-        console.log(error);
+        throw new Error (error.message);
     }
 };
 
@@ -37,7 +37,7 @@ const getUserById = async id =>{
         let SQL = `SELECT * FROM users WHERE id=$1;`;
         let safeValue = [id];
         let result = await client.query(SQL,safeValue);
-        return result;
+        return result.rows[0];
     } catch (error) {
         console.log(error)
     }
@@ -87,5 +87,17 @@ const getMobileById = async id =>{
     }
 }
 
+const getProfileByUserId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM profiles WHERE user_id = $1;';
+        let safeValue = [id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0];
+        
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
-module.exports = { signup, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById}
+
+module.exports = { signup, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById,getProfileByUserId}
