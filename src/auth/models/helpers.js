@@ -10,7 +10,6 @@ require('dotenv').config();
 async function authenticateBasic(email, password) {
     try {
         let user = await getUserByEmail(email);
-        console.log("🚀 ~ file: helpers.js ~ line 13 ~ authenticateBasic ~ user", user)
         const valid = await bcrypt.compare(password, user.user_password);
         if (valid) {
             return user;

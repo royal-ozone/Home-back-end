@@ -34,7 +34,7 @@ const signOutHandler = async (req, res, next) => {
         await deleteToken(req.user.id);
         res.status(200).json({
             status: 200,
-            message: 'successfully logged out',
+            message: 'successfully signed out',
         });
     } catch (error) {
         res.send(error.message)

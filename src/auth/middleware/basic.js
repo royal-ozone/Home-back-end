@@ -16,9 +16,14 @@ module.exports = async (req, res, next) => {
     const userTokens = await createToken(userData.id);
     delete userTokens.id;
     delete userTokens.user_id;
+    if (userData.verified === false){
+      res.status(403).send('User is not verified, please verify your mobile number!');
+    }
+    else{
     req.user = userData;
     req.tokens = userTokens;
     next();
+    }
   } catch (e) {
     _authError();
   }
