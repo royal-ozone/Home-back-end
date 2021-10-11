@@ -17,9 +17,7 @@ module.exports =async (req,res, next)=>{
         }
 
         let validUser = await authenticateWithToken(token,'access');
-        console.log(req.user = validUser);
         let userProfile = await getProfileByUserId(validUser.id);
-        console.log(userProfile);
         next();
     
     } catch (error) {

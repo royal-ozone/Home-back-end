@@ -11,9 +11,9 @@ const {sendVerificationCodeHandler,verifyUserHandler,sendMessageHandler} = requi
 
 authRouter.post('/signup',signupHandler);
 authRouter.post('/signin',basicAuth,signInHandler);
-authRouter.post('/signout',signOutHandler);
+authRouter.post('/signout',bearer,signOutHandler);
 authRouter.post('/user/verification',bearer,sendVerificationCodeHandler);
-authRouter.post('/user/verify',verifyUserHandler);
+authRouter.post('/user/verify',bearer,verifyUserHandler);
 authRouter.post('/user/send/message',sendMessageHandler);
 
 

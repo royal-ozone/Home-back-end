@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt')
 const signup =  async data =>{
     try {
         const {email,password,mobile,country,city,first_name,last_name,country_code} = data;
-        console.log("🚀 ~ file: user.js ~ line 10 ~ data", data)
         let SQL = `INSERT INTO users(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
         let userPassword = await bcrypt.hash(password, 10)
         
@@ -69,7 +68,6 @@ const getUserIdFromToken = async token =>{
         let SQL = 'SELECT user_id FROM jwt WHERE access_token =$1;';
         let safeValue =[token];
         let result = await client.query(SQL,safeValue);
-        console.log(result,'checkoooooooooooooooooooooooooooo');
         return result.rows[0].user_id;
     } catch (error) {
         return error.message;
