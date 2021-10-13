@@ -19,6 +19,21 @@ const signup =  async data =>{
     }
 };
 
+const createProfile = async data => {
+   try {
+    let mobileAllData = '+'+data.country_code + data.mobile.split('').splice(1,data.mobile.length).join('');
+    let SQL ='INSERT INTO profiles(user_id,first_name,last_name,city,country,mobile)VALUES($1,$2,$3,$4,$5,$6) RETURNING *;';
+    let {id,first_name,last_name,city,country} = data;
+    let safeValue = [id,first_name,last_name,city,country,mobileAllData];
+
+    let result = await client.query(SQL,safeValue);
+    return result.rows[0];
+
+   } catch (error) {
+       throw new Error (error.message);
+   }
+}
+
 const getUserByEmail = async email =>{
     try {
         let SQL = `SELECT * FROM users WHERE email=$1;`;
@@ -98,4 +113,5 @@ const getProfileByUserId = async id =>{
 }
 
 
-module.exports = { signup, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById,getProfileByUserId}
+
+module.exports = { signup,createProfile, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById,getProfileByUserId}

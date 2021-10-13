@@ -2,14 +2,16 @@
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { getUserById, getUserByEmail } = require('./user');
+const { getUserById, getUserByEmail ,getUserByMobile } = require('./user');
 require('dotenv').config();
 
 // BASIC AUTH
 
 async function authenticateBasic(email, password) {
     try {
-        let user = await getUserByEmail(email);
+        
+        let user = await getUserByEmail(email)||await getUserByMobile(email);
+        
         const valid = await bcrypt.compare(password, user.user_password);
         if (valid) {
             return user;

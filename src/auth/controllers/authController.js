@@ -1,11 +1,12 @@
 'use strict';
 
-const { signup, getUserById, getUserByEmail, getUserByMobile, getUserIdFromToken } = require('../models/user')
+const { signup, getUserById, getUserByEmail, getUserByMobile, getUserIdFromToken ,createProfile} = require('../models/user')
 const { createToken,deleteToken } = require('../models/jwt')
 
 const signupHandler = async (req, res, next) => {
     try {
         let result = await signup(req.body)
+        await createProfile(result);
         let userTokens = await createToken(result.id)
         res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token, result })
     } catch (error) {

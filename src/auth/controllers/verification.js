@@ -9,7 +9,7 @@ const sendVerificationCodeHandler = async (req, res, next) => {
     let token = req.headers.authorization.split(' ').pop();
    
     let userId = await getUserIdFromToken(token);
-    console.log("🚀 ~ file: verification.js ~ line 12 ~ sendVerificationCodeHandler ~ userId", userId)
+
     
     let userData = await getMobileById(userId);
    

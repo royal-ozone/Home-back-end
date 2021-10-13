@@ -30,12 +30,18 @@ DROP TABLE IF EXISTS order_notification;
 DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS new_order;
-DROP TABLE IF EXISTS profiles;
+
 DROP TABLE IF EXISTS stores;
+
+DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS user_file;
+
 DROP TABLE IF EXISTS users;
 
+
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 
 
 CREATE TABLE users(
@@ -74,9 +80,12 @@ CREATE TABLE profiles(
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
+
+
+
 CREATE TABLE stores(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
+  profile_id uuid NOT NULL UNIQUE,
   store_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
   address VARCHAR (250) DEFAULT 'Remote',
@@ -87,7 +96,7 @@ CREATE TABLE stores(
   store_rating REAL NOT NULL DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
@@ -167,9 +176,9 @@ CREATE TABLE product_pictures(
 );
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL,
+  profile_id uuid NOT NULL,
   profile_picture uuid NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 CREATE TABLE store_picture(
@@ -181,27 +190,27 @@ CREATE TABLE store_picture(
 );
 CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL ,
+  profile_id uuid NOT NULL ,
   product_id uuid NOT NULL ,
   review VARCHAR(250) NOT NULL,
   rate VARCHAR(1) NOT NULL,
   votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
 CREATE TABLE store_reviews(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
+  profile_id uuid NOT NULL UNIQUE,
   store_id uuid NOT NULL UNIQUE,
   review VARCHAR(250) NOT NULL,
   rate FLOAT NOT NULL DEFAULT '0',
   votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (store_id) REFERENCES stores(id)
 );
 
