@@ -29,7 +29,7 @@ passport.use(
         let googleId = profile.id;
         let googleEmail = profile._json.email;
 
-        let user = await getUserByGoogleId(googleId, 'google');
+        let user = await getUserByGoogleId(googleId);
         let email = await getUserByEmail(googleEmail);
 
         // console.log('profile:',profile);
