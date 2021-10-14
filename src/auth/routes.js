@@ -7,7 +7,9 @@ const bearer = require('./middleware/bearer');
 const {signupHandler,signInHandler,signOutHandler} = require('./controllers/authController')
 const {sendVerificationCodeHandler,verifyUserHandler,sendMessageHandler} = require('./controllers/verification')
 
+const googleAuth = require('./oauth/google-oauth');
 
+authRouter.use(googleAuth); // calling google oauth
 
 authRouter.post('/signup',signupHandler);
 authRouter.post('/signin',basicAuth,signInHandler);
