@@ -1,21 +1,21 @@
 'use strict';
 const express = require('express');
 const passportSetup = require('./passport-setup');
-const {googleAuthCall,googleFailed} = require ('./google');
+const {facebookAuthCall,facebookFailed} = require ('./facebook');
 
-const googleOauth = express.Router();
+const facebookOauth = express.Router();
 
-googleOauth.use(passportSetup.initialize());
+facebookOauth.use(passportSetup.initialize());
 
-googleOauth.get('/google',googleAuthCall);
-googleOauth.get('/failed',googleFailed);
+facebookOauth.get('/facebook',facebookAuthCall);
+facebookOauth.get('/failed',facebookFailed);
 
-googleOauth.get('/google/callback', 
-  passportSetup.authenticate('google', { failureRedirect: '/auth/signin' }),
+facebookOauth.get('/facebook/callback', 
+  passportSetup.authenticate('facebook', { failureRedirect: '/auth/signin' }),
   function(req, res) {
     let user = req.user;
     res.json(user);
   });
 
 
-module.exports = googleOauth;
+module.exports = facebookOauth;

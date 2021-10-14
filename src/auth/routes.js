@@ -8,8 +8,10 @@ const {signupHandler,signInHandler,signOutHandler} = require('./controllers/auth
 const {sendVerificationCodeHandler,verifyUserHandler,sendMessageHandler} = require('./controllers/verification')
 
 const googleAuth = require('./oauth/google-oauth');
+const facebookAuth = require('./oauth/facebook/facebook-oauth')
 
 authRouter.use(googleAuth); // calling google oauth
+authRouter.use(facebookAuth);
 
 authRouter.post('/signup',signupHandler);
 authRouter.post('/signin',basicAuth,signInHandler);
