@@ -51,7 +51,6 @@ passport.use(
         if (!user && !email) {
           user = await signupGoogle(userData);
           // Create user profile
-
           await createProfile(user);
           let userTokens = await createToken(user.id);
           delete user.user_password;

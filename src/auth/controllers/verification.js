@@ -6,15 +6,9 @@ const clientForVerification = require('twilio')(process.env.ACCOUNT_SID ,process
 
 
 const sendVerificationCodeHandler = async (req, res, next) => {
-    let token = req.headers.authorization.split(' ').pop();
-   
-    let userId = await getUserIdFromToken(token);
 
+    let userData = await getMobileById(req.user.id);
     
-    let userData = await getMobileById(userId);
-   
-    
-   console.log(typeof(userData.country_code),'aaaaaaaaaaaaaaaaaaaaaaaaaaa')
   if(userData){
     clientForVerification
     .verify
@@ -44,11 +38,9 @@ const sendVerificationCodeHandler = async (req, res, next) => {
 }
 
 const verifyUserHandler = async (req, res, next) => {
-    let token = req.headers.authorization.split(' ').pop();
-   
-    let userId = await getUserIdFromToken(token);
-    
-    let userData = await getMobileById(userId);
+
+    let userData = await getMobileById(req.user.id);
+    console.log("🚀 ~ file: verification.js ~ line 53 ~ verifyUserHandler ~ userData", userData)
 
     clientForVerification
     .verify
@@ -61,10 +53,7 @@ const verifyUserHandler = async (req, res, next) => {
     .then(async(data) => {
         if(data.status==='approved'){
             
-        //   let userData= await getUserByMobile(userData.mobile);
-        //   console.log(userData?userData.id:null);
-
-          let updateUser = await updateUserVerification(userId);
+          let updateUser = await updateUserVerification(req.user.id);
           
             res.status(200).send({
                 message:"User is Verified!!",
