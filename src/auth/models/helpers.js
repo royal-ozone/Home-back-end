@@ -58,7 +58,6 @@ let authenticateWithToken = async (token,tokenType='access')=>{
         
          const user = await getUserById(parsedToken.userId);
          if(user) return user;
-         next();
     } catch (error) {
         throw new Error(error.message);
     }

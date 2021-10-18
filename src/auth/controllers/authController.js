@@ -10,7 +10,7 @@ const { signup,
     updateUserEmail,
     updateUserMobile, } = require('../models/user')
 
-    const {authenticateWithToken} = require('../models/helpers')
+const { authenticateWithToken } = require('../models/helpers')
 
 const { createToken, deleteToken } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
@@ -92,20 +92,17 @@ const signOutHandler = async (req, res, next) => {
 const updateUserPasswordHandler = async (req, res, next) => {
     try {
 
-        let token = req.headers.authorization.split(' ').pop();
-        
-        let userId = await getUserIdFromToken(token);
-
         const oldPassword = req.body.old_password;
         const newPassword = req.body.new_password;
         const newPassword2 = req.body.new_password2;
-        if (!oldPassword || !newPassword) {
-            const error = new Error('Missing parameters, old password or new password');
+
+        if (!oldPassword || !newPassword || !newPassword2) {
+            const error = new Error('Missing parameters, please enter all required fields!');
             error.statusCode = 403;
             throw error;
         }
 
-        if( newPassword !== newPassword2) {
+        if (newPassword !== newPassword2) {
             const error = new Error('New password mismatch! please write the same new password in both fields!');
             error.statusCode = 403;
             throw error;
@@ -116,9 +113,9 @@ const updateUserPasswordHandler = async (req, res, next) => {
             error.statusCode = 403;
             throw error;
         }
- 
-        let user = await getUserById(userId);
-        
+
+        let user = await getUserById(req.user.id);
+
         const valid = await checkPassword(oldPassword, user.user_password);
         if (valid) {
             user = await updateUserPassword(user.id, newPassword);
@@ -139,22 +136,21 @@ const updateUserPasswordHandler = async (req, res, next) => {
 
 const updateUserEmailHandler = async (req, res, next) => {
     try {
-        let token = req.headers.authorization.split(' ').pop();
-        
-        let userId = await getUserIdFromToken(token);
+
         const oldEmail = req.body.old_email;
         const newEmail = req.body.new_email;
+
         if (!oldEmail || !newEmail) {
             const error = new Error('Missing parameters, old email or new email');
             error.statusCode = 403;
             throw error;
         }
 
-        let user = await getUserById(userId);
-        
-        
+        let user = await getUserById(req.user.id);
+
+
         if (user) {
-    
+
             let fixedEmailOld = oldEmail.toLowerCase().trim();
             let fixedEmailNew = newEmail.toLowerCase().trim();
 
@@ -163,13 +159,13 @@ const updateUserEmailHandler = async (req, res, next) => {
                 error.statusCode = 403;
                 throw error;
             }
-          
-            if(user.email !== fixedEmailOld) {
+
+            if (user.email !== fixedEmailOld) {
                 const error = new Error('Old email entry does not match your own email!');
                 error.statusCode = 403;
                 throw error;
             }
-            user = await updateUserEmail(user.id, fixedEmailNew);
+            user = await updateUserEmail(req.user.id, fixedEmailNew);
             const response = {
                 status: 200,
                 message: 'Email updated successfully',
@@ -188,12 +184,8 @@ const updateUserEmailHandler = async (req, res, next) => {
 const updateUserMobileHandler = async (req, res, next) => {
     try {
 
-        let token = req.headers.authorization.split(' ').pop();
-        
-        let userId = await getUserIdFromToken(token);
-
         const country = req.body.country_code;
-        const oldMobile= req.body.old_mobile;
+        const oldMobile = req.body.old_mobile;
         const newMobile = req.body.new_mobile;
 
         if (!oldMobile || !newMobile || !country) {
@@ -201,22 +193,22 @@ const updateUserMobileHandler = async (req, res, next) => {
             error.statusCode = 403;
             throw error;
         }
-        
-        
-        let user = await getUserById(userId);
-        
+
+
+        let user = await getUserById(req.user.id);
+
         if (user) {
-            console.log("country" , country);
+            console.log("country", country);
             let fixedMobileOld = oldMobile.trim();
             let fixedMobileNew = newMobile.trim();
-    
-            if(user.mobile !== fixedMobileOld) {
+
+            if (user.mobile !== fixedMobileOld) {
                 const error = new Error('Old mobile entry does not match your mobile number!');
                 error.statusCode = 403;
                 throw error;
             }
 
-            user = await updateUserMobile(user.id, country, fixedMobileNew);
+            user = await updateUserMobile(req.user.id, country, fixedMobileNew);
             const response = {
                 status: 200,
                 message: 'mobile updated successfully',

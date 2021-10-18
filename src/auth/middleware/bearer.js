@@ -21,8 +21,8 @@ module.exports =async (req,res, next)=>{
 
         // request.user:
         
-        // req.user = validUser;
-        // req.user.profile_id = userProfile.id;
+        req.user = validUser;
+        req.user.profile_id = userProfile.id;
         
         next();
     
