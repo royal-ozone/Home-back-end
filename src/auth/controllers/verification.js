@@ -13,8 +13,7 @@ const sendVerificationCodeHandler = async (req, res, next) => {
     
     let userData = await getMobileById(userId);
    
-    
-   console.log(typeof(userData.country_code),'aaaaaaaaaaaaaaaaaaaaaaaaaaa')
+ 
   if(userData){
     clientForVerification
     .verify

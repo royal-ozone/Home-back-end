@@ -18,6 +18,12 @@ module.exports =async (req,res, next)=>{
 
         let validUser = await authenticateWithToken(token,'access');
         let userProfile = await getProfileByUserId(validUser.id);
+
+        // request.user:
+        
+        // req.user = validUser;
+        // req.user.profile_id = userProfile.id;
+        
         next();
     
     } catch (error) {

@@ -131,11 +131,11 @@ async function updateUserEmail(user_id, email) {
     }
 }
 
-async function updateUserMobile(user_id, mobile) {
+async function updateUserMobile(user_id, country_code, mobile) {
     try {
-        const SQL = `UPDATE USERS SET mobile = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE USERS SET mobile = $1, country_code=$2 WHERE id = $3 RETURNING *;`;
 
-        const safeValues = [mobile, user_id];
+        const safeValues = [mobile, country_code, user_id];
         const result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (e) {
