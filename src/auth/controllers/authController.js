@@ -124,7 +124,7 @@ const updateUserPasswordHandler = async (req, res, next) => {
     }
 };
 
-const UpdateUserEmailHandler = async (req, res, next) => {
+const updateUserEmailHandler = async (req, res, next) => {
     try {
         const oldEmail = req.body.old_email;
         const newEmail = req.body.new_email;
@@ -159,7 +159,7 @@ const UpdateUserEmailHandler = async (req, res, next) => {
     }
 };
 
-const UpdateUserMobileHandler = async (req, res, next) => {
+const updateUserMobileHandler = async (req, res, next) => {
     try {
         const oldMobile = req.body.old_mobile;
         const newMobile = req.body.new_mobile;
@@ -237,8 +237,8 @@ module.exports = {
     signInHandler,
     signOutHandler,
     updateUserPasswordHandler,
-    UpdateUserEmailHandler,
-    UpdateUserMobileHandler,
+    updateUserEmailHandler,
+    updateUserMobileHandler,
     resetPasswordHandler,
     refreshHandler
 }
