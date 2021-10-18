@@ -19,6 +19,37 @@ const signup =  async data =>{
     }
 };
 
+const signupGoogle =  async data =>{
+    try {
+        const {email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified} = data;
+        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let userPassword = await bcrypt.hash(user_password, 10)
+        
+        let correctEmail = email.toLowerCase().trim();
+        let safeValues = [correctEmail,userPassword,country_code,mobile,country,city,first_name,last_name,google_id,verified];
+        let result = await client.query(SQL,safeValues);
+        return result.rows[0];
+    } catch (error) {
+       throw new Error (error.message);
+    }
+};
+
+const signupFacebook =  async data =>{
+    try {
+        const {email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified} = data;
+        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let userPassword = await bcrypt.hash(user_password, 10)
+        
+        let correctEmail = email.toLowerCase().trim();
+        let safeValues = [correctEmail,userPassword,country_code,mobile,country,city,first_name,last_name,facebook_id,verified];
+        let result = await client.query(SQL,safeValues);
+        return result.rows[0];
+    } catch (error) {
+       throw new Error (error.message);
+    }
+};
+
+
 const createProfile = async data => {
    try {
     let mobileAllData = '+'+data.country_code + data.mobile.split('').splice(1,data.mobile.length).join('');
@@ -50,6 +81,28 @@ const getUserById = async id =>{
     try {
         let SQL = `SELECT * FROM users WHERE id=$1;`;
         let safeValue = [id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0];
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+const getUserByGoogleId = async google_id =>{
+    try {
+        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let safeValue = [google_id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0];
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+const getUserByFacebookId = async facebook_id =>{
+    try {
+        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let safeValue = [facebook_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
     } catch (error) {
@@ -114,4 +167,4 @@ const getProfileByUserId = async id =>{
 
 
 
-module.exports = { signup,createProfile, getUserById, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById,getProfileByUserId}
+module.exports = { signup, signupGoogle,signupFacebook, createProfile, getUserById, getUserByGoogleId, getUserByEmail, getUserByMobile ,updateUserVerification,getUserIdFromToken,getMobileById,getProfileByUserId, getUserByFacebookId}

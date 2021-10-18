@@ -5,6 +5,7 @@
 const client = require('./db'); 
 
 const authRouter = require('./auth/routes')
+const v1Router = require ('./routes/v1')
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
@@ -16,7 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); ///
 app.use(express.static('./public'));
 app.use(cors());
-app.use('/api/v1', authRouter);
+app.use('/auth', authRouter);
+app.use('/api/v1', v1Router);
 
 
 /// routers /// 
