@@ -336,8 +336,8 @@ const addAdminHandler = async (req, res, next) => {
 
 const addModHandler = async (req, res, next) => {
     try {
-
-        let mod = await addMod(req.user.id);
+        let {mobile} = req.body;
+        let mod = await addMod(mobile);
         if(mod){
             res.status(200).json('Moderator has been added!')
         

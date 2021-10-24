@@ -45,7 +45,7 @@ authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
 authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
-authRouter.post('/mods/add', checkAdmin, bearer, addModHandler);
+authRouter.post('/mod/add',bearer, checkAdmin, addModHandler);
 authRouter.post('/user/ban',bearer, checkAuth, banUserHandler);
 authRouter.delete('/user/ban/remove',bearer, checkAuth, removeBanUserHandler);
 

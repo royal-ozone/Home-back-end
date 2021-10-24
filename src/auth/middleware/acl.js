@@ -34,7 +34,7 @@ let profileView = async (req, res, next) => {
 
 let checkAdmin = async (req, res, next) => {
     try {
-         let SQL = `SELECT * FROM ADMINS WHERE id=$1;`;
+         let SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
          let safeValue = [req.user.id];
          let result = await client.query(SQL,safeValue);
          if(result.rows[0]){
