@@ -43,7 +43,7 @@ authRouter.put('/user/password/reset', bearer, resetPasswordHandler);
 authRouter.put('/user/password/change', bearer, updateUserResetPasswordHandler);
 authRouter.put('/user/email', bearer, updateUserEmailHandler);
 authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
-authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
+authRouter.get('/user/all',bearer, checkAuth, getAllUsersHandler);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
 

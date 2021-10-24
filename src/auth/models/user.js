@@ -174,7 +174,7 @@ const getAllUsers = async token => {
     try {
         let SQL = 'SELECT * FROM USERS;';
         let result = await client.query(SQL);
-        return result;
+        return {users:result.rows};
     } catch (error) {
         return error.message;
     }
