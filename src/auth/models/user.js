@@ -240,7 +240,7 @@ const addMod = async userId => {
 
 const banUser = async userId => {
     try {
-        let SQL = `INSERT INTO banned-users(user_id) VALUES ($1) RETURNING *;`;
+        let SQL = `INSERT INTO banned_users(user_id) VALUES ($1) RETURNING *;`;
 
         let safeValues = [userId];
         let result = await client.query(SQL, safeValues);

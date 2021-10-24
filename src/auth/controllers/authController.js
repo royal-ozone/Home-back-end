@@ -93,6 +93,8 @@ const signOutHandler = async (req, res, next) => {
     }
 };
 
+// This function is for updating user password
+
 const updateUserPasswordHandler = async (req, res, next) => {
     try {
 
@@ -130,6 +132,49 @@ const updateUserPasswordHandler = async (req, res, next) => {
             res.status(200).json(response);
         } else {
             const error = new Error('Old password is incorrect!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const updateUserResetPasswordHandler = async (req, res, next) => {
+    try {
+
+        const newPassword = req.body.new_password;
+        const newPassword2 = req.body.new_password2;
+
+        if (!newPassword || !newPassword2) {
+            const error = new Error('Missing parameters, please enter all required fields!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (newPassword !== newPassword2) {
+            const error = new Error('New password mismatch! please write the same new password in both fields!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (!validatePassword(newPassword)) {
+            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number with no spaces, ex:Ax@123');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        let user = await getUserById(req.user.id);
+
+        if (user) {
+            user = await updateUserPassword(user.id, newPassword);
+            const response = {
+                status: 200,
+                message: 'Password updated successfully',
+            };
+            res.status(200).json(response);
+        } else {
+            const error = new Error('Something went wrong!');
             error.statusCode = 403;
             throw error;
         }
@@ -347,6 +392,7 @@ module.exports = {
     addModHandler,
     banUserHandler,
     updateUserPasswordHandler,
+    updateUserResetPasswordHandler,
     updateUserEmailHandler,
     updateUserMobileHandler,
     resetPasswordHandler,

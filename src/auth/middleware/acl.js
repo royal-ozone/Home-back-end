@@ -86,5 +86,5 @@ let checkBan = async (req, res, next) => {
     }
 };
 
-exports.module = {profileView,productComment,checkAdmin,checkMod,checkAuth,checkBan}
+module.exports = {profileView,productComment,checkAdmin,checkMod,checkAuth,checkBan};
  

@@ -13,6 +13,8 @@ const {
     addModHandler,
     banUserHandler,
     updateUserPasswordHandler,
+    resetPasswordHandler,
+    updateUserResetPasswordHandler,
     updateUserEmailHandler,
     updateUserMobileHandler,
     refreshHandler,
@@ -35,6 +37,8 @@ authRouter.post('/user/send/message', sendMessageHandler);
 authRouter.post('/refresh', refreshHandler);
 
 authRouter.put('/user/password', bearer, updateUserPasswordHandler);
+authRouter.put('/user/password/reset', bearer, resetPasswordHandler);
+authRouter.put('/user/password/change', bearer, updateUserResetPasswordHandler);
 authRouter.put('/user/email', bearer, updateUserEmailHandler);
 authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
 authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
