@@ -255,6 +255,23 @@ const banUser = async (mobile) => {
     }
 };
 
+const unbanUser = async (mobile) => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+
+        let userId = result.rows[0].id;
+        SQL = `DELETE FROM banned_users WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 module.exports = {
     signup,
     signupGoogle,
@@ -275,6 +292,7 @@ module.exports = {
     getProfileByUserId,
     addAdmin,
     addMod,
-    banUser
+    banUser,
+    unbanUser
 }
 

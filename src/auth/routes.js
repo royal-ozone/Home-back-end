@@ -12,6 +12,7 @@ const {
     addAdminHandler,
     addModHandler,
     banUserHandler,
+    removeBanUserHandler,
     updateUserPasswordHandler,
     resetPasswordHandler,
     updateUserResetPasswordHandler,
@@ -46,6 +47,7 @@ authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
 authRouter.post('/admin/add', bearer, addAdminHandler);
 authRouter.post('/mods/add', checkAdmin, bearer, addModHandler);
 authRouter.post('/user/ban',bearer, checkAuth, banUserHandler);
+authRouter.delete('/user/ban/remove',bearer, checkAuth, removeBanUserHandler);
 
 
 module.exports = authRouter;

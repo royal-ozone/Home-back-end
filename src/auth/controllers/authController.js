@@ -10,6 +10,7 @@ const { signup,
     addAdmin,
     addMod,
     banUser,
+    unbanUser,
     updateUserPassword,
     updateUserEmail,
     updateUserMobile, } = require('../models/user')
@@ -368,6 +369,24 @@ const banUserHandler = async (req, res, next) => {
     }
 };
 
+const removeBanUserHandler = async (req, res, next) => {
+    try {
+
+        let {mobile} = req.body;
+        let banned = await unbanUser(mobile);
+        if(!banned){
+            res.status(200).json('Ban has been removed from the user!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
 const getAllUsersHandler = async (req, res, next) => {
     try {
 
@@ -392,6 +411,7 @@ module.exports = {
     addAdminHandler,
     addModHandler,
     banUserHandler,
+    removeBanUserHandler,
     updateUserPasswordHandler,
     updateUserResetPasswordHandler,
     updateUserEmailHandler,
