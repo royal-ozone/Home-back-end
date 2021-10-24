@@ -353,8 +353,9 @@ const addModHandler = async (req, res, next) => {
 const banUserHandler = async (req, res, next) => {
     try {
 
-        let mod = await banUser(req.user.id);
-        if(mod){
+        let {mobile} = req.body;
+        let banned = await banUser(mobile);
+        if(banned){
             res.status(200).json('User has been banned!')
         
         } else {

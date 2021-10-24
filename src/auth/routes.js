@@ -45,7 +45,7 @@ authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
 authRouter.post('/mods/add', checkAdmin, bearer, addModHandler);
-authRouter.post('/user/ban', checkAuth, bearer, banUserHandler);
+authRouter.post('/user/ban',bearer, checkAuth, banUserHandler);
 
 
 module.exports = authRouter;

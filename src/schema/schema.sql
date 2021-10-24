@@ -73,6 +73,7 @@ CREATE TABLE user_file(
   file text NOT NULL,
   created_at date not null default current_timestamp
 );
+
 CREATE TABLE profiles(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,

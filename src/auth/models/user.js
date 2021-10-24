@@ -238,12 +238,17 @@ const addMod = async userId => {
     }
 };
 
-const banUser = async userId => {
+const banUser = async (mobile) => {
     try {
-        let SQL = `INSERT INTO banned_users(user_id) VALUES ($1) RETURNING *;`;
-
-        let safeValues = [userId];
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
+
+        let userId = result.rows[0].id;
+        SQL = `INSERT INTO banned_users(user_id) VALUES ($1) RETURNING *;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message);

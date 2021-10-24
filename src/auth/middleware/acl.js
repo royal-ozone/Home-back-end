@@ -37,7 +37,7 @@ let checkAdmin = async (req, res, next) => {
          let SQL = `SELECT * FROM ADMINS WHERE id=$1;`;
          let safeValue = [req.user.id];
          let result = await client.query(SQL,safeValue);
-         if(result){
+         if(result.rows[0]){
              next();
          } else throw new Error('User unauthorized, access denied!');
     } catch (error) {
@@ -50,7 +50,7 @@ let checkMod = async (req, res, next) => {
          let SQL = `SELECT * FROM MODS WHERE id=$1;`;
          let safeValue = [req.user.id];
          let result = await client.query(SQL,safeValue);
-         if(result){
+         if(result.rows[0]){
              next();
          } else throw new Error('User unauthorized, access denied!');
     } catch (error) {
@@ -60,12 +60,16 @@ let checkMod = async (req, res, next) => {
 
 let checkAuth = async (req, res, next) => {
     try {
-         let SQL = `SELECT * FROM ADMINS WHERE id=$1;`;
-         let SQL2 = `SELECT * FROM MODS WHERE id=$1;`;
+        // console.log("check id ", req.user.id)
+         let SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
+         let SQL2 = `SELECT * FROM MODS WHERE user_id=$1;`;
          let safeValue = [req.user.id];
+        //  console.log("🚀 ~ file: acl.js ~ line 67 ~ checkAuth ~ safeValue", safeValue)
          let result = await client.query(SQL,safeValue);
          let result2 = await client.query(SQL2,safeValue);
-         if(result || result2){
+        //  console.log("check result ", result.rows[0])
+        //  console.log("check result2 ", result2.rows[0])
+         if(result.rows[0] || result2.rows[0]){
              next();
          } else throw new Error('User unauthorized, access denied!');
     } catch (error) {
@@ -75,11 +79,11 @@ let checkAuth = async (req, res, next) => {
 
 let checkBan = async (req, res, next) => {
     try {
-         let SQL = `SELECT * FROM MODS WHERE id=$1;`;
+         let SQL = `SELECT * FROM banned_users WHERE user_id=$1;`;
          let safeValue = [req.user.id];
          let result = await client.query(SQL,safeValue);
-         if(result){
-            throw new Error('User unauthorized, access denied!');
+         if(result.rows[0]){
+            throw new Error('User has been banned!');
          } else next();
     } catch (error) {
         throw new Error(error.message)
