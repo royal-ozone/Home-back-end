@@ -14,36 +14,47 @@ passport.use(new facebookStrategy({
 
 },
 async function(token,refresh,profile,done){
-git try {
+ try {
     let facebookId = profile.id;
     let facebookEmail = profile.emails[0].value;
 
     let user = await getUserByFacebookId(facebookId);
     let email = await getUserByEmail(facebookEmail);
 
-    let userData = {
+    // let userData = {
+    //     email: facebookEmail,
+    //     user_password: randomGenerator(10),
+    //     country_code: '962',
+    //     mobile: '071' + randomGenerator(7),
+    //     country: 'Jordan',
+    //     city: 'Amman',
+    //     first_name: profile.name.givenName,
+    //     last_name: profile.name.familyName || 'not specified',
+    //     facebook_id: facebookId,
+    //     verified: true,
+    //   };
+      let userData = {
         email: facebookEmail,
-        user_password: randomGenerator(10),
-        country_code: '962',
-        mobile: '071' + randomGenerator(7),
-        country: 'Jordan',
-        city: 'Amman',
         first_name: profile.name.givenName,
         last_name: profile.name.familyName || 'not specified',
-        facebook_id: facebookId,
-        verified: true,
+        google_id: facebookId,
       };
 
       if (!user && !email) {
-        user = await signupFacebook(userData);
-        // Create user profile
+        
+        return done(null, userData);
+      }
 
-        await createProfile(user);
-        let userTokens = await createToken(user.id);
-        delete user.user_password;
-        delete userTokens.user_id;
-        return done(null, { user, userTokens });
-      } 
+      // if (!user && !email) {
+      //   user = await signupFacebook(userData);
+      //   // Create user profile
+
+      //   await createProfile(user);
+      //   let userTokens = await createToken(user.id);
+      //   delete user.user_password;
+      //   delete userTokens.user_id;
+      //   return done(null, { user, userTokens });
+      // } 
       else if (user) {
         await deleteToken(user.id);
         let userTokens = await createToken(user.id);
