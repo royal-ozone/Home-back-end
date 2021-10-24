@@ -252,6 +252,23 @@ const addMod = async mobile => {
     }
 };
 
+const removeMod = async (mobile) => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+
+        let userId = result.rows[0].id;
+        SQL = `DELETE FROM MODS WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 const banUser = async (mobile) => {
     try {
         let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
@@ -315,6 +332,7 @@ module.exports = {
     getProfileByUserId,
     addAdmin,
     addMod,
+    removeMod,
     banUser,
     unbanUser
 }

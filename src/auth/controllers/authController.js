@@ -9,6 +9,7 @@ const { signup,
     createProfile,
     addAdmin,
     addMod,
+    removeMod,
     banUser,
     unbanUser,
     updateUserPassword,
@@ -351,6 +352,22 @@ const addModHandler = async (req, res, next) => {
     }
 };
 
+const removeModHandler = async (req, res, next) => {
+    try {
+        let {mobile} = req.body;
+        let remove = await removeMod(mobile);
+        if(!remove){
+            res.status(200).json('Moderator has been removed!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
 const banUserHandler = async (req, res, next) => {
     try {
 
@@ -410,6 +427,7 @@ module.exports = {
     signOutHandler,
     addAdminHandler,
     addModHandler,
+    removeModHandler,
     banUserHandler,
     removeBanUserHandler,
     updateUserPasswordHandler,

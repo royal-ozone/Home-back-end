@@ -11,6 +11,7 @@ const {
     signOutHandler,
     addAdminHandler,
     addModHandler,
+    removeModHandler,
     banUserHandler,
     removeBanUserHandler,
     updateUserPasswordHandler,
@@ -45,7 +46,10 @@ authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
 authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
+
 authRouter.post('/mod/add',bearer, checkAdmin, addModHandler);
+authRouter.delete('/mod/remove',bearer, checkAdmin, removeModHandler);
+
 authRouter.post('/user/ban',bearer, checkAuth, banUserHandler);
 authRouter.delete('/user/ban/remove',bearer, checkAuth, removeBanUserHandler);
 
