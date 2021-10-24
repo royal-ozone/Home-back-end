@@ -169,6 +169,17 @@ async function updateUserMobile(user_id, country_code, mobile) {
         throw new Error(e.message);
     }
 }
+
+const getAllUsers = async token => {
+    try {
+        let SQL = 'SELECT * FROM USERS;';
+        let result = await client.query(SQL);
+        return result;
+    } catch (error) {
+        return error.message;
+    }
+}
+
 const getUserIdFromToken = async token => {
     try {
         let SQL = 'SELECT user_id FROM jwt WHERE access_token =$1;';
@@ -203,7 +214,41 @@ const getProfileByUserId = async id => {
     }
 }
 
+const addAdmin = async userId => {
+    try {
+        let SQL = `INSERT INTO ADMINS(user_id) VALUES ($1) RETURNING *;`;
 
+        let safeValues = [userId];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const addMod = async userId => {
+    try {
+        let SQL = `INSERT INTO MODS(user_id) VALUES ($1) RETURNING *;`;
+
+        let safeValues = [userId];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const banUser = async userId => {
+    try {
+        let SQL = `INSERT INTO banned-users(user_id) VALUES ($1) RETURNING *;`;
+
+        let safeValues = [userId];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 module.exports = {
     signup,
@@ -215,12 +260,16 @@ module.exports = {
     getUserByFacebookId,
     getUserByEmail,
     getUserByMobile,
+    getAllUsers,
     updateUserVerification,
     updateUserPassword,
     updateUserEmail,
     updateUserMobile,
     getUserIdFromToken,
     getMobileById, 
-    getProfileByUserId
+    getProfileByUserId,
+    addAdmin,
+    addMod,
+    banUser
 }
 

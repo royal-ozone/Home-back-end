@@ -3,15 +3,20 @@
 const express = require('express');
 const authRouter = express.Router();
 const basicAuth = require('./middleware/basic')
+const {checkAdmin,checkMod,checkAuth,checkBan} = require ('./middleware/acl')
 const bearer = require('./middleware/bearer');
 const {
     signupHandler,
     signInHandler,
     signOutHandler,
+    addAdminHandler,
+    addModHandler,
+    banUserHandler,
     updateUserPasswordHandler,
     updateUserEmailHandler,
     updateUserMobileHandler,
-    refreshHandler } = require('./controllers/authController')
+    refreshHandler,
+    getAllUsersHandler } = require('./controllers/authController')
 
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
 
@@ -22,7 +27,7 @@ authRouter.use(googleAuth); // calling google oauth
 authRouter.use(facebookAuth);
 
 authRouter.post('/signup', signupHandler);
-authRouter.post('/signin', basicAuth, signInHandler);
+authRouter.post('/signin', basicAuth,checkBan, signInHandler);
 authRouter.post('/signout', bearer, signOutHandler);
 authRouter.post('/user/verification', bearer, sendVerificationCodeHandler);
 authRouter.post('/user/verify', bearer, verifyUserHandler);
@@ -32,8 +37,11 @@ authRouter.post('/refresh', refreshHandler);
 authRouter.put('/user/password', bearer, updateUserPasswordHandler);
 authRouter.put('/user/email', bearer, updateUserEmailHandler);
 authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
+authRouter.get('/user/all', checkAuth, bearer, getAllUsersHandler);
 
-
+authRouter.post('/admin/add', bearer, addAdminHandler);
+authRouter.post('/mods/add', checkAdmin, bearer, addModHandler);
+authRouter.post('/user/ban', checkAuth, bearer, banUserHandler);
 
 
 module.exports = authRouter;

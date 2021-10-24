@@ -21,7 +21,6 @@ DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS cart_item;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS jwt;
 DROP TABLE IF EXISTS follow;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
@@ -33,9 +32,12 @@ DROP TABLE IF EXISTS new_order;
 
 DROP TABLE IF EXISTS stores;
 
-DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS user_file;
 
+DROP TABLE IF EXISTS admins;
+DROP TABLE IF EXISTS mods;
+DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS jwt;
 DROP TABLE IF EXISTS users;
 
 
@@ -78,6 +80,27 @@ CREATE TABLE profiles(
 
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+);
+
+CREATE TABLE admins(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE mods(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE banned-users(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 

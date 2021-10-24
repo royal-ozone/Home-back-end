@@ -5,7 +5,11 @@ const { signup,
     getUserByEmail,
     getUserByMobile,
     getUserIdFromToken,
+    getAllUsers,
     createProfile,
+    addAdmin,
+    addMod,
+    banUser,
     updateUserPassword,
     updateUserEmail,
     updateUserMobile, } = require('../models/user')
@@ -198,7 +202,6 @@ const updateUserMobileHandler = async (req, res, next) => {
         let user = await getUserById(req.user.id);
 
         if (user) {
-            console.log("country", country);
             let fixedMobileOld = oldMobile.trim();
             let fixedMobileNew = newMobile.trim();
 
@@ -268,13 +271,85 @@ const refreshHandler = async (req, res, next) => {
     }
 };
 
+const addAdminHandler = async (req, res, next) => {
+    try {
+
+        let admin = await addAdmin(req.user.id);
+        if(admin){
+            res.status(200).json('Adminstrator has been added!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const addModHandler = async (req, res, next) => {
+    try {
+
+        let mod = await addMod(req.user.id);
+        if(mod){
+            res.status(200).json('Moderator has been added!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const banUserHandler = async (req, res, next) => {
+    try {
+
+        let mod = await banUser(req.user.id);
+        if(mod){
+            res.status(200).json('User has been banned!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const getAllUsersHandler = async (req, res, next) => {
+    try {
+
+        let users = await getAllUsers();
+        if(users){
+            res.status(200).json(users)
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
 module.exports = {
     signupHandler,
     signInHandler,
     signOutHandler,
+    addAdminHandler,
+    addModHandler,
+    banUserHandler,
     updateUserPasswordHandler,
     updateUserEmailHandler,
     updateUserMobileHandler,
     resetPasswordHandler,
-    refreshHandler
+    refreshHandler,
+    getAllUsersHandler
 }
