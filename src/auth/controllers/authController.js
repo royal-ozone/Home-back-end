@@ -5,7 +5,13 @@ const { signup,
     getUserByEmail,
     getUserByMobile,
     getUserIdFromToken,
+    getAllUsers,
     createProfile,
+    addAdmin,
+    addMod,
+    removeMod,
+    banUser,
+    unbanUser,
     updateUserPassword,
     updateUserEmail,
     updateUserMobile, } = require('../models/user')
@@ -89,6 +95,8 @@ const signOutHandler = async (req, res, next) => {
     }
 };
 
+// This function is for updating user password
+
 const updateUserPasswordHandler = async (req, res, next) => {
     try {
 
@@ -126,6 +134,49 @@ const updateUserPasswordHandler = async (req, res, next) => {
             res.status(200).json(response);
         } else {
             const error = new Error('Old password is incorrect!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const updateUserResetPasswordHandler = async (req, res, next) => {
+    try {
+
+        const newPassword = req.body.new_password;
+        const newPassword2 = req.body.new_password2;
+
+        if (!newPassword || !newPassword2) {
+            const error = new Error('Missing parameters, please enter all required fields!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (newPassword !== newPassword2) {
+            const error = new Error('New password mismatch! please write the same new password in both fields!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (!validatePassword(newPassword)) {
+            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number with no spaces, ex:Ax@123');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        let user = await getUserById(req.user.id);
+
+        if (user) {
+            user = await updateUserPassword(user.id, newPassword);
+            const response = {
+                status: 200,
+                message: 'Password updated successfully',
+            };
+            res.status(200).json(response);
+        } else {
+            const error = new Error('Something went wrong!');
             error.statusCode = 403;
             throw error;
         }
@@ -198,7 +249,6 @@ const updateUserMobileHandler = async (req, res, next) => {
         let user = await getUserById(req.user.id);
 
         if (user) {
-            console.log("country", country);
             let fixedMobileOld = oldMobile.trim();
             let fixedMobileNew = newMobile.trim();
 
@@ -268,13 +318,123 @@ const refreshHandler = async (req, res, next) => {
     }
 };
 
+const addAdminHandler = async (req, res, next) => {
+    try {
+
+        let admin = await addAdmin(req.user.id);
+        if(admin){
+            res.status(200).json('Adminstrator has been added!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const addModHandler = async (req, res, next) => {
+    try {
+        let {mobile} = req.body;
+        let mod = await addMod(mobile);
+        if(mod){
+            res.status(200).json('Moderator has been added!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const removeModHandler = async (req, res, next) => {
+    try {
+        let {mobile} = req.body;
+        let remove = await removeMod(mobile);
+        if(!remove){
+            res.status(200).json('Moderator has been removed!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+const banUserHandler = async (req, res, next) => {
+    try {
+
+        let {mobile} = req.body;
+        let banned = await banUser(mobile);
+        if(banned){
+            res.status(200).json('User has been banned!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const removeBanUserHandler = async (req, res, next) => {
+    try {
+
+        let {mobile} = req.body;
+        let banned = await unbanUser(mobile);
+        if(!banned){
+            res.status(200).json('Ban has been removed from the user!')
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
+const getAllUsersHandler = async (req, res, next) => {
+    try {
+
+        let users = await getAllUsers();
+        if(users){
+            res.status(200).json(users)
+        
+        } else {
+            const error = new Error('Something went wrong!');
+            error.statusCode = 403;
+            throw error;
+        }
+    } catch (e) {
+        next(e);
+    }
+};
+
 module.exports = {
     signupHandler,
     signInHandler,
     signOutHandler,
+    addAdminHandler,
+    addModHandler,
+    removeModHandler,
+    banUserHandler,
+    removeBanUserHandler,
     updateUserPasswordHandler,
+    updateUserResetPasswordHandler,
     updateUserEmailHandler,
     updateUserMobileHandler,
     resetPasswordHandler,
-    refreshHandler
+    refreshHandler,
+    getAllUsersHandler
 }

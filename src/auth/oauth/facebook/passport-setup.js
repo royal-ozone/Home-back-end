@@ -14,7 +14,7 @@ passport.use(new facebookStrategy({
 
 },
 async function(token,refresh,profile,done){
-git try {
+ try {
     let facebookId = profile.id;
     let facebookEmail = profile.emails[0].value;
 

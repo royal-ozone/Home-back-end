@@ -1,5 +1,3 @@
-
-
 DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS product_tag;
 
@@ -36,9 +34,10 @@ DROP TABLE IF EXISTS stores;
 DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS user_file;
 
+DROP TABLE IF EXISTS admins;
+DROP TABLE IF EXISTS mods;
+DROP TABLE IF EXISTS banned_users;
 DROP TABLE IF EXISTS users;
-
-
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -59,11 +58,22 @@ CREATE TABLE users(
   verified BOOLEAN DEFAULT false,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
+
+CREATE TABLE jwt(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  access_token VARCHAR(250) NOT NULL,
+  refresh_token VARCHAR(250) NOT NULL,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE user_file(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   file text NOT NULL,
   created_at date not null default current_timestamp
 );
+
 CREATE TABLE profiles(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
@@ -78,6 +88,27 @@ CREATE TABLE profiles(
 
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+);
+
+CREATE TABLE admins(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE mods(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE banned_users(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
@@ -233,10 +264,6 @@ CREATE TABLE new_order(
   FOREIGN KEY (profile_id) REFERENCES profiles(id)
   );
 
-
-
-
-
 CREATE TABLE order_item (
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   order_id uuid NOT NULL,
@@ -305,14 +332,6 @@ CREATE TABLE cart_item(
 );
 
 
-CREATE TABLE jwt(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
-  access_token VARCHAR(250) NOT NULL,
-  refresh_token VARCHAR(250) NOT NULL,
-  created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
 
 
 

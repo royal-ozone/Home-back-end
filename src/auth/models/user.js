@@ -169,6 +169,17 @@ async function updateUserMobile(user_id, country_code, mobile) {
         throw new Error(e.message);
     }
 }
+
+const getAllUsers = async token => {
+    try {
+        let SQL = 'SELECT * FROM USERS;';
+        let result = await client.query(SQL);
+        return {users:result.rows};
+    } catch (error) {
+        return error.message;
+    }
+}
+
 const getUserIdFromToken = async token => {
     try {
         let SQL = 'SELECT user_id FROM jwt WHERE access_token =$1;';
@@ -203,7 +214,103 @@ const getProfileByUserId = async id => {
     }
 }
 
+const addAdmin = async userId => {
+    try {
+        let SQL = `INSERT INTO ADMINS(user_id) VALUES ($1) RETURNING *;`;
 
+        let safeValues = [userId];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const addMod = async mobile => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+        let userId = result.rows[0].id;
+
+        SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        
+        if(result.rows[0]){
+            const error = new Error('This is an admin user!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        SQL = `INSERT INTO mods(user_id) VALUES ($1) RETURNING *;`;
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const removeMod = async (mobile) => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+
+        let userId = result.rows[0].id;
+        SQL = `DELETE FROM MODS WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const banUser = async (mobile) => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+        let userId = result.rows[0].id;
+
+        SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        
+        if(result.rows[0]){
+            const error = new Error('This is an admin user!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        SQL = `INSERT INTO banned_users(user_id) VALUES ($1) RETURNING *;`;
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const unbanUser = async (mobile) => {
+    try {
+        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        
+        let safeValues = [mobile];
+        let result = await client.query(SQL, safeValues);
+
+        let userId = result.rows[0].id;
+        SQL = `DELETE FROM banned_users WHERE user_id=$1;`;
+        safeValues = [userId];
+        result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 module.exports = {
     signup,
@@ -215,12 +322,18 @@ module.exports = {
     getUserByFacebookId,
     getUserByEmail,
     getUserByMobile,
+    getAllUsers,
     updateUserVerification,
     updateUserPassword,
     updateUserEmail,
     updateUserMobile,
     getUserIdFromToken,
     getMobileById, 
-    getProfileByUserId
+    getProfileByUserId,
+    addAdmin,
+    addMod,
+    removeMod,
+    banUser,
+    unbanUser
 }
 
