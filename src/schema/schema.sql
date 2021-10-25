@@ -123,12 +123,10 @@ CREATE TABLE stores(
   mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
-  store_picture uuid,
   store_rating REAL NOT NULL DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+  FOREIGN KEY (profile_id) REFERENCES profiles(id)
 );
 
 
