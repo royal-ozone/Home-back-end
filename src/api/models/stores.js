@@ -6,7 +6,7 @@ const requestStore = async (data, profileId) => {
     try {
         let { store_name, city, address, mobile, caption, about } = data;
 
-        let SQL = `INSERT INTO STORE (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
+        let SQL = `INSERT INTO _REQUEST (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
         let safeValues = [profileId, store_name, city, address, mobile, caption, about];
 
         let result = client.query(SQL, safeValues);
