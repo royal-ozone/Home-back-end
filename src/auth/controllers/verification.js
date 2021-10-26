@@ -20,7 +20,7 @@ const sendVerificationCodeHandler = async (req, res, next) => {
     })
     .then((data) => {
         res.status(200).send({
-            message:"Verification is send !!",
+            message:"Verification was sent!",
             mobile: userData.mobile,
             data
         });
@@ -40,8 +40,6 @@ const sendVerificationCodeHandler = async (req, res, next) => {
 const verifyUserHandler = async (req, res, next) => {
 
     let userData = await getMobileById(req.user.id);
-    console.log("🚀 ~ file: verification.js ~ line 53 ~ verifyUserHandler ~ userData", userData)
-
     clientForVerification
     .verify
     .services(process.env.SERVICE_ID)
@@ -56,7 +54,7 @@ const verifyUserHandler = async (req, res, next) => {
           let updateUser = await updateUserVerification(req.user.id);
           
             res.status(200).send({
-                message:"User is Verified!!",
+                message:"User has been Verified successfully!",
                 data,
                 updateUser
             })

@@ -1,10 +1,18 @@
 'use strict';
 
 const { getProfileByUserId } = require('../../auth/models/user')
-const { createStore,
-    updateStore } = require('../models/stores');
+const {
+    requestStore,
+    createStore,
+    updateStore,
+    deleteStore } = require('../models/stores');
 
-const createStoreHandler = async (req, res, next) => {
+
+// updateStoreRequestHandler,
+// deleteStoreRequestHandler,
+
+
+const createStoreRequestHandler = async (req, res, next) => {
 
     try {
 
@@ -12,9 +20,37 @@ const createStoreHandler = async (req, res, next) => {
         let profile = await getProfileByUserId(req.user.id);
         let profile_id = profile.id;
 
-        let store = await createStore(req.body, profile_id);
+        let store = await requestStore(req.body, profile_id);
 
         if (store) {
+            res.status(200).json({
+                status: 200,
+                message: 'Store request created successfully',
+            });
+        }
+
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong while creating your store request!',
+            });
+        }
+
+    } catch (error) {
+        res.send(error.message)
+    }
+
+};
+
+const createStoreHandler = async (req, res, next) => {
+
+    try {
+
+        let {profile_id} = req.body;
+
+        let store = await createStore(profile_id);
+
+        if (store !== 0) {
             res.status(200).json({
                 status: 200,
                 message: 'Store created successfully',
@@ -24,7 +60,7 @@ const createStoreHandler = async (req, res, next) => {
         else {
             res.status(403).json({
                 status: 403,
-                message: 'Something went wrong while creating your store!',
+                message: 'Something went wrong while creating the user/s store!',
             });
         }
 
@@ -64,4 +100,38 @@ const updateStoreHandler = async (req, res, next) => {
 
 };
 
-module.exports = { createStoreHandler,updateStoreHandler };
+const deleteStoreHandler = async (req, res, next) => {
+
+    try {
+
+        let store = await deleteStore(req.params.storeId);
+        console.log("🚀 ~ file: storesController.js ~ line 74 ~ deleteStoreHandler ~ store", store)
+
+        if (!store) {
+            res.status(200).json({
+                status: 200,
+                message: 'Store deleted successfully',
+            });
+        }
+
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong while deleting your store!',
+            });
+        }
+
+    } catch (error) {
+        res.send(error.message)
+    }
+
+};
+
+module.exports = {
+    createStoreRequestHandler,
+    // updateStoreRequestHandler,
+    // deleteStoreRequestHandler,
+    createStoreHandler,
+    updateStoreHandler,
+    deleteStoreHandler
+};

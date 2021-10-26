@@ -29,14 +29,15 @@ DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS new_order;
 
-DROP TABLE IF EXISTS stores;
+DROP TABLE IF EXISTS store_request;
+DROP TABLE IF EXISTS store;
 
 DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS user_file;
 
-DROP TABLE IF EXISTS admins;
-DROP TABLE IF EXISTS mods;
-DROP TABLE IF EXISTS banned_users;
+DROP TABLE IF EXISTS administrator;
+DROP TABLE IF EXISTS moderator;
+DROP TABLE IF EXISTS banned_user;
 DROP TABLE IF EXISTS users;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -90,21 +91,21 @@ CREATE TABLE profiles(
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
-CREATE TABLE admins(
+CREATE TABLE administrator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE mods(
+CREATE TABLE moderator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE banned_users(
+CREATE TABLE banned_user(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
@@ -112,9 +113,7 @@ CREATE TABLE banned_users(
 );
 
 
-
-
-CREATE TABLE stores(
+CREATE TABLE store(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
   store_name VARCHAR (250) NOT NULL,
@@ -123,12 +122,30 @@ CREATE TABLE stores(
   mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
+  store_picture uuid,
   store_rating REAL NOT NULL DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
+CREATE TABLE store_request(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL UNIQUE,
+  store_name VARCHAR (250) NOT NULL,
+  city VARCHAR (250) NOT NULL,
+  address VARCHAR (250) DEFAULT 'Remote',
+  mobile VARCHAR (15) NOT NULL UNIQUE,
+  caption VARCHAR(250),
+  about VARCHAR(250),
+  store_picture uuid,
+  store_rating REAL NOT NULL DEFAULT '0',
+  created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+);
 
 CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -149,7 +166,7 @@ CREATE TABLE product(
   created_at timestamp not null default current_timestamp,
   
 
-  FOREIGN KEY (store_id) REFERENCES stores(id)
+  FOREIGN KEY (store_id) REFERENCES store(id)
 );
 CREATE TABLE product_tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -214,7 +231,7 @@ CREATE TABLE store_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
   store_picture uuid NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 CREATE TABLE product_review(
@@ -240,7 +257,7 @@ CREATE TABLE store_reviews(
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_id) REFERENCES stores(id)
+  FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
 
@@ -340,7 +357,7 @@ CREATE TABLE follow(
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (follower) REFERENCES profiles(id),
-  FOREIGN KEY (store_id) REFERENCES stores(id)
+  FOREIGN KEY (store_id) REFERENCES store(id)
 );
  
 
@@ -360,7 +377,7 @@ CREATE TABLE comment(
     created_at timestamp not null default current_timestamp,
 
     FOREIGN KEY (product_id) REFERENCES product(id),
-    FOREIGN KEY (store_id) REFERENCES stores(id),
+    FOREIGN KEY (store_id) REFERENCES store(id),
     FOREIGN KEY (profile_id) REFERENCES profiles(id)
 );
 
@@ -374,7 +391,7 @@ CREATE TABLE offer_notification(
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (receiver_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -385,7 +402,7 @@ CREATE TABLE order_notification(
   order_id uuid NOT NULL,
   message text NOT NULL,
 
-  FOREIGN KEY (receiver_id) REFERENCES stores(id),
+  FOREIGN KEY (receiver_id) REFERENCES store(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
 
@@ -398,7 +415,7 @@ CREATE TABLE return(
   product_id uuid NOT NULL,
   message text NOT NULL,
 
-  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)

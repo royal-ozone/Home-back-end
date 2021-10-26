@@ -11,7 +11,8 @@ const signup = async data => {
         let userPassword = await bcrypt.hash(password, 10)
 
         let email2 = email.toLowerCase().trim();
-        let safeValues = [email2, userPassword, mobile, country, city, first_name, last_name, country_code];
+        let mobile2 = mobile.trim();
+        let safeValues = [email2, userPassword, mobile2, country, city, first_name, last_name, country_code];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
