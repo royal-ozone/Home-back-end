@@ -1,7 +1,3 @@
-ALTER TABLE product DROP CONSTRAINT fk1;
-ALTER TABLE product DROP CONSTRAINT fk2;
-ALTER TABLE product DROP CONSTRAINT fk3;
-
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
@@ -117,8 +113,6 @@ CREATE TABLE banned_users(
 );
 
 
-
-
 CREATE TABLE stores(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
@@ -150,16 +144,11 @@ CREATE TABLE product(
   currency VARCHAR(10) default 'jod',
   brand_name VARCHAR(250),
   description text NOT NULL,
-  product_rating_id uuid,
   quantity INT NOT NULL DEFAULT '0',
-  product_review_id uuid,
-  product_tag_id uuid NOT NULL,
   status VARCHAR(250) DEFAULT 'Pending',
   created_at timestamp not null default current_timestamp,
   
   FOREIGN KEY (store_id) REFERENCES stores(id)
-
-  
 );
 CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -171,7 +160,7 @@ CREATE TABLE product_review(
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (product_id) REFERENCES product(id) deferrable initially deferred
+  FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
 CREATE TABLE tag(
@@ -201,9 +190,7 @@ CREATE TABLE product_rating(
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
 
-ALTER TABLE product ADD CONSTRAINT fk1 FOREIGN KEY (product_tag_id) REFERENCES product_tag(id);
-ALTER TABLE product ADD CONSTRAINT fk2 FOREIGN KEY (product_rating_id) REFERENCES product_rating(id);
-ALTER TABLE product ADD CONSTRAINT fk3 FOREIGN KEY (product_review_id) REFERENCES product_review(id);
+
 
 CREATE TABLE grandchild_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
