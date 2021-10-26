@@ -27,37 +27,49 @@ const signupHandler = async (req, res, next) => {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
 
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
-            const error = new Error('Missing parameters, please fill all the required fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, please fill all the required fields!',
+            });
         }
 
         if (!validateEmail(email)) {
-            const error = new Error('The email is not valid');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Invalid email format, please write a correct email!',
+            });
         }
 
         if (!validatePassword(password)) {
-            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number, ex:Ax@123');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: [`Invalid password format, password should have at least:`,
+                    `1- One capital letter.`,
+                    `2- One small letter.`,
+                    `3- One special character.`,
+                    `4- One number.`,
+                    `5- No periods.`,
+                    `6- Characters between 6-16.`,
+                    `ex:Ax@123`]
+            });
         }
 
         let emailCheck = await getUserByEmail(email);
 
         if (emailCheck) {
-            const error = new Error('This email is already in use, please write a different email address!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'This email is already in use, please write a different email address!',
+            });
         }
 
         let mobileCheck = await getUserByMobile(mobile);
 
         if (mobileCheck) {
-            const error = new Error('This mobile is already in use, please write a different mobile number!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'This mobile is already in use, please write a different mobile number!',
+            });
         }
 
         let result = await signup(req.body)
@@ -65,7 +77,7 @@ const signupHandler = async (req, res, next) => {
         let userTokens = await createToken(result.id)
         res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
     } catch (error) {
-        res.send(error.message)
+        res.send(error.message);
     }
 };
 
@@ -105,21 +117,31 @@ const updateUserPasswordHandler = async (req, res, next) => {
         const newPassword2 = req.body.new_password2;
 
         if (!oldPassword || !newPassword || !newPassword2) {
-            const error = new Error('Missing parameters, please enter all required fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, please enter all required fields!',
+            });
         }
 
         if (newPassword !== newPassword2) {
-            const error = new Error('New password mismatch! please write the same new password in both fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'New password mismatch! please write the same new password in both fields!',
+            });
         }
 
         if (!validatePassword(newPassword)) {
-            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number with no spaces, ex:Ax@123');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: [`Invalid password format, password should have at least:`,
+                    `1- One capital letter.`,
+                    `2- One small letter.`,
+                    `3- One special character.`,
+                    `4- One number.`,
+                    `5- No periods.`,
+                    `6- Characters between 6-16.`,
+                    `ex:Ax@123`]
+            });
         }
 
         let user = await getUserById(req.user.id);
@@ -149,21 +171,31 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
         const newPassword2 = req.body.new_password2;
 
         if (!newPassword || !newPassword2) {
-            const error = new Error('Missing parameters, please enter all required fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, please enter all required fields!',
+            });
         }
 
         if (newPassword !== newPassword2) {
-            const error = new Error('New password mismatch! please write the same new password in both fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'New password mismatch! please write the same new password in both fields!',
+            });
         }
 
         if (!validatePassword(newPassword)) {
-            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number with no spaces, ex:Ax@123');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: [`Invalid password format, password should have at least:`,
+                    `1- One capital letter.`,
+                    `2- One small letter.`,
+                    `3- One special character.`,
+                    `4- One number.`,
+                    `5- No periods.`,
+                    `6- Characters between 6-16.`,
+                    `ex:Ax@123`]
+            });
         }
 
         let user = await getUserById(req.user.id);
@@ -176,9 +208,10 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
             };
             res.status(200).json(response);
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -192,9 +225,10 @@ const updateUserEmailHandler = async (req, res, next) => {
         const newEmail = req.body.new_email;
 
         if (!oldEmail || !newEmail) {
-            const error = new Error('Missing parameters, old email or new email');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, old email or new email',
+            });
         }
 
         let user = await getUserById(req.user.id);
@@ -206,15 +240,17 @@ const updateUserEmailHandler = async (req, res, next) => {
             let fixedEmailNew = newEmail.toLowerCase().trim();
 
             if (!validateEmail(fixedEmailNew)) {
-                const error = new Error('Invalid email format, please write a correct email address!');
-                error.statusCode = 403;
-                throw error;
+                res.status(403).json({
+                    status: 403,
+                    message: 'Invalid email format, please write a coorect email!',
+                });
             }
 
             if (user.email !== fixedEmailOld) {
-                const error = new Error('Old email entry does not match your own email!');
-                error.statusCode = 403;
-                throw error;
+                res.status(403).json({
+                    status: 403,
+                    message: 'Old email entry does not match your own email!',
+                });
             }
             user = await updateUserEmail(req.user.id, fixedEmailNew);
             const response = {
@@ -223,9 +259,10 @@ const updateUserEmailHandler = async (req, res, next) => {
             };
             res.status(200).json(response);
         } else {
-            const error = new Error('Something went wrong while getting user data!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong while getting user data!',
+            });
         }
     } catch (e) {
         next(e);
@@ -240,9 +277,10 @@ const updateUserMobileHandler = async (req, res, next) => {
         const newMobile = req.body.new_mobile;
 
         if (!oldMobile || !newMobile || !country) {
-            const error = new Error('Missing parameters, please fill all required fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, please enter all required fields!',
+            });
         }
 
 
@@ -253,9 +291,10 @@ const updateUserMobileHandler = async (req, res, next) => {
             let fixedMobileNew = newMobile.trim();
 
             if (user.mobile !== fixedMobileOld) {
-                const error = new Error('Old mobile entry does not match your mobile number!');
-                error.statusCode = 403;
-                throw error;
+                res.status(403).json({
+                    status: 403,
+                    message: 'Old mobile entry does not match your mobile number!',
+                });
             }
 
             user = await updateUserMobile(req.user.id, country, fixedMobileNew);
@@ -265,9 +304,10 @@ const updateUserMobileHandler = async (req, res, next) => {
             };
             res.status(200).json(response);
         } else {
-            const error = new Error('Old mobile is incorrect!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Old mobile is incorrect!',
+            });
         }
     } catch (e) {
         next(e);
@@ -279,21 +319,30 @@ const resetPasswordHandler = async (req, res, next) => {
         let { email, password, code } = req.body;
 
         if (!code || !password) {
-            const error = new Error('Missing parameters,code or password');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters,code or password',
+            });
         }
 
         if (!validatePassword(password)) {
-            const error = new Error('Invalid password format, password should at least have 1 Capital letter, 1 small letter, 1 special character and a number, ex:Ax@123');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: [`Invalid password format, password should have at least:`,
+                    `1- One capital letter.`,
+                    `2- One small letter.`,
+                    `3- One special character.`,
+                    `4- One number.`,
+                    `5- No periods.`,
+                    `6- Characters between 6-16.`,
+                    `ex:Ax@123`]
+            });
         }
 
-
-        const error = new Error('The code is not correct or has expired');
-        error.statusCode = 403;
-        throw error;
+        res.status(403).json({
+            status: 403,
+            message: 'The code is not correct or has expired',
+        });
     } catch (e) {
         next(e);
     }
@@ -309,9 +358,10 @@ const refreshHandler = async (req, res, next) => {
             delete newTokens.user_id;
             res.status(200).json(newTokens);
         } else {
-            const error = new Error('Invalid token');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Invalid user refresh token!',
+            });
         }
     } catch (e) {
         next(e);
@@ -322,13 +372,14 @@ const addAdminHandler = async (req, res, next) => {
     try {
 
         let admin = await addAdmin(req.user.id);
-        if(admin){
+        if (admin) {
             res.status(200).json('Adminstrator has been added!')
-        
+
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -337,15 +388,38 @@ const addAdminHandler = async (req, res, next) => {
 
 const addModHandler = async (req, res, next) => {
     try {
-        let {mobile} = req.body;
+        let { mobile } = req.body;
         let mod = await addMod(mobile);
-        if(mod){
+        if (mod === 0) {
+            res.status(403).json({
+                status: 403,
+                message: 'You can\'t add an admininstrator as a moderator!',
+            });
+        }
+
+        if (mod === -1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This mobile number does not exist!',
+            });
+        }
+        
+        if (mod === 1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This user is already a moderator!',
+            });
+        }
+        
+        if (mod) {
             res.status(200).json('Moderator has been added!')
         
-        } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+        }
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -354,15 +428,16 @@ const addModHandler = async (req, res, next) => {
 
 const removeModHandler = async (req, res, next) => {
     try {
-        let {mobile} = req.body;
+        let { mobile } = req.body;
         let remove = await removeMod(mobile);
-        if(!remove){
+        if (!remove) {
             res.status(200).json('Moderator has been removed!')
-        
+
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -371,15 +446,23 @@ const removeModHandler = async (req, res, next) => {
 const banUserHandler = async (req, res, next) => {
     try {
 
-        let {mobile} = req.body;
+        let { mobile } = req.body;
         let banned = await banUser(mobile);
-        if(banned){
+        if (banned) {
             res.status(200).json('User has been banned!')
-        
-        } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+
+        }
+        if (banned === 0) {
+            res.status(403).json({
+                status: 403,
+                message: 'You can\'t ban an admininstrator!',
+            });
+        }
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -389,15 +472,16 @@ const banUserHandler = async (req, res, next) => {
 const removeBanUserHandler = async (req, res, next) => {
     try {
 
-        let {mobile} = req.body;
+        let { mobile } = req.body;
         let banned = await unbanUser(mobile);
-        if(!banned){
-            res.status(200).json('Ban has been removed from the user!')
-        
+        if (!banned) {
+            res.status(200).json('Ban has been lifted from the user!')
+
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
@@ -408,13 +492,14 @@ const getAllUsersHandler = async (req, res, next) => {
     try {
 
         let users = await getAllUsers();
-        if(users){
+        if (users) {
             res.status(200).json(users)
-        
+
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
         }
     } catch (e) {
         next(e);
