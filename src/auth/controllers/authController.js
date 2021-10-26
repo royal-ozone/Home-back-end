@@ -27,15 +27,16 @@ const signupHandler = async (req, res, next) => {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
 
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
-            const error = new Error('Missing parameters, please fill all the required fields!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).json({
+                status: 403,
+                message: 'Missing parameters, please fill all the required fields!',
+            });
         }
 
         if (!validateEmail(email)) {
             res.status(403).json({
                 status: 403,
-                message: 'Invalid email format, please write a coorect email!',
+                message: 'Invalid email format, please write a correct email!',
             });
         }
 
@@ -76,7 +77,7 @@ const signupHandler = async (req, res, next) => {
         let userTokens = await createToken(result.id)
         res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
     } catch (error) {
-        res.send(error.message)
+        res.send(error.message);
     }
 };
 
@@ -389,10 +390,32 @@ const addModHandler = async (req, res, next) => {
     try {
         let { mobile } = req.body;
         let mod = await addMod(mobile);
+        if (mod === 0) {
+            res.status(403).json({
+                status: 403,
+                message: 'You can\'t add an admininstrator as a moderator!',
+            });
+        }
+
+        if (mod === -1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This mobile number does not exist!',
+            });
+        }
+        
+        if (mod === 1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This user is already a moderator!',
+            });
+        }
+        
         if (mod) {
             res.status(200).json('Moderator has been added!')
-
-        } else {
+        
+        }
+        else {
             res.status(403).json({
                 status: 403,
                 message: 'Something went wrong!',
@@ -428,7 +451,14 @@ const banUserHandler = async (req, res, next) => {
         if (banned) {
             res.status(200).json('User has been banned!')
 
-        } else {
+        }
+        if (banned === 0) {
+            res.status(403).json({
+                status: 403,
+                message: 'You can\'t ban an admininstrator!',
+            });
+        }
+        else {
             res.status(403).json({
                 status: 403,
                 message: 'Something went wrong!',

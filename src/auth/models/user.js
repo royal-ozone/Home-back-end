@@ -217,7 +217,7 @@ const getProfileByUserId = async id => {
 
 const addAdmin = async userId => {
     try {
-        let SQL = `INSERT INTO ADMINS(user_id) VALUES ($1) RETURNING *;`;
+        let SQL = `INSERT INTO ADMINISTRATOR(user_id) VALUES ($1) RETURNING *;`;
 
         let safeValues = [userId];
         let result = await client.query(SQL, safeValues);
@@ -233,19 +233,28 @@ const addMod = async mobile => {
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
+        
+        if(!result.rows[0]){
+            return -1;
+        }
+        
         let userId = result.rows[0].id;
-
-        SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
+        SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         safeValues = [userId];
         result = await client.query(SQL, safeValues);
         
         if(result.rows[0]){
-            const error = new Error('This is an admin user!');
-            error.statusCode = 403;
-            throw error;
+            return 0;
         }
 
-        SQL = `INSERT INTO mods(user_id) VALUES ($1) RETURNING *;`;
+        SQL = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
+        result = await client.query(SQL, safeValues);
+
+        if(result.rows[0]){
+            return 1;
+        }
+
+        SQL = `INSERT INTO MODERATOR(user_id) VALUES ($1) RETURNING *;`;
         result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -261,7 +270,7 @@ const removeMod = async (mobile) => {
         let result = await client.query(SQL, safeValues);
 
         let userId = result.rows[0].id;
-        SQL = `DELETE FROM MODS WHERE user_id=$1;`;
+        SQL = `DELETE FROM MODERATOR WHERE user_id=$1;`;
         safeValues = [userId];
         result = await client.query(SQL, safeValues);
         return result.rows[0];
@@ -278,17 +287,15 @@ const banUser = async (mobile) => {
         let result = await client.query(SQL, safeValues);
         let userId = result.rows[0].id;
 
-        SQL = `SELECT * FROM ADMINS WHERE user_id=$1;`;
+        SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         safeValues = [userId];
         result = await client.query(SQL, safeValues);
         
         if(result.rows[0]){
-            const error = new Error('This is an admin user!');
-            error.statusCode = 403;
-            throw error;
+            return 0;
         }
 
-        SQL = `INSERT INTO banned_users(user_id) VALUES ($1) RETURNING *;`;
+        SQL = `INSERT INTO BANNED_USER(user_id) VALUES ($1) RETURNING *;`;
         result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -304,7 +311,7 @@ const unbanUser = async (mobile) => {
         let result = await client.query(SQL, safeValues);
 
         let userId = result.rows[0].id;
-        SQL = `DELETE FROM banned_users WHERE user_id=$1;`;
+        SQL = `DELETE FROM BANNED_USER WHERE user_id=$1;`;
         safeValues = [userId];
         result = await client.query(SQL, safeValues);
         return result.rows[0];

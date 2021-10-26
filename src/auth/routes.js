@@ -47,11 +47,11 @@ authRouter.get('/user/all',bearer, checkAuth, getAllUsersHandler);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
 
-authRouter.post('/mod/add',bearer, checkAdmin, addModHandler);
-authRouter.delete('/mod/remove',bearer, checkAdmin, removeModHandler);
+authRouter.post('/mod/add',bearer, checkAdmin, addModHandler); //tested
+authRouter.delete('/mod/remove',bearer, checkAdmin, removeModHandler); //tested
 
-authRouter.post('/user/ban',bearer, checkAuth, banUserHandler);
-authRouter.delete('/user/ban/remove',bearer, checkAuth, removeBanUserHandler);
+authRouter.post('/user/ban',bearer, checkAuth, banUserHandler); //tested
+authRouter.delete('/user/ban/remove',bearer, checkAuth, removeBanUserHandler); //tested
 
 
 module.exports = authRouter;

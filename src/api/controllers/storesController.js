@@ -105,8 +105,6 @@ const deleteStoreHandler = async (req, res, next) => {
     try {
 
         let store = await deleteStore(req.params.storeId);
-        console.log("🚀 ~ file: storesController.js ~ line 74 ~ deleteStoreHandler ~ store", store)
-
         if (!store) {
             res.status(200).json({
                 status: 200,
