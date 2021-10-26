@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS product_tag;
+DROP TABLE IF EXISTS tag;
 
 DROP TABLE IF EXISTS parent_category;
 DROP TABLE IF EXISTS child_category;
@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS profile_picture;
 
 DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS product_review;
+DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_reviews;
 
 
@@ -112,7 +113,6 @@ CREATE TABLE banned_user(
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
 CREATE TABLE store(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
@@ -150,38 +150,65 @@ CREATE TABLE store_request(
 CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
-  title VARCHAR(250) NOT NULL,
+  enTitle VARCHAR(250) NOT NULL,
+  arTitle VARCHAR(250) NOT NULL,
   metaTitle VARCHAR(100),
   sku VARCHAR(100),
   discount BOOLEAN DEFAULT FALSE,
-  dicount_rate FLOAT DEFAULT '0',
+  discount_rate FLOAT DEFAULT '0',
   price REAL NOT NULL,
-  currency VARCHAR(10),
+  currency VARCHAR(10) default 'jod',
   brand_name VARCHAR(250),
   description text NOT NULL,
-  product_rating REAL NOT NULL DEFAULT '0',
   quantity INT NOT NULL DEFAULT '0',
-  product_review text NOT NULL,
   status VARCHAR(250) DEFAULT 'Pending',
   created_at timestamp not null default current_timestamp,
   
-
   FOREIGN KEY (store_id) REFERENCES store(id)
+);
+
+CREATE TABLE product_review(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  review VARCHAR(250) NOT NULL,
+  rate VARCHAR(1) NOT NULL,
+  votes VARCHAR(250) DEFAULT '0',
+  created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+CREATE TABLE tag(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  entitle VARCHAR(75) not null,
+  arTitle VARCHAR(75) not null,
+  metaTitle VARCHAR(100),
+  slug VARCHAR(100),
+  content TEXT
+  
 );
 CREATE TABLE product_tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  FOREIGN KEY (product_id) REFERENCES product(id)
-);
-CREATE TABLE tag(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   tag_id uuid NOT NULL,
-  title VARCHAR(75),
-  metaTitle VARCHAR(100),
-  slug VARCHAR(100),
-  content TEXT,
-  FOREIGN KEY (tag_id) REFERENCES product_tag(id)
+
+  FOREIGN KEY (product_id) REFERENCES product(id),
+  FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
+CREATE TABLE product_rating(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  profile_id uuid NOT NULL,
+  rating REAL NOT NULL DEFAULT '0',
+
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (product_id) REFERENCES product(id) 
+);
+
+
+
 CREATE TABLE grandchild_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
@@ -233,18 +260,6 @@ CREATE TABLE store_picture(
   store_picture uuid NOT NULL,
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
-);
-CREATE TABLE product_review(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL ,
-  product_id uuid NOT NULL ,
-  review VARCHAR(250) NOT NULL,
-  rate VARCHAR(1) NOT NULL,
-  votes VARCHAR(250) DEFAULT '0',
-  created_at timestamp not null default current_timestamp,
-
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
 CREATE TABLE store_reviews(
