@@ -53,7 +53,7 @@ const updateProduct = async (id,data) => {
     }
 };
 
-const updateProductStatus = (id,data) => {
+const updateProductStatus = async (id,data) => {
     try {
         let SQL = `UPDATE product SET status=$1 WHERE id=$2 RETURNING *;`
         let safeValue = [data, id]
