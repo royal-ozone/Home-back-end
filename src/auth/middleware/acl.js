@@ -39,7 +39,11 @@ let checkAdmin = async (req, res, next) => {
          let result = await client.query(SQL,safeValue);
          if(result.rows[0]){
              next();
-         } else throw new Error('User unauthorized, access denied!');
+         } else {
+               res.status(401).send('User unauthorized, access denied!');
+            //   throw new Error('User unauthorized, access denied!')
+
+         } 
     } catch (error) {
         throw new Error(error.message)
     }
@@ -71,7 +75,7 @@ let checkAuth = async (req, res, next) => {
         //  console.log("check result2 ", result2.rows[0])
          if(result.rows[0] || result2.rows[0]){
              next();
-         } else throw new Error('User unauthorized, access denied!');
+         } else  throw new Error('User unauthorized, access denied!');
     } catch (error) {
         throw new Error(error.message)
     }

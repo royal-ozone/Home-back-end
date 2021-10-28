@@ -25,7 +25,7 @@ const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 const signupHandler = async (req, res, next) => {
     try {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
-
+            console.log(req.body,'req .body');
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
             const error = new Error('Missing parameters, please fill all the required fields!');
             error.statusCode = 403;
@@ -61,6 +61,8 @@ const signupHandler = async (req, res, next) => {
         }
 
         let result = await signup(req.body)
+        console.log("🚀 ~ file: authController.js ~ line 64 ~ signupHandler ~ result", result)
+        
         await createProfile(result);
         let userTokens = await createToken(result.id)
         res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
@@ -320,8 +322,9 @@ const refreshHandler = async (req, res, next) => {
 
 const addAdminHandler = async (req, res, next) => {
     try {
-
+        
         let admin = await addAdmin(req.user.id);
+        console.log("🚀 ~ file: authController.js ~ line 327 ~ addAdminHandler ~ req.user", req)
         if(admin){
             res.status(200).json('Adminstrator has been added!')
         
@@ -360,9 +363,10 @@ const removeModHandler = async (req, res, next) => {
             res.status(200).json('Moderator has been removed!')
         
         } else {
-            const error = new Error('Something went wrong!');
-            error.statusCode = 403;
-            throw error;
+            res.status(403).send('the user is not mod or the mod is not exist!')
+            // const error = new Error('Something went wrong!');
+            // error.statusCode = 403;
+            // throw error;
         }
     } catch (e) {
         next(e);
