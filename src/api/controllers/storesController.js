@@ -102,6 +102,7 @@ const updateStoreHandler = async (req, res, next) => {
 
         let { store_name, city, address, mobile, caption, about } = req.body;
         let profile = await getProfileByUserId(req.user.id);
+        console.log("🚀 ~ file: storesController.js ~ line 105 ~ updateStoreHandler ~ profile", profile)
         let profile_id = profile.id;
 
         let store = await updateStore(req.body, profile_id);

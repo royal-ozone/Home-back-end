@@ -106,7 +106,7 @@ let checkStoreOwner = async (userId) => {
         let safeValue = [profileId];
 
         let result = await client.query(SQL, safeValue);
-        return result.rows[0];
+        return result;
     } catch (error) {
         throw new Error(error.message)
     }
@@ -114,14 +114,14 @@ let checkStoreOwner = async (userId) => {
 
 let checkStoreAuth = async (req, res, next) => {
     try {
-        let storeOwner = checkStoreOwner(req.user.id)
+        let storeOwner = await checkStoreOwner(req.user.id)
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
         let result2 = await client.query(SQL2, safeValue);
 
-        if (result.rows[0] || result2.rows[0] || storeOwner) {
+        if (result.rows[0] || result2.rows[0] || storeOwner.rows[0]) {
             next();
         } else {
             res.status(403).json({
