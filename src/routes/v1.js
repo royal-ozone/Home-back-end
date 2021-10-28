@@ -3,15 +3,27 @@
 const express = require('express');
 const router = express.Router();
 const bearer = require('../auth/middleware/bearer');
-const {checkAdmin,checkMod,checkAuth,checkBan} = require ('../auth/middleware/acl')
+
+
 const {addParentCategory,removeParentCategory,updateParentCategory,getParentCategoryById,getAllParentCategory,getParentCategoryByTitle} = require('../api/controllers/parentCategory');
 const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategoryById,getAllChildCategory,getChildCategoryByTitle} = require('../api/controllers/childCategory');
 const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
 
 
 
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan} = require ('../auth/middleware/acl')
+const {
+  createStoreRequestHandler,
+  // updateStoreRequestHandler,
+  // deleteStoreRequestHandler,
+  createStoreHandler,
+  updateStoreHandler,
+  deleteStoreHandler
+} = require('../api/controllers/storesController');
+
+
 // Global middleware
-// router.use(bearer);
+router.use(bearer);
 
 router.post('/add/PG',bearer,checkAdmin,addParentCategory);
 router.delete('/remove/PG/:idPG',bearer,checkAdmin,removeParentCategory);
@@ -39,9 +51,20 @@ router.get('/search/title/GCG',bearer,getGrandChildCategoryByTitle);
 
 
 // Test route
-router.get('/test', (req,res)=>{
+router.get('/test', (req, res) => {
   res.send('working well');
 });
+
+// router.get('/store/request',checkAuth, getAllStoreRequestHandler);
+// router.get('/store/request/:storeId', getOneStoreRequestHandler);
+router.post('/store/request', createStoreRequestHandler);
+// router.put('/store/request', updateStoreRequestHandler);
+// router.delete('/store/request/:storeId', deleteStoreRequestHandler);
+
+router.post('/store',checkAuth, createStoreHandler);
+router.put('/store',checkStoreAuth,updateStoreHandler);
+router.delete('/store/:storeId', deleteStoreHandler);
+
 
 
 
