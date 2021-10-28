@@ -44,6 +44,7 @@ let profileView = async (req, res, next) => {
 
 let checkAdmin = async (req, res, next) => {
     try {
+
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
@@ -55,6 +56,7 @@ let checkAdmin = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
+
     } catch (error) {
         throw new Error(error.message)
     }
@@ -80,6 +82,8 @@ let checkMod = async (req, res, next) => {
 
 let checkAuth = async (req, res, next) => {
     try {
+
+
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
@@ -129,6 +133,7 @@ let checkStoreAuth = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
+
     } catch (error) {
         throw new Error(error.message)
     }

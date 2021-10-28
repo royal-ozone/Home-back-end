@@ -268,7 +268,9 @@ const removeMod = async (mobile) => {
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
-
+            if(!result.rows[0]){
+               return (' you can not remove the mod ');
+            }
         let userId = result.rows[0].id;
         SQL = `DELETE FROM MODERATOR WHERE user_id=$1;`;
         safeValues = [userId];

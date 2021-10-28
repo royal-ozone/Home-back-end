@@ -1,9 +1,6 @@
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
-DROP TABLE IF EXISTS parent_category;
-DROP TABLE IF EXISTS child_category;
-DROP TABLE IF EXISTS grandchild_category;
 
 DROP TABLE IF EXISTS product_pictures;
 DROP TABLE IF EXISTS profile_picture;
@@ -28,6 +25,9 @@ DROP TABLE IF EXISTS order_notification;
 
 DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS grandchild_category;
+DROP TABLE IF EXISTS child_category;
+DROP TABLE IF EXISTS parent_category;
 DROP TABLE IF EXISTS new_order;
 
 DROP TABLE IF EXISTS store_request;
@@ -147,6 +147,41 @@ CREATE TABLE store_request(
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
+
+CREATE TABLE parent_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  -- child_id uuid NOT NULL,
+  entitle VARCHAR(75),
+  artitle VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+  created_at timestamp not null default current_timestamp
+  -- FOREIGN KEY (child_id) REFERENCES child_category(id)
+);
+CREATE TABLE child_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  parent_id uuid NOT NULL,
+  -- product_id uuid,
+  entitle VARCHAR(75),
+  artitle VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+   FOREIGN KEY (parent_id) REFERENCES parent_category(id),
+  -- FOREIGN KEY (product_id) REFERENCES product(id)
+  created_at timestamp not null default current_timestamp
+);
+CREATE TABLE grandchild_category(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  parent_id uuid NOT NULL,
+  entitle VARCHAR(75),
+  artitle VARCHAR(75),
+  metaTitle VARCHAR(100),
+  content TEXT,
+  FOREIGN KEY (parent_id) REFERENCES child_category(id),
+  created_at timestamp not null default current_timestamp
+);
+
+
 CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
@@ -209,35 +244,7 @@ CREATE TABLE product_rating(
 
 
 
-CREATE TABLE grandchild_category(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  product_id uuid NOT NULL,
-  title VARCHAR(75),
-  metaTitle VARCHAR(100),
-  content TEXT,
-  created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (product_id) REFERENCES product(id)
-);
-CREATE TABLE child_category(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  child_id uuid,
-  product_id uuid,
-  title VARCHAR(75),
-  metaTitle VARCHAR(100),
-  content TEXT,
-  created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (child_id) REFERENCES grandchild_category(id),
-  FOREIGN KEY (product_id) REFERENCES product(id)
-);
-CREATE TABLE parent_category(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  child_id uuid NOT NULL,
-  title VARCHAR(75),
-  metaTitle VARCHAR(100),
-  content TEXT,
-  created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (child_id) REFERENCES child_category(id)
-);
+
 
 
 CREATE TABLE product_pictures(

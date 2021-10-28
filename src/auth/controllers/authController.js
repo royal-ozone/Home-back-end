@@ -25,7 +25,7 @@ const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 const signupHandler = async (req, res, next) => {
     try {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
-
+            console.log(req.body,'req .body');
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
             res.status(403).json({
                 status: 403,
@@ -73,6 +73,8 @@ const signupHandler = async (req, res, next) => {
         }
 
         let result = await signup(req.body)
+        console.log("🚀 ~ file: authController.js ~ line 64 ~ signupHandler ~ result", result)
+        
         await createProfile(result);
         let userTokens = await createToken(result.id)
         res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
@@ -370,9 +372,10 @@ const refreshHandler = async (req, res, next) => {
 
 const addAdminHandler = async (req, res, next) => {
     try {
-
+        
         let admin = await addAdmin(req.user.id);
-        if (admin) {
+
+        if (admin) { 
             res.status(200).json('Adminstrator has been added!')
 
         } else {
@@ -434,10 +437,12 @@ const removeModHandler = async (req, res, next) => {
             res.status(200).json('Moderator has been removed!')
 
         } else {
+
             res.status(403).json({
                 status: 403,
                 message: 'Something went wrong!',
             });
+
         }
     } catch (e) {
         next(e);
