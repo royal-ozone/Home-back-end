@@ -314,6 +314,10 @@ const unbanUser = async (mobile) => {
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
 
+        if(!result.rows[0]){
+            return -1;
+        }
+        
         let userId = result.rows[0].id;
         SQL = `DELETE FROM BANNED_USER WHERE user_id=$1;`;
         safeValues = [userId];

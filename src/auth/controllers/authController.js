@@ -482,6 +482,14 @@ const removeBanUserHandler = async (req, res, next) => {
 
         let { mobile } = req.body;
         let banned = await unbanUser(mobile);
+
+        if (banned === -1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This mobile number does not exist!',
+            });
+        }
+        
         if (!banned) {
             res.status(200).json('Ban has been lifted from the user!')
 
