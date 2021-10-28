@@ -433,7 +433,15 @@ const removeModHandler = async (req, res, next) => {
         if (!remove) {
             res.status(200).json('Moderator has been removed!')
 
-        } else {
+        }
+        
+        if (remove === -1) {
+            res.status(403).json({
+                status: 403,
+                message: 'This mobile number does not exist!',
+            });
+        }
+        else {
             res.status(403).json({
                 status: 403,
                 message: 'Something went wrong!',
