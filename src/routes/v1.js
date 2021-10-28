@@ -25,7 +25,7 @@ router.get('/test', (req, res) => {
 
 router.get('/store/request',checkAuth, getAllStoreRequestHandler); //tested
 // router.get('/store/request/:storeId', getOneStoreRequestHandler);
-router.post('/store/request', createStoreRequestHandler);
+router.post('/store/request', createStoreRequestHandler); //tested
 // router.put('/store/request', updateStoreRequestHandler);
 // router.delete('/store/request/:storeId', deleteStoreRequestHandler);
 

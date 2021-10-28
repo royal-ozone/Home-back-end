@@ -22,7 +22,7 @@ const requestStore = async (data, profileId) => {
     try {
         let { store_name, city, address, mobile, caption, about } = data;
 
-        let SQL = `INSERT INTO _REQUEST (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
+        let SQL = `INSERT INTO STORE_REQUEST (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
         let safeValues = [profileId, store_name, city, address, mobile, caption, about];
 
         let result = client.query(SQL, safeValues);
@@ -71,10 +71,11 @@ const createStore = async (profileId) => {
 
     try {
         let profile = await getStoreRequestByProfileId(profileId);
+        console.log("🚀 ~ file: stores.js ~ line 74 ~ createStore ~ profile", profile.rows)
         if (profile.rows[0]) {
             let { store_name, city, address, mobile, caption, about } = profile.rows[0];
 
-            let SQL = `INSERT INTO STORE_REQUEST (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
+            let SQL = `INSERT INTO STORE (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
             let safeValues = [profileId, store_name, city, address, mobile, caption, about];
 
             let result = client.query(SQL, safeValues);
