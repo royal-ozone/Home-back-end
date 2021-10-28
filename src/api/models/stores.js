@@ -1,6 +1,22 @@
 'use strict';
 const client = require('../../db')
 
+
+const getAllStoreRequests = async () => {
+
+    try {
+
+        let SQL = `SELECT * FROM STORE_REQUEST;`;
+
+        let result = await client.query(SQL);
+        return result.rows;
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+
+};
+
 const requestStore = async (data, profileId) => {
 
     try {
@@ -112,4 +128,4 @@ const deleteStore = async (storeId) => {
 
 };
 
-module.exports = { requestStore, createStore, updateStore, deleteStore };
+module.exports = { getAllStoreRequests, requestStore, createStore, updateStore, deleteStore };

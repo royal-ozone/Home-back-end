@@ -2,6 +2,7 @@
 
 const { getProfileByUserId } = require('../../auth/models/user')
 const {
+    getAllStoreRequests,
     requestStore,
     createStore,
     updateStore,
@@ -11,6 +12,31 @@ const {
 // updateStoreRequestHandler,
 // deleteStoreRequestHandler,
 
+const getAllStoreRequestHandler = async (req, res, next) => {
+
+    try {
+
+        let getAllStores = await getAllStoreRequests();
+
+        if (getAllStores) {
+            res.status(200).json({
+                status: 200,
+                requests: getAllStores,
+            });
+        }
+
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong while getting store request!s',
+            });
+        }
+
+    } catch (error) {
+        res.send(error.message)
+    }
+
+};
 
 const createStoreRequestHandler = async (req, res, next) => {
 
@@ -126,6 +152,7 @@ const deleteStoreHandler = async (req, res, next) => {
 };
 
 module.exports = {
+    getAllStoreRequestHandler,
     createStoreRequestHandler,
     // updateStoreRequestHandler,
     // deleteStoreRequestHandler,

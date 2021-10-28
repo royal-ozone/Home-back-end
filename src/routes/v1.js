@@ -5,6 +5,7 @@ const router = express.Router();
 const bearer = require('../auth/middleware/bearer');
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth} = require ('../auth/middleware/acl')
 const {
+  getAllStoreRequestHandler,
   createStoreRequestHandler,
   // updateStoreRequestHandler,
   // deleteStoreRequestHandler,
@@ -22,7 +23,7 @@ router.get('/test', (req, res) => {
   res.send('working well');
 });
 
-// router.get('/store/request',checkAuth, getAllStoreRequestHandler);
+router.get('/store/request',checkAuth, getAllStoreRequestHandler); //tested
 // router.get('/store/request/:storeId', getOneStoreRequestHandler);
 router.post('/store/request', createStoreRequestHandler);
 // router.put('/store/request', updateStoreRequestHandler);

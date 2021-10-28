@@ -30,7 +30,10 @@ module.exports = async (req, res, next) => {
         next();
 
     } catch (error) {
-        throw new Error(error.message);
+        // throw new Error(error.message);
+        res.status(500).json({
+            message:error.message
+        })
     }
     function _authError() {
         next('Invalid Login');
