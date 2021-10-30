@@ -44,7 +44,7 @@ const getProduct = async data => {
 const updateProduct = async (id,data) => {
     try {
         let {store_id, enTitle, arTitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate} = data;
-        let SQL = 'UPDATE product SET store_id=$1, title=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, description=$7, quantity=$8, discount=$9, discount_rate=$10, arTitle=$12  WHERE id=$11 RETURNING *'
+        let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, description=$7, quantity=$8, discount=$9, discount_rate=$10, arTitle=$12  WHERE id=$11 RETURNING *'
         let safeValues = [store_id, enTitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate, id, arTitle];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
@@ -56,7 +56,7 @@ const updateProduct = async (id,data) => {
 const updateProductStatus = async (id,data) => {
     try {
         let SQL = `UPDATE product SET status=$1 WHERE id=$2 RETURNING *;`
-        let safeValue = [data, id]
+        let safeValue = [data.status, id]
         let result = await client.query(SQL,safeValue)
         return result.rows[0];
     } catch (error) {
