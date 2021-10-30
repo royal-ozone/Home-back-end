@@ -48,7 +48,33 @@ router.get('/get/GCG/:idGCG',bearer,checkAuth,getGrandChildCategoryById);
 router.get('/getAll/GCG',bearer,getAllGrandChildCategory);
 router.get('/search/title/GCG',bearer,getGrandChildCategoryByTitle);
 
+router.post('/tag',addTagHandler)
+router.get('/tag/:id',getTagHandler)
+router.delete('/tag/:id',deleteTagHandler)
+router.put('/tag/:id', updateTagHandler)
+router.get('/tag', getAllTagsHandler)
 
+router.post('/product', addProductHandler)
+router.get('/product', getAllProductHandler)
+router.get('/product/:id', getProductHandler)
+router.put('/product/:id', updateProductHandler)
+router.put('/product/status/:id', updateProductStatusHandler)
+router.delete('/product/:id', deleteProductHandler)
+
+router.post('/product/tag',addProductTagHandler)
+router.get('/product/tag/:id', getProductTagsHandler)
+router.delete('/product/tag/:id', deleteProductTagHandler)
+router.put('/product/tag/:id', updateProductTagsHandler)
+
+router.post('/product/review',addProductReviewHandler)
+router.get('/product/review/:id', getProductReviewHandler)
+router.delete('/product/review/:id', deleteProductReviewHandler)
+router.put('/product/review/:id', updateProductReviewHandler)
+
+router.post('/product/rating',addProductRatingHandler)
+router.get('/product/rating/:id', getProductRatingHandler)
+router.delete('/product/rating/:id', deleteProductRatingHandler)
+router.put('/product/rating/:id', updateProductRatingHandler)
 
 // Test route
 router.get('/test', (req, res) => {
