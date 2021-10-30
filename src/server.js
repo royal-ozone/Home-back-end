@@ -5,7 +5,7 @@
 const client = require('./db'); 
 
 const authRouter = require('./auth/routes')
-const v1Router = require ('./api/router')
+const v1Router = require ('./routes/v1')
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
