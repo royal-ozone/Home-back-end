@@ -83,7 +83,6 @@ INSERT INTO product_review(id,user_id,product_id,review,rate,votes)
 VALUES('d4df9477-0b36-4376-8927-b5f974abfa98','4b9a4f7b-6c1c-4039-9e29-26909a63021c','0047da41-5e33-460a-88da-5cfa2b9d8724','very bad product','0','199');
 
 
-
 -------------------------------- store_reviews -----------------------------------
 INSERT INTO store_reviews(id,user_id,store_id,review,rate,votes)VALUES
 ('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','2fa53b27-a3d7-406f-9f91-c7f3950e9078','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3','24K');
@@ -97,7 +96,6 @@ INSERT INTO new_order(id,profile_id,first_name,last_name,status,tax,shipping,dis
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
 ('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
-
 
 
 -------------------------------- transaction ----------------------------
