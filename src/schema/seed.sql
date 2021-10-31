@@ -243,7 +243,6 @@ INSERT INTO store_picture (id,store_id,store_picture) VALUES
 
 
 
-
 -------------------------------- store_reviews -----------------------------------
 INSERT INTO store_reviews(id,profile_id,store_id,review,rate,votes)VALUES
 ('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3','24K');
@@ -257,7 +256,6 @@ INSERT INTO new_order(id,profile_id,first_name,last_name,status,tax,shipping,dis
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
 ('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
-
 
 
 -------------------------------- transaction ----------------------------

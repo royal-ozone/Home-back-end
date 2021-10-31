@@ -9,8 +9,10 @@ const {addParentCategory,removeParentCategory,updateParentCategory,getParentCate
 const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategoryById,getAllChildCategory,getChildCategoryByTitle} = require('../api/controllers/childCategory');
 const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
 
+
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
 const {addCartHandler,addCartItemHandler} = require('../api/controllers/cartControllers');
+
 
 
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan} = require ('../auth/middleware/acl')
@@ -22,6 +24,13 @@ const {
   updateStoreHandler,
   deleteStoreHandler
 } = require('../api/controllers/storesController');
+
+
+const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
+const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api//controllers/tagController')
+const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api//controllers/productTagController')
+const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api//controllers/productReviewController')
+const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api//controllers/productRating')
 
 
 // Global middleware
@@ -51,6 +60,7 @@ router.get('/getAll/GCG',bearer,getAllGrandChildCategory);
 router.get('/search/title/GCG',bearer,getGrandChildCategoryByTitle);
 
 
+
 router.post('/add/address',bearer,addAddressHandler);
 router.delete('/remove/address/:id',bearer,removeAddressHandler);
 router.put('/update/address/:id',bearer,updateAddressHandler);
@@ -58,6 +68,35 @@ router.get('/getAll/address',bearer,getAllAddressHandler);
 
 router.post('/add/cart',bearer,addCartHandler);
 router.post('/add/cart_item',bearer,addCartItemHandler);
+
+
+router.post('/tag',addTagHandler)
+router.get('/tag/:id',getTagHandler)
+router.delete('/tag/:id',deleteTagHandler)
+router.put('/tag/:id', updateTagHandler)
+router.get('/tag', getAllTagsHandler)
+
+router.post('/product', addProductHandler)
+router.get('/product', getAllProductHandler)
+router.get('/product/:id', getProductHandler)
+router.put('/product/:id', updateProductHandler)
+router.put('/product/status/:id', updateProductStatusHandler)
+router.delete('/product/:id', deleteProductHandler)
+
+router.post('/product/tag',addProductTagHandler)
+router.get('/product/tag/:id', getProductTagsHandler)
+router.delete('/product/tag/:id', deleteProductTagHandler)
+router.put('/product/tag/:id', updateProductTagsHandler)
+
+router.post('/product/review',addProductReviewHandler)
+router.get('/product/review/:id', getProductReviewHandler)
+router.delete('/product/review/:id', deleteProductReviewHandler)
+router.put('/product/review/:id', updateProductReviewHandler)
+
+router.post('/product/rating',addProductRatingHandler)
+router.get('/product/rating/:id', getProductRatingHandler)
+router.delete('/product/rating/:id', deleteProductRatingHandler)
+router.put('/product/rating/:id', updateProductRatingHandler)
 
 
 // Test route
