@@ -65,6 +65,30 @@ const createProfile = async data => {
         throw new Error(error.message);
     }
 }
+const updateProfilersModel = async (data,id) =>{
+   try {
+       let SQL = 'UPDATE profiles SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE user_id =$5 RETURNING *;'
+       const {first_name,last_name,city,country,mobile} = data;
+       let safeValue = [first_name,last_name,city,country,id];
+       let result = await client.query(SQL,safeValue);
+       return result.rows[0];
+   } catch (error) {
+       throw new Error(error.message);
+   } 
+}
+
+const updateUserModel = async (data,id)=>{
+
+    try {
+        let SQL = 'UPDATE users SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE id =$5 RETURNING * ;';
+        const {first_name,last_name,city,country,mobile} = data;
+       let safeValue = [first_name,last_name,city,country,id];
+       let result = await client.query(SQL,safeValue);
+       return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 const getUserByEmail = async email => {
     try {
@@ -161,13 +185,35 @@ async function updateUserEmail(user_id, email) {
 
 async function updateUserMobile(user_id, country_code, mobile) {
     try {
-        const SQL = `UPDATE USERS SET mobile = $1, country_code=$2 WHERE id = $3 RETURNING *;`;
+        const SQL = `UPDATE USERS SET mobile = $1, country_code=$2 , verified=$3 WHERE id = $4 RETURNING *;`;
 
-        const safeValues = [mobile, country_code, user_id];
+        const safeValues = [mobile, country_code,false, user_id];
         const result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (e) {
         throw new Error(e.message);
+    }
+}
+
+const updateProfileMobile = async (user_id,mobile)=> {
+    try {
+        let SQL = `UPDATE profiles SET mobile = $1 WHERE user_id = $2 RETURNING *;`;
+        let safeValue = [mobile,user_id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+
+}
+const getTokenByUserId = async (id) => {
+    try {
+        let SQL = 'SELECT access_token FROM jwt WHERE user_id =$1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
     }
 }
 
@@ -210,6 +256,17 @@ const getProfileByUserId = async id => {
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
 
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getAddressByProfileId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM address WHERE profile_id = $1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message);
     }
@@ -344,6 +401,12 @@ module.exports = {
     addMod,
     removeMod,
     banUser,
-    unbanUser
+    unbanUser,
+    updateProfilersModel,
+    updateUserModel,
+    updateProfileMobile,
+    getTokenByUserId,
+    getAddressByProfileId
+    
 }
 
