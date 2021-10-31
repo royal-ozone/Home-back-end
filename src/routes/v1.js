@@ -9,6 +9,8 @@ const {addParentCategory,removeParentCategory,updateParentCategory,getParentCate
 const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategoryById,getAllChildCategory,getChildCategoryByTitle} = require('../api/controllers/childCategory');
 const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
 
+const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
+const {addCartHandler,addCartItemHandler} = require('../api/controllers/cartControllers');
 
 
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan} = require ('../auth/middleware/acl')
@@ -48,6 +50,14 @@ router.get('/get/GCG/:idGCG',bearer,checkAuth,getGrandChildCategoryById);
 router.get('/getAll/GCG',bearer,getAllGrandChildCategory);
 router.get('/search/title/GCG',bearer,getGrandChildCategoryByTitle);
 
+
+router.post('/add/address',bearer,addAddressHandler);
+router.delete('/remove/address/:id',bearer,removeAddressHandler);
+router.put('/update/address/:id',bearer,updateAddressHandler);
+router.get('/getAll/address',bearer,getAllAddressHandler);
+
+router.post('/add/cart',bearer,addCartHandler);
+router.post('/add/cart_item',bearer,addCartItemHandler);
 
 
 // Test route

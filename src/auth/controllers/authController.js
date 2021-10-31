@@ -14,9 +14,10 @@ const { signup,
     unbanUser,
     updateUserPassword,
     updateUserEmail,
-    updateUserMobile, } = require('../models/user')
+    updateUserMobile, updateProfilersModel ,updateUserModel ,updateProfileMobile,getTokenByUserId
+} = require('../models/user')
 
-const { authenticateWithToken } = require('../models/helpers')
+const { authenticateWithToken, getToken } = require('../models/helpers')
 
 const { createToken, deleteToken } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
@@ -82,6 +83,27 @@ const signupHandler = async (req, res, next) => {
         res.send(error.message);
     }
 };
+
+const updateProfilers = async(req, res, next)=> {
+    try {
+        let id = req.params.id
+        let dataProfile = await getUserById(req.user.id);
+        
+        let result = await updateProfilersModel(req.body,id)
+        let resultFromProfile = await updateUserModel(req.body,id)
+        console.log("🚀 ~ file: authController.js ~ line 94 ~ updateProfilers ~ resultFromProfile", resultFromProfile)
+        let response ={
+            profile: result ,
+            user : resultFromProfile
+        }
+        res.status(200).send(response);
+    } catch (error) {
+        let response ={
+            message: error.message,
+        }
+        res.status(403).send(response);
+    }
+}
 
 
 // This handler is to return user access and refresh tokens on signin request:
@@ -273,7 +295,7 @@ const updateUserEmailHandler = async (req, res, next) => {
 
 const updateUserMobileHandler = async (req, res, next) => {
     try {
-
+        let id = req.params.id
         const country = req.body.country_code;
         const oldMobile = req.body.old_mobile;
         const newMobile = req.body.new_mobile;
@@ -286,7 +308,8 @@ const updateUserMobileHandler = async (req, res, next) => {
         }
 
 
-        let user = await getUserById(req.user.id);
+        let user = await getUserById(id);
+        
 
         if (user) {
             let fixedMobileOld = oldMobile.trim();
@@ -299,12 +322,18 @@ const updateUserMobileHandler = async (req, res, next) => {
                 });
             }
 
-            user = await updateUserMobile(req.user.id, country, fixedMobileNew);
+            let result = await updateUserMobile(id, country, fixedMobileNew);
+            let resultFromProfile = await updateProfileMobile(id,fixedMobileNew);
+            let token = await getTokenByUserId(id)
+            
             const response = {
                 status: 200,
-                message: 'mobile updated successfully',
+                message: 'mobile updated successfully please verify your mobile number!',
+                user:result,
+                profile: resultFromProfile,
+                token:token
             };
-            res.status(200).json(response);
+            res.status(200).send(response);
         } else {
             res.status(403).json({
                 status: 403,
@@ -526,5 +555,6 @@ module.exports = {
     updateUserMobileHandler,
     resetPasswordHandler,
     refreshHandler,
-    getAllUsersHandler
+    getAllUsersHandler,
+    updateProfilers
 }

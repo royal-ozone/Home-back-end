@@ -13,6 +13,7 @@ const addProduct = async data => {
         let safeValues = [store_id, enTitle,arTitle, metaTitle, sku, price, brand_name, description, quantity];
         let result = await client.query(SQL,safeValues)
         return result.rows[0];
+        console.log("🚀 ~ file: products.js ~ line 16 ~ result.rows[0]", result.rows[0])
     } catch (error) {
         throw new Error(error.message)
     }

@@ -20,7 +20,7 @@ const {
     updateUserEmailHandler,
     updateUserMobileHandler,
     refreshHandler,
-    getAllUsersHandler } = require('./controllers/authController')
+    getAllUsersHandler,updateProfilers } = require('./controllers/authController')
 
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
 
@@ -42,8 +42,10 @@ authRouter.put('/user/password', bearer, updateUserPasswordHandler);
 authRouter.put('/user/password/reset', bearer, resetPasswordHandler);
 authRouter.put('/user/password/change', bearer, updateUserResetPasswordHandler);
 authRouter.put('/user/email', bearer, updateUserEmailHandler);
-authRouter.put('/user/mobile', bearer, updateUserMobileHandler);
+authRouter.put('/user/mobile/:id', bearer, updateUserMobileHandler);
 authRouter.get('/user/all',bearer, checkAuth, getAllUsersHandler);
+
+authRouter.put('/update/profile/:id', bearer, updateProfilers);
 
 authRouter.post('/admin/add', bearer, addAdminHandler);
 

@@ -235,10 +235,10 @@ CREATE TABLE product_tag(
 CREATE TABLE product_rating(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  profile_id uuid NOT NULL,
   rating REAL NOT NULL DEFAULT '0',
+  votes VARCHAR(250) DEFAULT '0',
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
 
