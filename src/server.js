@@ -4,8 +4,7 @@
 
 const client = require('./db'); 
 
-const authRouter = require('./auth/routes')
-const v1Router = require ('./routes/v1')
+
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
@@ -13,12 +12,10 @@ const cors = require('cors');
 /// server ///
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); ///
 app.use(express.static('./public'));
 app.use(cors());
-app.use('/auth', authRouter);
-app.use('/api/v1', v1Router);
+
 
 
 /// routers /// 
@@ -28,15 +25,15 @@ const  HomePage = (req,res,next) =>{
 app.get('/' , HomePage);
 
 
-// client.query('select * from company',(err,res)=>{
-//     if(!err){
-//         console.log(res.rows);
+client.query('select * from company',(err,res)=>{
+    if(!err){
+        console.log(res.rows);
 
-//     }else{
-//         console.log('ahmad',err.message);
-//     }
-//     client.end();
-// })  
+    }else{
+        console.log('ahmad',err.message);
+    }
+    client.end();
+})  
 
 
 
