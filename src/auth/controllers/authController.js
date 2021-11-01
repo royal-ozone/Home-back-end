@@ -26,7 +26,6 @@ const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 const signupHandler = async (req, res, next) => {
     try {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
-            console.log(req.body,'req .body');
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
             res.status(403).json({
                 status: 403,
@@ -74,7 +73,6 @@ const signupHandler = async (req, res, next) => {
         }
 
         let result = await signup(req.body)
-        console.log("🚀 ~ file: authController.js ~ line 64 ~ signupHandler ~ result", result)
         
         await createProfile(result);
         let userTokens = await createToken(result.id)

@@ -117,6 +117,7 @@ CREATE TABLE store(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
   store_name VARCHAR (250) NOT NULL,
+  name_is_changed BOOLEAN DEFAULT FALSE,
   city VARCHAR (250) NOT NULL,
   address VARCHAR (250) DEFAULT 'Remote',
   mobile VARCHAR (15) NOT NULL UNIQUE,
@@ -124,28 +125,14 @@ CREATE TABLE store(
   about VARCHAR(250),
   store_picture uuid,
   store_rating REAL NOT NULL DEFAULT '0',
+  status VARCHAR(250) DEFAULT 'pending',
+  rejected_reason TEXT DEFAULT '',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
-CREATE TABLE store_request(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL UNIQUE,
-  store_name VARCHAR (250) NOT NULL,
-  city VARCHAR (250) NOT NULL,
-  address VARCHAR (250) DEFAULT 'Remote',
-  mobile VARCHAR (15) NOT NULL UNIQUE,
-  caption VARCHAR(250),
-  about VARCHAR(250),
-  store_picture uuid,
-  store_rating REAL NOT NULL DEFAULT '0',
-  created_at timestamp not null default current_timestamp,
-
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
-);
 
 
 CREATE TABLE parent_category(
@@ -241,9 +228,6 @@ CREATE TABLE product_rating(
   
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
-
-
-
 
 
 
