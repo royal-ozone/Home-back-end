@@ -44,7 +44,6 @@ let profileView = async (req, res, next) => {
 
 let checkAdmin = async (req, res, next) => {
     try {
-
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
@@ -56,7 +55,6 @@ let checkAdmin = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
-
     } catch (error) {
         throw new Error(error.message)
     }
@@ -82,8 +80,6 @@ let checkMod = async (req, res, next) => {
 
 let checkAuth = async (req, res, next) => {
     try {
-
-
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
@@ -104,13 +100,13 @@ let checkAuth = async (req, res, next) => {
 
 let checkStoreOwner = async (userId) => {
     try {
-        let profileId = await getProfileByUserId(userId);
+        let profile = await getProfileByUserId(userId);
 
         let SQL = `SELECT * FROM STORE WHERE profile_id=$1;`;
-        let safeValue = [profileId];
+        let safeValue = [profile.id];
 
         let result = await client.query(SQL, safeValue);
-        return result.rows[0];
+        return result;
     } catch (error) {
         throw new Error(error.message)
     }
@@ -118,14 +114,14 @@ let checkStoreOwner = async (userId) => {
 
 let checkStoreAuth = async (req, res, next) => {
     try {
-        let storeOwner = checkStoreOwner(req.user.id)
+        let storeOwner = await checkStoreOwner(req.user.id)
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
         let result2 = await client.query(SQL2, safeValue);
 
-        if (result.rows[0] || result2.rows[0] || storeOwner) {
+        if (result.rows[0] || result2.rows[0] || storeOwner.rows[0]) {
             next();
         } else {
             res.status(403).json({
@@ -133,7 +129,6 @@ let checkStoreAuth = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
-
     } catch (error) {
         throw new Error(error.message)
     }
@@ -156,4 +151,3 @@ let checkBan = async (req, res, next) => {
 };
 
 module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan };
-
