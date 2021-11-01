@@ -34,6 +34,23 @@ const requestStore = async (data, profileId) => {
 
 };
 
+
+const getStoreRequestByStoreName = async (storeName) => {
+
+    try {
+
+        let SQL = `SELECT * FROM STORE_REQUEST WHERE store_name=$1;`;
+        let safeValues = [storeName];
+
+        let result = client.query(SQL, safeValues);
+        return result;
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+
+};
+
 const getStoreRequestByProfileId = async (profileId) => {
 
     try {
@@ -49,7 +66,6 @@ const getStoreRequestByProfileId = async (profileId) => {
     }
 
 };
-
 
 const deleteStoreRequestByProfileId = async (profileId) => {
 
@@ -67,20 +83,34 @@ const deleteStoreRequestByProfileId = async (profileId) => {
 };
 
 
-const createStore = async (profileId) => {
+const getAllStores = async () => {
 
     try {
-        let profile = await getStoreRequestByProfileId(profileId);
-        console.log("🚀 ~ file: stores.js ~ line 74 ~ createStore ~ profile", profile.rows)
+
+        let SQL = `SELECT * FROM STORE;`;
+
+        let result = await client.query(SQL);
+        return result.rows;
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+
+};
+
+const createStore = async (storeName) => {
+
+    try {
+        let profile = await getStoreRequestByStoreName(storeName);
         if (profile.rows[0]) {
-            let { store_name, city, address, mobile, caption, about } = profile.rows[0];
+            let { profile_id, city, address, mobile, caption, about } = profile.rows[0];
 
             let SQL = `INSERT INTO STORE (profile_id,store_name,city,address,mobile,caption,about) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;`;
-            let safeValues = [profileId, store_name, city, address, mobile, caption, about];
+            let safeValues = [profile_id, storeName, city, address, mobile, caption, about];
 
             let result = client.query(SQL, safeValues);
 
-            await deleteStoreRequestByProfileId(profileId);
+            await deleteStoreRequestByProfileId(profile_id);
             return result;
         }
 
@@ -113,12 +143,12 @@ const updateStore = async (data, profileId) => {
 
 };
 
-const deleteStore = async (storeId) => {
+const deleteStore = async (storeName) => {
 
     try {
 
-        let SQL = `DELETE FROM STORE WHERE id=$1`;
-        let safeValues = [storeId];
+        let SQL = `DELETE FROM STORE WHERE store_name=$1`;
+        let safeValues = [storeName];
 
         let result = client.query(SQL, safeValues);
         return result;
@@ -129,4 +159,4 @@ const deleteStore = async (storeId) => {
 
 };
 
-module.exports = { getAllStoreRequests, requestStore, createStore, updateStore, deleteStore };
+module.exports = { getAllStoreRequests, requestStore, getAllStores, createStore, updateStore, deleteStore };

@@ -9,6 +9,7 @@ const {
   createStoreRequestHandler,
   // updateStoreRequestHandler,
   // deleteStoreRequestHandler,
+  getAllStoresHandler,
   createStoreHandler,
   updateStoreHandler,
   deleteStoreHandler
@@ -29,9 +30,11 @@ router.post('/store/request', createStoreRequestHandler); //tested
 // router.put('/store/request', updateStoreRequestHandler);
 // router.delete('/store/request/:storeId', deleteStoreRequestHandler);
 
+router.get('/store',checkAuth, getAllStoresHandler); //tested
+// router.get('/store/', getOneStoreHandler);
 router.post('/store',checkAuth, createStoreHandler); //tested
 router.put('/store',checkStoreAuth,updateStoreHandler);
-router.delete('/store/:storeId', deleteStoreHandler);
+router.delete('/store', checkStoreAuth, deleteStoreHandler); //tested
 
 
 

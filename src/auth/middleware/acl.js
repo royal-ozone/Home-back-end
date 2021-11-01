@@ -100,10 +100,10 @@ let checkAuth = async (req, res, next) => {
 
 let checkStoreOwner = async (userId) => {
     try {
-        let profileId = await getProfileByUserId(userId);
+        let profile = await getProfileByUserId(userId);
 
         let SQL = `SELECT * FROM STORE WHERE profile_id=$1;`;
-        let safeValue = [profileId];
+        let safeValue = [profile.id];
 
         let result = await client.query(SQL, safeValue);
         return result;
