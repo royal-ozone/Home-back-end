@@ -11,7 +11,8 @@ const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,g
 
 
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
-const {addCartHandler,addCartItemHandler} = require('../api/controllers/cartControllers');
+const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
+const {addOrderHandler} = require('../api/controllers/orderControllers');
 
 
 
@@ -38,12 +39,12 @@ router.use(bearer);
 
 
 router.post('/store', createStoreHandler);
-router.put('/store/:id',checkStoreAuth,updateStoreHandler);
-router.delete('/store/:id',checkStoreAuth, deleteStoreHandler);
-router.get('/store/:id', getStoreHandler);
-router.put('/store/name/:id',checkStoreAuth, updateStoreNameHandler);
-router.put('/store/status/:id',checkAuth, updateStoreStatusHandler);
-router.get('/store', getAllStoresHandler)
+router.put('/store',checkStoreAuth,updateStoreHandler);
+router.delete('/store',checkStoreAuth, deleteStoreHandler);
+router.get('/store', getStoreHandler);
+router.put('/store/name',checkStoreAuth, updateStoreNameHandler);
+router.put('/store/status',checkAuth, updateStoreStatusHandler);
+router.get('/store/all', getAllStoresHandler)
 router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
 
@@ -80,6 +81,12 @@ router.get('/getAll/address',bearer,getAllAddressHandler);
 
 router.post('/add/cart',bearer,addCartHandler);
 router.post('/add/cart_item',bearer,addCartItemHandler);
+router.delete('/remove/cart_item',bearer,removeCartItemHandler);
+router.get('/getAll/cart_item',bearer,getAllCartItemHandler);
+router.get('/getAll/cart',bearer,getAllCartHandler); 
+
+router.post('/add/order',bearer,addOrderHandler);
+
 
 
 router.post('/tag',addTagHandler)

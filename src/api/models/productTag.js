@@ -36,6 +36,17 @@ const deleteProductTag = async id => {
     }
 }
 
+const deleteProductTagByProductId = async product_id => {
+    try {
+        let SQL = 'DELETE FROM product_tag WHERE product_id=$1 RETURNING *;';
+        let safeValue = [product_id]
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 const updateProductTag = async (id, data) =>{
     try {
         let {product_tag, tag_id} = data;
@@ -48,4 +59,4 @@ const updateProductTag = async (id, data) =>{
     }
 } 
 
-module.exports = {deleteProductTag, updateProductTag,getProductTags,addProductTag}
+module.exports = {deleteProductTag, updateProductTag,getProductTags,addProductTag,deleteProductTagByProductId}
