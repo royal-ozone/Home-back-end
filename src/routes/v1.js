@@ -38,12 +38,12 @@ router.use(bearer);
 
 
 router.post('/store', createStoreHandler);
-router.put('/store/:id',checkStoreAuth,updateStoreHandler);
-router.delete('/store/:id',checkStoreAuth, deleteStoreHandler);
-router.get('/store/:id', getStoreHandler);
-router.put('/store/name/:id',checkStoreAuth, updateStoreNameHandler);
-router.put('/store/status/:id',checkAuth, updateStoreStatusHandler);
-router.get('/store', getAllStoresHandler)
+router.put('/store',checkStoreAuth,updateStoreHandler);
+router.delete('/store',checkStoreAuth, deleteStoreHandler);
+router.get('/store', getStoreHandler);
+router.put('/store/name',checkStoreAuth, updateStoreNameHandler);
+router.put('/store/status',checkAuth, updateStoreStatusHandler);
+router.get('/store/all', getAllStoresHandler)
 router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
 

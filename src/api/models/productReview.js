@@ -35,6 +35,16 @@ const deleteProductReview = async id => {
     }
 }
 
+const deleteProductReviewByProductId = async product_id => {
+    try {
+        let SQL = 'DELETE FROM product_review WHERE product_id=$1;';
+        let result = await client.query(SQL,[product_id])
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 const updateProductReview = async (id, data) => {
     try {
         let {review,rate,votes} = data;
@@ -48,4 +58,4 @@ const updateProductReview = async (id, data) => {
     }
 }
 
-module.exports = {addProductReview,getProductReview, deleteProductReview,updateProductReview}
+module.exports = {addProductReview,getProductReview, deleteProductReview,updateProductReview,deleteProductReviewByProductId}
