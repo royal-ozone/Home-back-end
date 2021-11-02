@@ -9,6 +9,7 @@ const signup = async data => {
         const { email, password, mobile, country, city, first_name, last_name, country_code } = data;
         let SQL = `INSERT INTO users(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
         let userPassword = await bcrypt.hash(password, 10)
+        console.log("🚀 ~ file: user.js ~ line 12 ~ userPassword", userPassword)
 
         let email2 = email.toLowerCase().trim();
         let mobile2 = mobile.trim();
@@ -379,6 +380,17 @@ const unbanUser = async (mobile) => {
     }
 };
 
+const getStoreIdByProfileId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM store WHERE profile_id=$1;'
+        let safeValues = [id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 module.exports = {
     signup,
     signupGoogle,
@@ -406,7 +418,8 @@ module.exports = {
     updateUserModel,
     updateProfileMobile,
     getTokenByUserId,
-    getAddressByProfileId
+    getAddressByProfileId,
+    getStoreIdByProfileId
     
 }
 

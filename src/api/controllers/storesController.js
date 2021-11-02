@@ -7,7 +7,7 @@ const {createStore,getStore, updateStore,deleteStore,updateStoreName, getStoreBy
 
 const createStoreHandler = async (req, res) =>{
     try {
-      let result = await createStore( req.body)
+      let result = await createStore({profile_id:req.user.profile_id,...req.body})
                 if (result) {
             res.status(200).json({
                 status: 200,
@@ -27,9 +27,9 @@ const createStoreHandler = async (req, res) =>{
 }
 
 const getStoreHandler = async (req, res) =>{
+console.log("🚀 ~ file: storesController.js ~ line 30 ~ getStoreHandler ~ req", req.user)
     try {
-        let id = req.params.id;
-        let result = await getStore(id);
+        let result = await getStore(req.user.profile_id);
         if (result) {
     res.status(200).json({
         status: 200,
@@ -51,8 +51,8 @@ else {
 
 const updateStoreHandler = async (req, res) =>{
     try {
-        let id = req.params.id; 
-        let result = await updateStore(id, req.body)
+         
+        let result = await updateStore(req.user.profile_id, req.body)
         if (result) {
             res.status(200).json({
                 status: 200,
@@ -73,16 +73,16 @@ const updateStoreHandler = async (req, res) =>{
 
 const updateStoreNameHandler = async (req, res) =>{   
     try {
-        let id = req.params.id;
-        let result = await getStore(id)
+        
+        let result = await getStore(req.user.profile_id)
         if(result.name_is_changed){
             res.status(403).json({
                 status: 403,
                 message: 'Your store name has been changed previously',
             });
         } else {
-            let result = await updateStoreName(id, req.body)
-            await updateChangingName(id)
+            let result = await updateStoreName(req.user.profile_id, req.body)
+            await updateChangingName(req.user.profile_id)
             res.status(200).json({
                 status: 200,
                 message: 'Store name has been changed successfully',
@@ -95,8 +95,8 @@ const updateStoreNameHandler = async (req, res) =>{
 
 const deleteStoreHandler = async (req, res) =>{
     try {
-        let id = req.params.id;
-        let result = await deleteStore(id);
+        
+        let result = await deleteStore(req.user.profile_id);
         if (result) {
             res.status(200).json({
                 status: 200,
@@ -156,8 +156,8 @@ const getStoreByNameHandler = async (req, res) => {
 
 const updateStoreStatusHandler = async (req, res) => {
     try {
-        let id = req.params.id;
-        let response = await updateStoreStatus(id, req.body)
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
         res.status(200).json({
             status: 200,
             message: 'Store Status has been updated successfully'

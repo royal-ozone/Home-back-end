@@ -1,7 +1,7 @@
 'use strict';
 const { getTokenRecord } = require('../models/jwt');
 const { authenticateWithToken } = require('../models/helpers');
-const { getProfileByUserId } = require('../models/user')
+const { getProfileByUserId, getStoreIdByProfileId } = require('../models/user')
 
 module.exports = async (req, res, next) => {
     try {
@@ -21,11 +21,13 @@ module.exports = async (req, res, next) => {
 
         let validUser = await authenticateWithToken(token, 'access');
         let userProfile = await getProfileByUserId(validUser.id);
+        let store = await getStoreIdByProfileId(userProfile.id);
 
         // request.user:
 
         req.user = validUser;
         req.user.profile_id = userProfile.id;
+        req.user.store_id = store? store.id: null;
 
         next();
 

@@ -33,6 +33,16 @@ const deleteProductRating = async id => {
     }
 }
 
+const deleteProductRatingByProductId = async product_id => {
+    try {
+        let SQL = 'DELETE FROM product_rating WHERE product_id=$1 RETURNING *;';
+        let result = await client.query(SQL, [product_id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 const updateProductRating = async (id,data) => {
     try {
         let {rating, votes} = data;
@@ -45,4 +55,4 @@ const updateProductRating = async (id,data) => {
     }
 }
 
-module.exports = {addProductRating, updateProductRating,getProductRating,deleteProductRating}
+module.exports = {addProductRating, updateProductRating,getProductRating,deleteProductRating,deleteProductRatingByProductId}

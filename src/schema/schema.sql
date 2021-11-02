@@ -177,12 +177,12 @@ CREATE TABLE product(
   metaTitle VARCHAR(100),
   sku VARCHAR(100),
   discount BOOLEAN DEFAULT FALSE,
-  discount_rate FLOAT DEFAULT '0',
+  discount_rate FLOAT DEFAULT 0,
   price REAL NOT NULL,
   currency VARCHAR(10) default 'jod',
   brand_name VARCHAR(250),
   description text NOT NULL,
-  quantity INT NOT NULL DEFAULT '0',
+  quantity INT NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'Pending',
   created_at timestamp not null default current_timestamp,
   
@@ -195,7 +195,7 @@ CREATE TABLE product_review(
   product_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate VARCHAR(1) NOT NULL,
-  votes VARCHAR(250) DEFAULT '0',
+  votes INT DEFAULT 0 ,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
@@ -228,7 +228,6 @@ CREATE TABLE product_rating(
   
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
-
 
 
 CREATE TABLE product_pictures(
