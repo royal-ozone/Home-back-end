@@ -1,13 +1,13 @@
 
 -------------------------- Users Table ----------------------------------
 INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
-('2fa53b27-a3d7-406f-9f91-c7f3950e9078','emranaloul@gmail.com','54321','962','0798009950','jordan','amman','emran','aloul','aa25ss568165asffjs','kjaffjjsu8s5895s',true);
+('2fa53b27-a3d7-406f-9f91-c7f3950e9078','emranaloul@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0798009950','jordan','amman','emran','aloul','aa25ss568165asffjs','kjaffjjsu8s5895s',true);
 INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES
- ('4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjadmesmar@gmail.com','7568','962','0796750891','jordan','irbid','amjad','mesmar','aa25ss86816fff5ajs','kjajfgw9su85895s',false);
+ ('4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjadmesmar@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796750891','jordan','irbid','amjad','mesmar','aa25ss86816fff5ajs','kjajfgw9su85895s',true);
 INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES
- ('507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam@gmail.com','1s2345','962','009627966851','jordan','irbid','wesam','al-masri',false);
+ ('507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','009627966851','jordan','irbid','wesam','al-masri',true);
 INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
-('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','12345','962','079655780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
+('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','079655780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
 
 
 ------------------------- User File Table --------------------------------
