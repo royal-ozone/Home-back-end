@@ -15,10 +15,10 @@ const addCartModel =async (idAddress,data)=> {
         return response;
     }
 }
-const addCartItemModel =async (id,data)=> {
+const addCartItemModel =async (id,data,product_id)=> {
     try {
         let SQL ='INSERT INTO cart_item(cart_id,product_id,price,discount,quantity) VALUES ($1,$2,$3,$4,$5) RETURNING *;';
-        const {product_id,price,discount,quantity}= data;
+        const {price,discount,quantity}= data;
         let safeValue = [id,product_id,price,discount,quantity];
        
         let result = await client.query(SQL, safeValue);
@@ -44,5 +44,70 @@ try {
     return response;
 }
 }
+const removeCartItemModel = async(id) =>{
+try {
+    let SQL = 'DELETE from cart_item WHERE id =$1';
+    let safeValue = [id];
+    let result = await client.query(SQL, safeValue);
+    return result.rows[0];
+} catch (error) {
+    let response = {
+        message: error.message,
+    }
+    return response;
+}
+}
+const getCartItemByIdModel =async id => {
+    try {
+        let SQL = 'SELECT * FROM cart_item WHERE id=$1 ;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
+const getAllCartItemModel = async id => {
+    try {
+        let SQL = 'SELECT * FROM cart_item ;';
+        let result = await client.query(SQL)
+        return result.rows;
+        
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
+const getCartByProfileIdModel = async id => {
+    try {
+        let SQL = 'SELECT * FROM cart WHERE profile_id = $1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
+const getAllCartModel = async id => {
+    try {
+        let SQL = 'SELECT * FROM cart ;';
+        let result = await client.query(SQL)
+        return result.rows;
+        
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
 
-module.exports = {addCartModel,addCartItemModel,getCartByProfileId};
+module.exports = {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModel,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel};
