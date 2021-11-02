@@ -11,7 +11,8 @@ const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,g
 
 
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
-const {addCartHandler,addCartItemHandler} = require('../api/controllers/cartControllers');
+const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
+const {addOrderHandler} = require('../api/controllers/orderControllers');
 
 
 
@@ -80,6 +81,12 @@ router.get('/getAll/address',bearer,getAllAddressHandler);
 
 router.post('/add/cart',bearer,addCartHandler);
 router.post('/add/cart_item',bearer,addCartItemHandler);
+router.delete('/remove/cart_item',bearer,removeCartItemHandler);
+router.get('/getAll/cart_item',bearer,getAllCartItemHandler);
+router.get('/getAll/cart',bearer,getAllCartHandler); 
+
+router.post('/add/order',bearer,addOrderHandler);
+
 
 
 router.post('/tag',addTagHandler)
