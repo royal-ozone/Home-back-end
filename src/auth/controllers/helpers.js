@@ -9,15 +9,10 @@ function validateEmail(email) {
 }
 function validatePassword(password) {
   const regularExpression =
-    /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    /^(?=.*[0-9])(?=.*[!@#$%.^&*])[a-zA-Z0-9!@#$%^.&*]{6,16}$/;
   return regularExpression.test(password);
 }
 
-// function validatePassword(password) {
-//   const regularExpression =
-//   "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$";
-//   return regularExpression.test(password);
-// }
 async function checkPassword(password, encryptedPassword) {
   try {
     const valid = await bcrypt.compare(password, encryptedPassword);
