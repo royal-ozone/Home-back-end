@@ -181,6 +181,21 @@ const updateStoreReview = async (profileId,storeId,data) =>{
     }
 }
 
+const deleteStoreReview = async (profileId,storeId) =>{
+    try {
+        let check = await checkIfReviewd(profileId,storeId);
+        if(!check.rows[0]){
+            return 0;
+        }
+        let SQL = 'DELETE FROM STORE_REVIEW WHERE store_id=$1 AND profile_id=$2;'
+        let safeValues = [storeId,profileId];
+        let result = await client.query(SQL,safeValues)
+        return result;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 module.exports = {
     createStore,
     getStore,
@@ -195,4 +210,5 @@ module.exports = {
     createStoreReview,
     getAllStoreReviews,
     getStoreReviews,
-    updateStoreReview};
+    updateStoreReview,
+    deleteStoreReview};
