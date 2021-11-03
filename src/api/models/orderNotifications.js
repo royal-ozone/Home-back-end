@@ -24,9 +24,9 @@ const getOrderNotification = async id => {
     }
 }
 
-const getOrderNotificationByOrderId = async id => {
+const getOrderNotificationByStoreId = async id => {
     try {
-        let SQL = 'SELECT * FROM order_notification WHERE order_id=$1;';
+        let SQL = 'SELECT * FROM order_notification WHERE receiver_id=$1;';
         let safeValue = [id]
         let result = await client.query(SQL, safeValue);
         return result.rows;
@@ -35,4 +35,4 @@ const getOrderNotificationByOrderId = async id => {
     }
 }
 
-module.exports = {addOrderNotification,getOrderNotification,getOrderNotificationByOrderId}
+module.exports = {addOrderNotification,getOrderNotification,getOrderNotificationByStoreId}

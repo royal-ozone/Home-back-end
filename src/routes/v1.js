@@ -16,6 +16,7 @@ const {addOrderHandler} = require('../api/controllers/orderControllers');
 
 
 
+
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
 // const {
 //   createStoreRequestHandler,
@@ -33,7 +34,8 @@ const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,update
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
 const  {createStoreHandler, getStoreHandler, deleteStoreHandler, updateStoreHandler, updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler} = require('../api/controllers/storesController')
-const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler} = require('../api/controllers/orderNotificationController')
+const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
+const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
 // Global middleware
 router.use(bearer);
@@ -120,8 +122,11 @@ router.put('/product/rating/:id', updateProductRatingHandler)
 
 router.post('/order/notification', addOrderNotificationHandler)
 router.get('/order/notification/:id', getOrderNotificationHandler)
-router.get('/order/notifications/:orderId', getOrderNotificationByOrderIdHandler)
+router.get('/order/notifications', getOrderNotificationByStoreIdHandler)
 
+router.post('/offer/notification', addOfferNotificationHandler)
+router.get('/offer/notification', getAllOfferNotificationsHandler)
+router.get('/offer/notification/store', getOfferNotificationByStoreIdHandler)
 
 
 // Test route

@@ -6,7 +6,7 @@ const { getProfileByUserId, getStoreIdByProfileId } = require('../models/user')
 module.exports = async (req, res, next) => {
     try {
         if (!req.headers.authorization) {
-            _authError();
+            return _authError();
         }
         let token = req.headers.authorization.split(' ').pop();
 
@@ -38,7 +38,7 @@ module.exports = async (req, res, next) => {
         })
     }
     function _authError() {
-        next('Invalid Login');
+        res.status(403).send('header authorization is not provided');
     }
 
 }

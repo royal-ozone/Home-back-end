@@ -1,4 +1,4 @@
-const {addOrderNotification,getOrderNotification,getOrderNotificationByOrderId} = require('../models/orderNotifications')
+const {addOrderNotification,getOrderNotification,getOrderNotificationByStoreId} = require('../models/orderNotifications')
 
 
 const addOrderNotificationHandler = async (req, res) =>{
@@ -23,9 +23,9 @@ const getOrderNotificationHandler = async (req, res) =>{
 }
 
 
-const getOrderNotificationByOrderIdHandler = async (req, res) =>{
+const getOrderNotificationByStoreIdHandler = async (req, res) =>{
     try {
-        let result = await getOrderNotificationByOrderId(req.params.orderId);
+        let result = await getOrderNotificationByStoreId(req.user.store_id);
         res.status(200).json({
             status: 200,
             result: result,
@@ -35,4 +35,4 @@ const getOrderNotificationByOrderIdHandler = async (req, res) =>{
     }
 }
 
-module.exports = {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler}
+module.exports = {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler}
