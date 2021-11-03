@@ -14,26 +14,18 @@ const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddress
 const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
 const {addOrderHandler} = require('../api/controllers/orderControllers');
 
-
-
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
-// const {
-//   createStoreRequestHandler,
-//   // updateStoreRequestHandler,
-//   // deleteStoreRequestHandler,
-//   createStoreHandler,
-//   updateStoreHandler,
-//   deleteStoreHandler
-// } = require('../api/controllers/storesController');
-
 
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
 const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api/controllers/productTagController')
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
-const  {createStoreHandler, getStoreHandler, deleteStoreHandler, updateStoreHandler, updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler} = require('../api/controllers/storesController')
+
+const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
+
 const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler} = require('../api/controllers/orderNotificationController')
+
 
 // Global middleware
 router.use(bearer);
@@ -49,6 +41,16 @@ router.get('/store/all', getAllStoresHandler)
 router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
 
+router.get('/store/review', getAllStoreReviewHandler)
+router.get('/store/review/:storeId', getStoreReviewHandler)
+router.post('/store/review',createStoreReviewHandler)
+router.put('/store/review/:storeId', updateStoreReviewHandler)
+router.delete('/store/review/:storeId', deleteStoreReviewHandler)
+
+router.get('/store/follower', getAllStorefollowersHandler)
+router.get('/store/follower/:storeId', getStorefollowersHandler)
+router.post('/store/follower',createStorefollowerHandler)
+router.delete('/store/follower/:storeId', deleteStorefollowerHandler)
 
 router.post('/add/PG',bearer,checkAdmin,addParentCategory);
 router.delete('/remove/PG/:idPG',bearer,checkAdmin,removeParentCategory);

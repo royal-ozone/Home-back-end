@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS profile_picture;
 DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
-DROP TABLE IF EXISTS store_reviews;
+DROP TABLE IF EXISTS store_review;
 
 
 DROP TABLE IF EXISTS return;
@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS cart_item;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS jwt;
-DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS store_follower;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
 DROP TABLE IF EXISTS order_notification;
@@ -30,7 +30,6 @@ DROP TABLE IF EXISTS child_category;
 DROP TABLE IF EXISTS parent_category;
 DROP TABLE IF EXISTS new_order;
 
-DROP TABLE IF EXISTS store_request;
 DROP TABLE IF EXISTS store;
 
 DROP TABLE IF EXISTS profiles;
@@ -253,13 +252,12 @@ CREATE TABLE store_picture(
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
-CREATE TABLE store_reviews(
+CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
-  store_id uuid NOT NULL UNIQUE,
+  store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate FLOAT NOT NULL DEFAULT '0',
-  votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),
@@ -352,11 +350,7 @@ CREATE TABLE cart_item(
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
-
-
-
-
-CREATE TABLE follow(
+CREATE TABLE store_follower(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
   follower uuid NOT NULL,
