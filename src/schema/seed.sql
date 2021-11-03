@@ -86,7 +86,7 @@ INSERT INTO store_picture (id,store_id,store_picture) VALUES
 
 
 -------------------------------- store_reviews -----------------------------------
-INSERT INTO store_reviews(id,profile_id,store_id,review,rate,votes)VALUES
+INSERT INTO store_review(id,profile_id,store_id,review,rate,votes)VALUES
 ('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3','24K');
 
 
@@ -127,8 +127,8 @@ INSERT INTO jwt (id,user_id,access_token,refresh_token)VALUES
 ('44b54ebd-44a4-4733-81ea-3af2be8a3d93','2fa53b27-a3d7-406f-9f91-c7f3950e9078','aaa','sss');
 
 
--------------------------------- follow ----------------------------
-INSERT INTO follow(id,store_id,follower)VALUES 
+-------------------------------- store followers ----------------------------
+INSERT INTO store_follower(id,store_id,follower)VALUES 
 ('792d59a3-34b8-4838-8765-af9afe69e158','72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857');
 
 

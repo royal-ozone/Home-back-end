@@ -27,7 +27,6 @@ const createStoreHandler = async (req, res) =>{
 }
 
 const getStoreHandler = async (req, res) =>{
-console.log("🚀 ~ file: storesController.js ~ line 30 ~ getStoreHandler ~ req", req.user)
     try {
         let result = await getStore(req.user.profile_id);
         if (result) {
@@ -167,5 +166,87 @@ const updateStoreStatusHandler = async (req, res) => {
     }
 }
 
-module.exports = {createStoreHandler, getStoreHandler, deleteStoreHandler, updateStoreHandler, updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler}
+// Store Reviews:
+
+const getAllStoreReviewHandler = async (req, res) => {
+    try {
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        res.status(200).json({
+            status: 200,
+            message: 'Store Status has been updated successfully'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const getStoreReviewHandler = async (req, res) => {
+    try {
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        res.status(200).json({
+            status: 200,
+            message: 'Store Status has been updated successfully'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const createStoreReviewHandler = async (req, res) => {
+    try {
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        res.status(200).json({
+            status: 200,
+            message: 'Store Status has been updated successfully'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const updateStoreReviewHandler = async (req, res) => {
+    try {
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        res.status(200).json({
+            status: 200,
+            message: 'Store Status has been updated successfully'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const deleteStoreReviewHandler = async (req, res) => {
+    try {
+        
+        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        res.status(200).json({
+            status: 200,
+            message: 'Store Status has been updated successfully'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+
+module.exports = {
+    createStoreHandler,
+    getStoreHandler,
+    deleteStoreHandler,
+    updateStoreHandler,
+    updateStoreNameHandler,
+    getAllStoresHandler,
+    getStoreByStatusHandler,
+    updateStoreStatusHandler,
+    getStoreByNameHandler,
+    getAllStoreReviewHandler,
+    getStoreReviewHandler,
+    createStoreReviewHandler,
+    updateStoreReviewHandler,
+    deleteStoreReviewHandler}
 
