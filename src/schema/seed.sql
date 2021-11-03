@@ -86,8 +86,8 @@ INSERT INTO store_picture (id,store_id,store_picture) VALUES
 
 
 -------------------------------- store_reviews -----------------------------------
-INSERT INTO store_review(id,profile_id,store_id,review,rate,votes)VALUES
-('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3','24K');
+INSERT INTO store_review(id,profile_id,store_id,review,rate)VALUES
+('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3');
 
 
 --------------------------------- new_order ----------------------------------------

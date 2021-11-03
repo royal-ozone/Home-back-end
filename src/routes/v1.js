@@ -39,10 +39,10 @@ router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
 
 router.get('/store/review', getAllStoreReviewHandler)
-router.get('/store/review/:id', getStoreReviewHandler)
+router.get('/store/review/:storeId', getStoreReviewHandler)
 router.post('/store/review',createStoreReviewHandler)
-router.put('/store/review/:id', updateStoreReviewHandler)
-router.delete('/store/review/:id', deleteStoreReviewHandler)
+router.put('/store/review/:storeId', updateStoreReviewHandler)
+router.delete('/store/review/:storeId', deleteStoreReviewHandler)
 
 router.post('/add/PG',bearer,checkAdmin,addParentCategory);
 router.delete('/remove/PG/:idPG',bearer,checkAdmin,removeParentCategory);

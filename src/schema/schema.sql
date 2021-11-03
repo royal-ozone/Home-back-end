@@ -254,10 +254,9 @@ CREATE TABLE store_picture(
 CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
-  store_id uuid NOT NULL UNIQUE,
+  store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate FLOAT NOT NULL DEFAULT '0',
-  votes VARCHAR(250) DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profiles(id),

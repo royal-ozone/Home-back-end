@@ -117,4 +117,65 @@ const updateChangingName = async id =>{
     }
 }
 
-module.exports = {createStore,getStore, updateStore,deleteStore,updateStoreName,updateStoreStatus, getStoreByStatus, getStoreByName, getAllStores,updateChangingName};
+const checkIfReviewd = async (profileId,storeId) =>{
+    try {
+        let SQL =  `SELECT * FROM STORE_REVIEW WHERE profile_id=$1 AND store_id=$2;`;
+        let safeValues = [profileId,storeId];
+        let result = await client.query(SQL,safeValues)
+        return result;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const createStoreReview = async (profileId,data) =>{
+    try {
+        let {store_id,review,rate} = data;
+        let check = await checkIfReviewd(profileId,store_id);
+        if(check.rows[0]){
+            return 0;
+        }
+        let SQL =  `INSERT INTO STORE_REVIEW (profile_id,store_id,review,rate) VALUES ($1,$2,$3,$4) RETURNING *;`;
+        let safeValues = [profileId,store_id,review,rate];
+        let result = await client.query(SQL,safeValues)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const getAllStoreReviews = async () =>{
+    try {
+        let SQL =  `SELECT * FROM STORE_REVIEW;`;
+        let result = await client.query(SQL)
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const getStoreReviews = async (storeId) =>{
+    try {
+        let SQL =  `SELECT * FROM STORE_REVIEW WHERE store_id=$1;`;
+        let safeValues = [storeId];
+        let result = await client.query(SQL,safeValues)
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+module.exports = {
+    createStore,
+    getStore,
+    updateStore,
+    deleteStore,
+    updateStoreName,
+    updateStoreStatus,
+    getStoreByStatus,
+    getStoreByName,
+    getAllStores,
+    updateChangingName,
+    createStoreReview,
+    getAllStoreReviews,
+    getStoreReviews};
