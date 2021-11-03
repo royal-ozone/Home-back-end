@@ -349,10 +349,6 @@ CREATE TABLE cart_item(
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
-
-
-
-
 CREATE TABLE store_follower(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,

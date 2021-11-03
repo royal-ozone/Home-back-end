@@ -15,11 +15,15 @@ const {
     getAllStoreReviews,
     getStoreReviews,
     updateStoreReview,
-    deleteStoreReview } = require('../models/stores');
+    deleteStoreReview,
+    createStoreFollower,
+    getAllStoreFollowers,
+    getStoreFollowers,
+    deleteStoreFollower} = require('../models/stores');
 
 
 
-
+// Store handlers----------------------------------------------------------------------------------------------
 const createStoreHandler = async (req, res) => {
     try {
         let result = await createStore({ profile_id: req.user.profile_id, ...req.body })
@@ -133,6 +137,7 @@ const getAllStoresHandler = async (req, res) => {
     try {
         let response = await getAllStores();
         res.status(200).json({
+            number: response.length,
             status: 200,
             data: response,
         })
@@ -181,13 +186,14 @@ const updateStoreStatusHandler = async (req, res) => {
     }
 }
 
-// Store Reviews:
+// Store Reviews----------------------------------------------------------------------------------------------
 
 const getAllStoreReviewHandler = async (req, res) => {
     try {
 
         let allStoreReviews = await getAllStoreReviews();
         res.status(200).json({
+            number: allStoreReviews.length,
             status: 200,
             reviews: allStoreReviews
         })
@@ -202,6 +208,7 @@ const getStoreReviewHandler = async (req, res) => {
         let storeReviews = await getStoreReviews(req.params.storeId);
         if (storeReviews) {
             res.status(200).json({
+                number: storeReviews.length,
                 status: 200,
                 reviews: storeReviews
             })
@@ -276,6 +283,79 @@ const deleteStoreReviewHandler = async (req, res) => {
     }
 }
 
+// Store follower ---------------------------------------------------------------------------------------------------
+
+const getAllStorefollowersHandler = async (req, res) => {
+    try {
+
+        let allStoreFollowers = await getAllStoreFollowers();
+        res.status(200).json({
+            number: allStoreFollowers.length,
+            status: 200,
+            followers: allStoreFollowers
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const getStorefollowersHandler = async (req, res) => {
+    try {
+
+        let storeFollowers = await getStoreFollowers(req.params.storeId);
+        if (storeFollowers) {
+            res.status(200).json({
+                number: storeFollowers.length,
+                status: 200,
+                followers: storeFollowers
+            })
+        }
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const createStorefollowerHandler = async (req, res) => {
+    try {
+        let {store_id} = req.body;
+        let storeFollower = await createStoreFollower(req.user.profile_id,store_id)
+
+        if (storeFollower === 0) {
+            res.status(200).json({
+                status: 200,
+                message: 'You have unfollowed this store!'
+            })
+        }
+        else if (storeFollower !== 0) {
+            res.status(200).json({
+                status: 200,
+                message: 'Store has been followed successfully!'
+            })
+        }
+        else {
+            res.status(403).json({
+                status: 403,
+                message: 'Something went wrong while following a store!'
+            })
+        }
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const deleteStorefollowerHandler = async (req, res) => {
+    try {
+        await deleteStoreFollower(req.user.profile_id, req.params.storeId)
+        res.status(200).json({
+            status: 200,
+            message: 'Your have unfollowed this store!'
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+
 
 module.exports = {
     createStoreHandler,
@@ -291,6 +371,10 @@ module.exports = {
     getStoreReviewHandler,
     createStoreReviewHandler,
     updateStoreReviewHandler,
-    deleteStoreReviewHandler
+    deleteStoreReviewHandler,
+    getAllStorefollowersHandler,
+    getStorefollowersHandler,
+    createStorefollowerHandler,
+    deleteStorefollowerHandler
 }
 

@@ -1,10 +1,11 @@
 'use strict';
 const client = require('../../db')
 
+// store handlers ---------------------------------------------------------------------------------------------------
 
-const createStore = async data =>{
+const createStore = async data => {
     try {
-        let {profile_id, store_name, city, address, mobile, caption, about} = data;
+        let { profile_id, store_name, city, address, mobile, caption, about } = data;
         let SQL = 'INSERT INTO store (profile_id, store_name, city, address, mobile,caption, about) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;';
         let safeValues = [profile_id, store_name, city, address, mobile, caption, about]
         let result = await client.query(SQL, safeValues);
@@ -12,9 +13,9 @@ const createStore = async data =>{
     } catch (error) {
         throw new Error(error.message);
     }
-} 
+}
 
-const deleteStore = async id =>{
+const deleteStore = async id => {
     try {
         let SQL = 'DELETE FROM store WHERE profile_id=$1 RETURNING *;';
         let safeValue = [id];
@@ -25,11 +26,11 @@ const deleteStore = async id =>{
     }
 };
 
-const updateStore = async (id,data) =>{
+const updateStore = async (id, data) => {
     try {
-        let {city, address, mobile, caption, about} = data;
+        let { city, address, mobile, caption, about } = data;
         let SQL = 'UPDATE store SET city=$1, address=$2, mobile=$3, caption=$4,about=$5 WHERE profile_id=$6 RETURNING *;';
-        let safeValues = [city, address, mobile, caption, about,id];
+        let safeValues = [city, address, mobile, caption, about, id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -37,11 +38,11 @@ const updateStore = async (id,data) =>{
     }
 };
 
-const updateStoreName = async (id,data) =>{
+const updateStoreName = async (id, data) => {
     try {
-        let {store_name} = data;
+        let { store_name } = data;
         let SQL = 'UPDATE store SET store_name=$1 WHERE profile_id=$2 RETURNING *;';
-        let safeValues = [store_name,id];
+        let safeValues = [store_name, id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
 
@@ -50,7 +51,7 @@ const updateStoreName = async (id,data) =>{
     }
 }
 
-const getStore =async (id) =>{
+const getStore = async (id) => {
     try {
         let SQL = 'SELECT * FROM store WHERE profile_id=$1;';
         let safeValues = [id];
@@ -61,11 +62,11 @@ const getStore =async (id) =>{
     }
 }
 
-const updateStoreStatus =async (id, data) =>{
+const updateStoreStatus = async (id, data) => {
     try {
-        let {status, rejected_reason} = data;
+        let { status, rejected_reason } = data;
         let SQL = 'UPDATE store SET status=$1, rejected_reason=$2 WHERE profile_id=$3 RETURNING *;';
-        let safeValues = [status,rejected_reason,id];
+        let safeValues = [status, rejected_reason, id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -73,9 +74,9 @@ const updateStoreStatus =async (id, data) =>{
     }
 }
 
-const getStoreByStatus =async (data) =>{
+const getStoreByStatus = async (data) => {
     try {
-       
+
         let SQL = 'SELECT * FROM store WHERE status=$1;'
         let safeValues = [data]
         let result = await client.query(SQL, safeValues);
@@ -85,7 +86,7 @@ const getStoreByStatus =async (data) =>{
     }
 }
 
-const getStoreByName = async (data) =>{
+const getStoreByName = async (data) => {
     try {
         let SQL = 'SELECT * FROM store WHERE store_name=$1;'
         let safeValues = [data];
@@ -96,7 +97,7 @@ const getStoreByName = async (data) =>{
     }
 }
 
-const getAllStores = async () =>{
+const getAllStores = async () => {
     try {
         let SQL = 'SELECT * FROM store;';
         let result = await client.query(SQL)
@@ -106,47 +107,49 @@ const getAllStores = async () =>{
     }
 }
 
-const updateChangingName = async id =>{
+const updateChangingName = async id => {
     try {
         let SQL = 'UPDATE store SET name_is_changed=$1 WHERE profile_id=$2;'
         let safeValues = [true, id];
-        let result = await client.query(SQL,safeValues)
+        let result = await client.query(SQL, safeValues)
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const checkIfReviewd = async (profileId,storeId) =>{
+// store reviews ---------------------------------------------------------------------------------------------------
+
+const checkIfReviewd = async (profileId, storeId) => {
     try {
-        let SQL =  `SELECT * FROM STORE_REVIEW WHERE profile_id=$1 AND store_id=$2;`;
-        let safeValues = [profileId,storeId];
-        let result = await client.query(SQL,safeValues)
+        let SQL = `SELECT * FROM STORE_REVIEW WHERE profile_id=$1 AND store_id=$2;`;
+        let safeValues = [profileId, storeId];
+        let result = await client.query(SQL, safeValues)
         return result;
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const createStoreReview = async (profileId,data) =>{
+const createStoreReview = async (profileId, data) => {
     try {
-        let {store_id,review,rate} = data;
-        let check = await checkIfReviewd(profileId,store_id);
-        if(check.rows[0]){
+        let { store_id, review, rate } = data;
+        let check = await checkIfReviewd(profileId, store_id);
+        if (check.rows[0]) {
             return 0;
         }
-        let SQL =  `INSERT INTO STORE_REVIEW (profile_id,store_id,review,rate) VALUES ($1,$2,$3,$4) RETURNING *;`;
-        let safeValues = [profileId,store_id,review,rate];
-        let result = await client.query(SQL,safeValues)
+        let SQL = `INSERT INTO STORE_REVIEW (profile_id,store_id,review,rate) VALUES ($1,$2,$3,$4) RETURNING *;`;
+        let safeValues = [profileId, store_id, review, rate];
+        let result = await client.query(SQL, safeValues)
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const getAllStoreReviews = async () =>{
+const getAllStoreReviews = async () => {
     try {
-        let SQL =  `SELECT * FROM STORE_REVIEW;`;
+        let SQL = `SELECT * FROM STORE_REVIEW;`;
         let result = await client.query(SQL)
         return result.rows;
     } catch (error) {
@@ -154,48 +157,111 @@ const getAllStoreReviews = async () =>{
     }
 }
 
-const getStoreReviews = async (storeId) =>{
+const getStoreReviews = async (storeId) => {
     try {
-        let SQL =  `SELECT * FROM STORE_REVIEW WHERE store_id=$1;`;
+        let SQL = `SELECT * FROM STORE_REVIEW WHERE store_id=$1;`;
         let safeValues = [storeId];
-        let result = await client.query(SQL,safeValues)
+        let result = await client.query(SQL, safeValues)
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const updateStoreReview = async (profileId,storeId,data) =>{
+const updateStoreReview = async (profileId, storeId, data) => {
     try {
-        let {review, rate } = data;
-        let check = await checkIfReviewd(profileId,storeId);
-        if(!check.rows[0]){
+        let { review, rate } = data;
+        let check = await checkIfReviewd(profileId, storeId);
+        if (!check.rows[0]) {
             return 0;
         }
         let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2 WHERE store_id=$3 AND profile_id=$4;'
-        let safeValues = [review,rate,storeId,profileId];
-        let result = await client.query(SQL,safeValues)
+        let safeValues = [review, rate, storeId, profileId];
+        let result = await client.query(SQL, safeValues)
         return result;
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const deleteStoreReview = async (profileId,storeId) =>{
+const deleteStoreReview = async (profileId, storeId) => {
     try {
-        let check = await checkIfReviewd(profileId,storeId);
-        if(!check.rows[0]){
+        let check = await checkIfReviewd(profileId, storeId);
+        if (!check.rows[0]) {
             return 0;
         }
         let SQL = 'DELETE FROM STORE_REVIEW WHERE store_id=$1 AND profile_id=$2;'
-        let safeValues = [storeId,profileId];
-        let result = await client.query(SQL,safeValues)
+        let safeValues = [storeId, profileId];
+        let result = await client.query(SQL, safeValues)
+        return result;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+// store reviews ---------------------------------------------------------------------------------------------------
+
+const checkIfFollowed = async (profileId, storeId) => {
+    try {
+        let SQL = `SELECT * FROM STORE_FOLLOWER WHERE follower=$1 AND store_id=$2;`;
+        let safeValues = [profileId, storeId];
+        let result = await client.query(SQL, safeValues)
         return result;
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
+
+
+const getAllStoreFollowers = async () => {
+    try {
+        let SQL = `SELECT * FROM STORE_FOLLOWER;`;
+        let result = await client.query(SQL)
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const getStoreFollowers = async (storeId) => {
+    try {
+        let SQL = `SELECT * FROM STORE_FOLLOWER WHERE store_id=$1;`;
+        let safeValues = [storeId];
+        let result = await client.query(SQL, safeValues)
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const createStoreFollower = async (profileId, storeId) => {
+    try {
+        let check = await checkIfFollowed(profileId, storeId);
+        if (check.rows[0]) {
+            let deleteFollower = await deleteStoreFollower(profileId, storeId);
+            return 0;
+        }
+        else {
+            let SQL = `INSERT INTO STORE_FOLLOWER(follower,store_id) VALUES ($1,$2) RETURNING *;`;
+            let safeValues = [profileId, storeId];
+            let result = await client.query(SQL, safeValues)
+            return result.rows[0];
+        }
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const deleteStoreFollower = async (profileId, storeId) => {
+    try {
+        let SQL = 'DELETE FROM STORE_FOLLOWER WHERE store_id=$1 AND follower=$2;'
+        let safeValues = [storeId, profileId];
+        let result = await client.query(SQL, safeValues)
+        return result;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 module.exports = {
     createStore,
     getStore,
@@ -211,4 +277,9 @@ module.exports = {
     getAllStoreReviews,
     getStoreReviews,
     updateStoreReview,
-    deleteStoreReview};
+    deleteStoreReview,
+    createStoreFollower,
+    getAllStoreFollowers,
+    getStoreFollowers,
+    deleteStoreFollower
+};

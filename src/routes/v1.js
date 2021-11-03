@@ -22,7 +22,7 @@ const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTa
 const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api/controllers/productTagController')
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
-const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler} = require('../api/controllers/storesController')
+const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
 
 // Global middleware
 router.use(bearer);
@@ -43,6 +43,11 @@ router.get('/store/review/:storeId', getStoreReviewHandler)
 router.post('/store/review',createStoreReviewHandler)
 router.put('/store/review/:storeId', updateStoreReviewHandler)
 router.delete('/store/review/:storeId', deleteStoreReviewHandler)
+
+router.get('/store/follower', getAllStorefollowersHandler)
+router.get('/store/follower/:storeId', getStorefollowersHandler)
+router.post('/store/follower',createStorefollowerHandler)
+router.delete('/store/follower/:storeId', deleteStorefollowerHandler)
 
 router.post('/add/PG',bearer,checkAdmin,addParentCategory);
 router.delete('/remove/PG/:idPG',bearer,checkAdmin,removeParentCategory);
