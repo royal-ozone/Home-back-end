@@ -33,6 +33,7 @@ const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,update
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
 const  {createStoreHandler, getStoreHandler, deleteStoreHandler, updateStoreHandler, updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler} = require('../api/controllers/storesController')
+const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler} = require('../api/controllers/orderNotificationController')
 
 // Global middleware
 router.use(bearer);
@@ -116,6 +117,10 @@ router.post('/product/rating',addProductRatingHandler)
 router.get('/product/rating/:id', getProductRatingHandler)
 router.delete('/product/rating/:id', deleteProductRatingHandler)
 router.put('/product/rating/:id', updateProductRatingHandler)
+
+router.post('/order/notification', addOrderNotificationHandler)
+router.get('/order/notification/:id', getOrderNotificationHandler)
+router.get('/order/notifications/:orderId', getOrderNotificationByOrderIdHandler)
 
 
 
