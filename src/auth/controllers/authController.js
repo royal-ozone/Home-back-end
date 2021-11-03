@@ -14,7 +14,7 @@ const { signup,
     unbanUser,
     updateUserPassword,
     updateUserEmail,
-    updateUserMobile, updateProfilersModel ,updateUserModel ,updateProfileMobile,getTokenByUserId
+    updateUserMobile, updateProfilersModel ,updateUserModel ,updateProfileMobile,getTokenByUserId, deactivateAccount,
 } = require('../models/user')
 
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -538,6 +538,16 @@ const getAllUsersHandler = async (req, res, next) => {
     }
 };
 
+
+const deactivateAccountHandler = async (req, res, next) => {
+    try {
+        let resdd = await deactivateAccount(req.user.id)
+        res.send('your account has been deactivated')
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+};
+
 module.exports = {
     signupHandler,
     signInHandler,
@@ -554,5 +564,5 @@ module.exports = {
     resetPasswordHandler,
     refreshHandler,
     getAllUsersHandler,
-    updateProfilers
+    updateProfilers,deactivateAccountHandler
 }

@@ -1,5 +1,5 @@
 const client = require('../../db')
-const { getProfileByUserId } = require('../models/user')
+const { getProfileByUserId, activateAccount } = require('../models/user')
 
 // comment on product
 
@@ -18,7 +18,7 @@ let productComment = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 }
 
@@ -36,7 +36,7 @@ let profileView = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
@@ -150,4 +150,18 @@ let checkBan = async (req, res, next) => {
     }
 };
 
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan };
+const checkActive = async (req, res, next) =>{
+    try {
+        if(req.user.status === 'active'){
+            next()
+        } else if (req.user.status === 'deactivated'){
+            res.status(403).send('your account is deactivated, sign in again to activate it!');
+            await activateAccount(req.user.id)
+            next();
+        }
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive };

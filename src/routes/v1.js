@@ -16,7 +16,7 @@ const {addOrderHandler} = require('../api/controllers/orderControllers');
 
 
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan} = require ('../auth/middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
 // const {
 //   createStoreRequestHandler,
 //   // updateStoreRequestHandler,

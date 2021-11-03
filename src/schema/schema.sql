@@ -58,6 +58,7 @@ CREATE TABLE users(
   google_id VARCHAR(200) UNIQUE,
   facebook_id VARCHAR(200) UNIQUE,
   verified BOOLEAN DEFAULT false,
+  status VARCHAR(15) DEFAULT 'active',
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 
