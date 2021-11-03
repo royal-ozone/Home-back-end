@@ -14,15 +14,18 @@ const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddress
 const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
 const {addOrderHandler} = require('../api/controllers/orderControllers');
 
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
 
-
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan} = require ('../auth/middleware/acl')
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
 const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api/controllers/productTagController')
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
+
 const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
+
+const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler} = require('../api/controllers/orderNotificationController')
+
 
 // Global middleware
 router.use(bearer);
@@ -116,6 +119,10 @@ router.post('/product/rating',addProductRatingHandler)
 router.get('/product/rating/:id', getProductRatingHandler)
 router.delete('/product/rating/:id', deleteProductRatingHandler)
 router.put('/product/rating/:id', updateProductRatingHandler)
+
+router.post('/order/notification', addOrderNotificationHandler)
+router.get('/order/notification/:id', getOrderNotificationHandler)
+router.get('/order/notifications/:orderId', getOrderNotificationByOrderIdHandler)
 
 
 

@@ -391,6 +391,29 @@ const getStoreIdByProfileId = async id =>{
     }
 }
 
+const deactivateAccount = async id => {
+
+    try {
+        let SQL = 'UPDATE users SET status=$1 WHERE id=$2;'
+        let safeValues = ['deactivated',id];
+        let result = await client.query(SQL, safeValues);
+        return 'deactivated';
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const activateAccount = async id => {
+    try {
+        let SQL = 'UPDATE users SET status=$1 WHERE id=$2;'
+        let safeValues = ['active',id];
+        let result = await client.query(SQL, safeValues);
+        return 'activated';
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 module.exports = {
     signup,
     signupGoogle,
@@ -419,7 +442,8 @@ module.exports = {
     updateProfileMobile,
     getTokenByUserId,
     getAddressByProfileId,
-    getStoreIdByProfileId
-    
+    getStoreIdByProfileId,
+    deactivateAccount,
+    activateAccount
 }
 
