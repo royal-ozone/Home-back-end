@@ -13,7 +13,8 @@ const {
     updateChangingName,
     createStoreReview,
     getAllStoreReviews,
-    getStoreReviews } = require('../models/stores');
+    getStoreReviews,
+    updateStoreReview } = require('../models/stores');
 
 
 
@@ -239,11 +240,17 @@ const createStoreReviewHandler = async (req, res) => {
 
 const updateStoreReviewHandler = async (req, res) => {
     try {
-
-        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        let {review, rate } = req.body;
+        let updateReview = await updateStoreReview(req.user.profile_id, req.params.storeId,req.body)
+        if (updateReview === 0) {
+            res.status(403).json({
+                status: 403,
+                message: 'You store review for this store does not exist!'
+            })
+        }
         res.status(200).json({
             status: 200,
-            message: 'Store Status has been updated successfully'
+            message: 'Your review for this store has been updated successfully'
         })
     } catch (error) {
         res.status(403).send(error.message)

@@ -165,6 +165,22 @@ const getStoreReviews = async (storeId) =>{
     }
 }
 
+const updateStoreReview = async (profileId,storeId,data) =>{
+    try {
+        let {review, rate } = data;
+        let check = await checkIfReviewd(profileId,storeId);
+        if(!check.rows[0]){
+            return 0;
+        }
+        let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2 WHERE store_id=$3 AND profile_id=$4;'
+        let safeValues = [review,rate,storeId,profileId];
+        let result = await client.query(SQL,safeValues)
+        return result;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 module.exports = {
     createStore,
     getStore,
@@ -178,4 +194,5 @@ module.exports = {
     updateChangingName,
     createStoreReview,
     getAllStoreReviews,
-    getStoreReviews};
+    getStoreReviews,
+    updateStoreReview};
