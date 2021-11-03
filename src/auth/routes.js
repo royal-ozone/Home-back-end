@@ -3,7 +3,7 @@
 const express = require('express');
 const authRouter = express.Router();
 const basicAuth = require('./middleware/basic')
-const {checkAdmin,checkMod,checkAuth,checkBan} = require ('./middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkBan, checkActive} = require ('./middleware/acl')
 const bearer = require('./middleware/bearer');
 const {
     signupHandler,
@@ -20,7 +20,7 @@ const {
     updateUserEmailHandler,
     updateUserMobileHandler,
     refreshHandler,
-    getAllUsersHandler,updateProfilers } = require('./controllers/authController')
+    getAllUsersHandler,updateProfilers,deactivateAccountHandler } = require('./controllers/authController')
 
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
 
@@ -31,12 +31,13 @@ authRouter.use(googleAuth); // calling google oauth
 authRouter.use(facebookAuth);
 
 authRouter.post('/signup', signupHandler);
-authRouter.post('/signin', basicAuth,checkBan, signInHandler);
+authRouter.post('/signin', basicAuth, checkActive,checkBan, signInHandler);
 authRouter.post('/signout', bearer, signOutHandler);
 authRouter.post('/user/verification', bearer, sendVerificationCodeHandler);
 authRouter.post('/user/verify', bearer, verifyUserHandler);
 authRouter.post('/user/send/message', sendMessageHandler);
 authRouter.post('/refresh', refreshHandler);
+authRouter.post('/deactivate', bearer, deactivateAccountHandler)
 
 authRouter.put('/user/password', bearer, updateUserPasswordHandler);
 authRouter.put('/user/password/reset', bearer, resetPasswordHandler);
