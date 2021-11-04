@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
         let store = await getStoreIdByProfileId(userProfile.id);
 
         // request.user:
-
+        
         req.user = validUser;
         req.user.profile_id = userProfile.id;
         req.user.store_id = store? store.id: null;
@@ -32,13 +32,12 @@ module.exports = async (req, res, next) => {
         next();
 
     } catch (error) {
-        // throw new Error(error.message);
         res.status(500).json({
             message:error.message
         })
     }
     function _authError() {
-        res.status(403).send('header authorization is not provided');
+        res.status(403).send('Header authorization is not provided');
     }
 
 }

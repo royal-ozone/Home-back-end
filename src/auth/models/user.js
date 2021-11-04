@@ -7,9 +7,8 @@ const bcrypt = require('bcrypt')
 const signup = async data => {
     try {
         const { email, password, mobile, country, city, first_name, last_name, country_code } = data;
-        let SQL = `INSERT INTO users(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
         let userPassword = await bcrypt.hash(password, 10)
-        console.log("🚀 ~ file: user.js ~ line 12 ~ userPassword", userPassword)
 
         let email2 = email.toLowerCase().trim();
         let mobile2 = mobile.trim();
@@ -24,7 +23,7 @@ const signup = async data => {
 const signupGoogle = async data => {
     try {
         const { email, user_password, country_code, mobile, country, city, first_name, last_name, google_id, verified } = data;
-        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
         let userPassword = await bcrypt.hash(user_password, 10)
 
         let correctEmail = email.toLowerCase().trim();
@@ -39,7 +38,7 @@ const signupGoogle = async data => {
 const signupFacebook =  async data =>{
     try {
         const {email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified} = data;
-        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
         let userPassword = await bcrypt.hash(user_password, 10)
         
         let correctEmail = email.toLowerCase().trim();
@@ -55,7 +54,7 @@ const signupFacebook =  async data =>{
 const createProfile = async data => {
     try {
         let mobileAllData = '+' + data.country_code + data.mobile.split('').splice(1, data.mobile.length).join('');
-        let SQL = 'INSERT INTO profiles(user_id,first_name,last_name,city,country,mobile)VALUES($1,$2,$3,$4,$5,$6) RETURNING *;';
+        let SQL = 'INSERT INTO PROFILE(user_id,first_name,last_name,city,country,mobile)VALUES($1,$2,$3,$4,$5,$6) RETURNING *;';
         let { id, first_name, last_name, city, country } = data;
         let safeValue = [id, first_name, last_name, city, country, mobileAllData];
 
@@ -68,7 +67,7 @@ const createProfile = async data => {
 }
 const updateProfilersModel = async (data,id) =>{
    try {
-       let SQL = 'UPDATE profiles SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE user_id =$5 RETURNING *;'
+       let SQL = 'UPDATE PROFILE SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE user_id =$5 RETURNING *;'
        const {first_name,last_name,city,country,mobile} = data;
        let safeValue = [first_name,last_name,city,country,id];
        let result = await client.query(SQL,safeValue);
@@ -81,7 +80,7 @@ const updateProfilersModel = async (data,id) =>{
 const updateUserModel = async (data,id)=>{
 
     try {
-        let SQL = 'UPDATE users SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE id =$5 RETURNING * ;';
+        let SQL = 'UPDATE CLIENT SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE id =$5 RETURNING * ;';
         const {first_name,last_name,city,country,mobile} = data;
        let safeValue = [first_name,last_name,city,country,id];
        let result = await client.query(SQL,safeValue);
@@ -93,7 +92,7 @@ const updateUserModel = async (data,id)=>{
 
 const getUserByEmail = async email => {
     try {
-        let SQL = `SELECT * FROM users WHERE email=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE email=$1;`;
         let safeValue = [email];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -105,7 +104,7 @@ const getUserByEmail = async email => {
 
 const getUserById = async id => {
     try {
-        let SQL = `SELECT * FROM users WHERE id=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE id=$1;`;
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -116,7 +115,7 @@ const getUserById = async id => {
 
 const getUserByGoogleId = async google_id => {
     try {
-        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE google_id=$1;`;
         let safeValue = [google_id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -128,7 +127,7 @@ const getUserByGoogleId = async google_id => {
 
 const getUserByFacebookId = async facebook_id =>{
     try {
-        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE google_id=$1;`;
         let safeValue = [facebook_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
@@ -139,7 +138,7 @@ const getUserByFacebookId = async facebook_id =>{
 
 const getUserByMobile = async mobile =>{
     try {
-        let SQL = `SELECT * FROM users WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         let safeValue = [mobile];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -150,7 +149,7 @@ const getUserByMobile = async mobile =>{
 
 const updateUserVerification = async id => {
     try {
-        let SQL = `UPDATE users SET verified = true WHERE id =$1 RETURNING *;`;
+        let SQL = `UPDATE CLIENT SET verified = true WHERE id =$1 RETURNING *;`;
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0].id;
@@ -162,7 +161,7 @@ const updateUserVerification = async id => {
 async function updateUserPassword(user_id, password) {
     try {
         const user_password = await bcrypt.hash(password, 10);
-        const SQL = `UPDATE USERS SET user_password = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET user_password = $1 WHERE id = $2 RETURNING *;`;
 
         const safeValues = [user_password, user_id];
         const result = await client.query(SQL, safeValues);
@@ -174,7 +173,7 @@ async function updateUserPassword(user_id, password) {
 
 async function updateUserEmail(user_id, email) {
     try {
-        const SQL = `UPDATE USERS SET email = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET email = $1 WHERE id = $2 RETURNING *;`;
 
         const safeValues = [email, user_id];
         const result = await client.query(SQL, safeValues);
@@ -186,7 +185,7 @@ async function updateUserEmail(user_id, email) {
 
 async function updateUserMobile(user_id, country_code, mobile) {
     try {
-        const SQL = `UPDATE USERS SET mobile = $1, country_code=$2 , verified=$3 WHERE id = $4 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET mobile = $1, country_code=$2 , verified=$3 WHERE id = $4 RETURNING *;`;
 
         const safeValues = [mobile, country_code,false, user_id];
         const result = await client.query(SQL, safeValues);
@@ -198,7 +197,7 @@ async function updateUserMobile(user_id, country_code, mobile) {
 
 const updateProfileMobile = async (user_id,mobile)=> {
     try {
-        let SQL = `UPDATE profiles SET mobile = $1 WHERE user_id = $2 RETURNING *;`;
+        let SQL = `UPDATE PROFILE SET mobile = $1 WHERE user_id = $2 RETURNING *;`;
         let safeValue = [mobile,user_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0]
@@ -220,7 +219,7 @@ const getTokenByUserId = async (id) => {
 
 const getAllUsers = async token => {
     try {
-        let SQL = 'SELECT * FROM USERS;';
+        let SQL = 'SELECT * FROM CLIENT;';
         let result = await client.query(SQL);
         return {users:result.rows};
     } catch (error) {
@@ -241,7 +240,7 @@ const getUserIdFromToken = async token => {
 
 const getMobileById = async id => {
     try {
-        let SQL = 'SELECT * FROM users WHERE id=$1;';
+        let SQL = 'SELECT * FROM CLIENT WHERE id=$1;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -252,7 +251,7 @@ const getMobileById = async id => {
 
 const getProfileByUserId = async id => {
     try {
-        let SQL = 'SELECT * FROM profiles WHERE user_id = $1;';
+        let SQL = 'SELECT * FROM PROFILE WHERE user_id = $1;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -287,7 +286,7 @@ const addAdmin = async userId => {
 
 const addMod = async mobile => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
@@ -322,7 +321,7 @@ const addMod = async mobile => {
 
 const removeMod = async (mobile) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
@@ -341,7 +340,7 @@ const removeMod = async (mobile) => {
 
 const banUser = async (mobile) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
@@ -365,7 +364,7 @@ const banUser = async (mobile) => {
 
 const unbanUser = async (mobile) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
@@ -382,7 +381,7 @@ const unbanUser = async (mobile) => {
 
 const getStoreIdByProfileId = async id =>{
     try {
-        let SQL = 'SELECT * FROM store WHERE profile_id=$1;'
+        let SQL = 'SELECT * FROM STORE WHERE profile_id=$1;'
         let safeValues = [id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
@@ -394,7 +393,7 @@ const getStoreIdByProfileId = async id =>{
 const deactivateAccount = async id => {
 
     try {
-        let SQL = 'UPDATE users SET status=$1 WHERE id=$2;'
+        let SQL = 'UPDATE CLIENT SET status=$1 WHERE id=$2;'
         let safeValues = ['deactivated',id];
         let result = await client.query(SQL, safeValues);
         return 'deactivated';
@@ -405,7 +404,7 @@ const deactivateAccount = async id => {
 
 const activateAccount = async id => {
     try {
-        let SQL = 'UPDATE users SET status=$1 WHERE id=$2;'
+        let SQL = 'UPDATE CLIENT SET status=$1 WHERE id=$2;'
         let safeValues = ['active',id];
         let result = await client.query(SQL, safeValues);
         return 'activated';

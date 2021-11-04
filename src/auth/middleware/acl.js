@@ -155,7 +155,7 @@ const checkActive = async (req, res, next) =>{
         if(req.user.status === 'active'){
             next()
         } else if (req.user.status === 'deactivated'){
-            res.status(403).send('your account is deactivated, sign in again to activate it!');
+            res.status(403).send('Your account is deactivated, sign in again to activate it!');
             await activateAccount(req.user.id)
             next();
         }
