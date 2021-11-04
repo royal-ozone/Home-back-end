@@ -18,27 +18,25 @@ module.exports = async (req, res, next) => {
                 message: 'Invalid token!',
             });
         }
+        else {
+            let validUser = await authenticateWithToken(token, 'access');
+            let userProfile = await getProfileByUserId(validUser.id);
+            let store = await getStoreIdByProfileId(userProfile.id);
 
-        let validUser = await authenticateWithToken(token, 'access');
-        let userProfile = await getProfileByUserId(validUser.id);
-        let store = await getStoreIdByProfileId(userProfile.id);
+            // request.user:
 
-        // request.user:
+            req.user = validUser;
+            req.user.profile_id = userProfile.id;
+            req.user.store_id = store ? store.id : null;
 
-        req.user = validUser;
-        req.user.profile_id = userProfile.id;
-        req.user.store_id = store? store.id: null;
-
-        next();
+            next();
+        }
 
     } catch (error) {
-        // throw new Error(error.message);
-        res.status(500).json({
-            message:error.message
-        })
+        next(error);
     }
     function _authError() {
-        res.status(403).send('header authorization is not provided');
+        res.status(403).send('Header authorization is not provided');
     }
 
 }

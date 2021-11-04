@@ -24,7 +24,7 @@ let productComment = async (req, res, next) => {
 
 let profileView = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM profiles WHERE id=$1;`;
+        let SQL = `SELECT * FROM PROFILE WHERE id=$1;`;
         let safeValue = [req.params.id];
         let result = await client.query(SQL, safeValue);
         if (req.user.profile_id === result.rows[0].id) {
@@ -155,7 +155,7 @@ const checkActive = async (req, res, next) =>{
         if(req.user.status === 'active'){
             next()
         } else if (req.user.status === 'deactivated'){
-            res.status(403).send('your account is deactivated, sign in again to activate it!');
+            res.status(403).send('Your account is deactivated, sign in again to activate it!');
             await activateAccount(req.user.id)
             next();
         }

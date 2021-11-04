@@ -32,19 +32,19 @@ DROP TABLE IF EXISTS new_order;
 
 DROP TABLE IF EXISTS store;
 
-DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS profile;
 DROP TABLE IF EXISTS user_file;
 
 DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
 DROP TABLE IF EXISTS banned_user;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS client;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 
-CREATE TABLE users(
+CREATE TABLE client(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   email VARCHAR(150) NOT NULL UNIQUE,
   user_password VARCHAR(250) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE jwt(
   access_token VARCHAR(250) NOT NULL,
   refresh_token VARCHAR(250) NOT NULL,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE user_file(
@@ -76,7 +76,7 @@ CREATE TABLE user_file(
   created_at date not null default current_timestamp
 );
 
-CREATE TABLE profiles(
+CREATE TABLE profile(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   first_name VARCHAR (250) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE profiles(
   created_at timestamp not null default current_timestamp,
   
 
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (user_id) REFERENCES client(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
@@ -96,21 +96,21 @@ CREATE TABLE administrator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE moderator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE banned_user(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE store(
@@ -129,7 +129,7 @@ CREATE TABLE store(
   rejected_reason TEXT DEFAULT '',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
@@ -198,7 +198,7 @@ CREATE TABLE product_review(
   votes INT DEFAULT 0 ,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -241,7 +241,7 @@ CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   profile_picture uuid NOT NULL,
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 CREATE TABLE store_picture(
@@ -260,7 +260,7 @@ CREATE TABLE store_review(
   rate FLOAT NOT NULL DEFAULT '0',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
@@ -280,7 +280,7 @@ CREATE TABLE new_order(
   city VARCHAR (250) NOT NULL,
   country VARCHAR (250) NOT NULL,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
   );
 
 CREATE TABLE order_item (
@@ -305,7 +305,7 @@ CREATE TABLE transaction(
    status VARCHAR (100),
    created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 
 );
@@ -322,7 +322,7 @@ CREATE TABLE address(
    street_name VARCHAR(250) NOT NULL,
    building_number VARCHAR (250) NOT NULL,
    apartment_number VARCHAR (250),
-   FOREIGN KEY (profile_id) REFERENCES profiles(id)
+   FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -333,7 +333,7 @@ CREATE TABLE cart(
      mobile VARCHAR (15) NOT NULL, 
      created_at timestamp not null default current_timestamp,
 
-     FOREIGN KEY (profile_id) REFERENCES profiles(id),
+     FOREIGN KEY (profile_id) REFERENCES profile(id),
      FOREIGN KEY (address_id) REFERENCES address(id)
 );
 
@@ -356,7 +356,7 @@ CREATE TABLE store_follower(
   follower uuid NOT NULL,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (follower) REFERENCES profiles(id),
+  FOREIGN KEY (follower) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
  
@@ -378,7 +378,7 @@ CREATE TABLE comment(
 
     FOREIGN KEY (product_id) REFERENCES product(id),
     FOREIGN KEY (store_id) REFERENCES store(id),
-    FOREIGN KEY (profile_id) REFERENCES profiles(id)
+    FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 CREATE TABLE offer_notification(
@@ -390,7 +390,7 @@ CREATE TABLE offer_notification(
   seen boolean DEFAULT false,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (receiver_id) REFERENCES profiles(id),
+  FOREIGN KEY (receiver_id) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -416,7 +416,7 @@ CREATE TABLE return(
   message text NOT NULL,
 
   FOREIGN KEY (store_id) REFERENCES store(id),
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );

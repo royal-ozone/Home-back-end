@@ -1,12 +1,12 @@
 
--------------------------- Users Table ----------------------------------
-INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
+-------------------------- client Table ----------------------------------
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
 ('2fa53b27-a3d7-406f-9f91-c7f3950e9078','emranaloul@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0798009950','jordan','amman','emran','aloul','aa25ss568165asffjs','kjaffjjsu8s5895s',true);
-INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES
  ('4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjadmesmar@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796750891','jordan','irbid','amjad','mesmar','aa25ss86816fff5ajs','kjajfgw9su85895s',true);
-INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES
  ('507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','009627966851','jordan','irbid','wesam','al-masri',true);
-INSERT INTO users(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
 ('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','079655780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
 
 
@@ -18,16 +18,22 @@ INSERT INTO user_file(id,file) VALUES ('b6d0861e-90ac-48d6-9460-5aed8515ecbf','h
 INSERT INTO user_file(id,file) VALUES ('0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
       
--------------------------- profiles Table --------------------------------
-INSERT INTO profiles(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
+-------------------------- profile Table --------------------------------
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
 ('fca8e07b-ac7d-4ce8-8437-53c54ca85857','2fa53b27-a3d7-406f-9f91-c7f3950e9078','emran','aloul','amman','jordan','0798009950','e9b6516a-16b8-43fd-836c-9df52dbd55e1');
-INSERT INTO profiles(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
 ('d7a36645-a598-4584-a158-23615a865ac9','4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjad','mesmar','irbid','jordan','0796750891','3b47e66c-690b-4eb2-8c24-4f0117c9ab83');
-INSERT INTO profiles(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
 ('1821db68-97c9-4380-9a55-ad8bc7f16eda','14a60467-c390-4ca7-a1be-5d0ee11d9ad8','ahmad','arman','amman','jordan','079655780751','5f04b02b-a142-4445-a65f-bf5542d1fbd4');
-INSERT INTO profiles(id,user_id,first_name,last_name,city,country,mobile) VALUES
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile) VALUES
 ('3be97674-8ce4-49a8-a378-605965c4b98c','507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam','al-masri','irbid','jordan','009627966851');
 
+
+------------------------- Administrator Table ----------------------------------
+INSERT INTO ADMINISTRATOR (id,user_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e83d22','4b9a4f7b-6c1c-4039-9e29-26909a63021c');
+
+------------------------- Moderator Table ----------------------------------
+INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec','14a60467-c390-4ca7-a1be-5d0ee11d9ad8');
 
 ------------------------- Stores Table ----------------------------------
 INSERT INTO store(id,profile_id,store_name,city,address,mobile,caption,about,store_picture,store_rating) VALUES 

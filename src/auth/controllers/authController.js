@@ -14,7 +14,7 @@ const { signup,
     unbanUser,
     updateUserPassword,
     updateUserEmail,
-    updateUserMobile, updateProfilersModel ,updateUserModel ,updateProfileMobile,getTokenByUserId, deactivateAccount,
+    updateUserMobile, updateProfilersModel, updateUserModel, updateProfileMobile, getTokenByUserId, deactivateAccount,
 } = require('../models/user')
 
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -26,6 +26,9 @@ const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 const signupHandler = async (req, res, next) => {
     try {
         let { email, password, country_code, mobile, country, city, first_name, last_name } = req.body;
+        let emailCheck = await getUserByEmail(email);
+        let mobileCheck = await getUserByMobile(mobile);
+
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
             res.status(403).json({
                 status: 403,
@@ -33,14 +36,14 @@ const signupHandler = async (req, res, next) => {
             });
         }
 
-        if (!validateEmail(email)) {
+        else if (!validateEmail(email)) {
             res.status(403).json({
                 status: 403,
                 message: 'Invalid email format, please write a correct email!',
             });
         }
 
-        if (!validatePassword(password)) {
+        else if (!validatePassword(password)) {
             res.status(403).json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
@@ -48,58 +51,53 @@ const signupHandler = async (req, res, next) => {
                     `2- One small letter.`,
                     `3- One special character.`,
                     `4- One number.`,
-                    `5- No periods.`,
-                    `6- Characters between 6-16.`,
+                    `5- Characters between 6-16.`,
                     `ex:Ax@123`]
             });
         }
 
-        let emailCheck = await getUserByEmail(email);
 
-        if (emailCheck) {
+        else if (emailCheck) {
             res.status(403).json({
                 status: 403,
                 message: 'This email is already in use, please write a different email address!',
             });
         }
 
-        let mobileCheck = await getUserByMobile(mobile);
 
-        if (mobileCheck) {
+        else if (mobileCheck) {
             res.status(403).json({
                 status: 403,
                 message: 'This mobile is already in use, please write a different mobile number!',
             });
         }
+        else {
+            let result = await signup(req.body)
 
-        let result = await signup(req.body)
-        
-        await createProfile(result);
-        let userTokens = await createToken(result.id)
-        res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
+            await createProfile(result);
+            let userTokens = await createToken(result.id)
+            res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
+        }
+
     } catch (error) {
-        res.send(error.message);
+        next(error);
     }
 };
 
-const updateProfilers = async(req, res, next)=> {
+const updateProfilers = async (req, res, next) => {
     try {
         let id = req.params.id
         let dataProfile = await getUserById(req.user.id);
-        
-        let result = await updateProfilersModel(req.body,id)
-        let resultFromProfile = await updateUserModel(req.body,id)
-        console.log("🚀 ~ file: authController.js ~ line 94 ~ updateProfilers ~ resultFromProfile", resultFromProfile)
-        let response ={
-            profile: result ,
-            user : resultFromProfile
+
+        let result = await updateProfilersModel(req.body, id)
+        let resultFromProfile = await updateUserModel(req.body, id)
+        let response = {
+            profile: result,
+            user: resultFromProfile
         }
         res.status(200).send(response);
     } catch (error) {
-        let response ={
-            message: error.message,
-        }
-        res.status(403).send(response);
+        next(error);
     }
 }
 
@@ -111,7 +109,7 @@ const signInHandler = async (req, res, next) => {
         delete req.tokens.created_at;
         res.status(200).json(req.tokens);
     } catch (error) {
-        res.send(error.message)
+        next(error);
     }
 };
 
@@ -125,7 +123,7 @@ const signOutHandler = async (req, res, next) => {
             message: 'successfully signed out',
         });
     } catch (error) {
-        res.send(error.message)
+        next(error);
     }
 };
 
@@ -138,6 +136,9 @@ const updateUserPasswordHandler = async (req, res, next) => {
         const newPassword = req.body.new_password;
         const newPassword2 = req.body.new_password2;
 
+        let user = await getUserById(req.user.id);
+        const valid = await checkPassword(oldPassword, user.user_password);
+
         if (!oldPassword || !newPassword || !newPassword2) {
             res.status(403).json({
                 status: 403,
@@ -145,14 +146,14 @@ const updateUserPasswordHandler = async (req, res, next) => {
             });
         }
 
-        if (newPassword !== newPassword2) {
+        else if (newPassword !== newPassword2) {
             res.status(403).json({
                 status: 403,
                 message: 'New password mismatch! please write the same new password in both fields!',
             });
         }
 
-        if (!validatePassword(newPassword)) {
+        else if (!validatePassword(newPassword)) {
             res.status(403).json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
@@ -160,16 +161,11 @@ const updateUserPasswordHandler = async (req, res, next) => {
                     `2- One small letter.`,
                     `3- One special character.`,
                     `4- One number.`,
-                    `5- No periods.`,
-                    `6- Characters between 6-16.`,
+                    `5- Characters between 6-16.`,
                     `ex:Ax@123`]
             });
         }
-
-        let user = await getUserById(req.user.id);
-
-        const valid = await checkPassword(oldPassword, user.user_password);
-        if (valid) {
+        else if (valid) {
             user = await updateUserPassword(user.id, newPassword);
             const response = {
                 status: 200,
@@ -177,9 +173,11 @@ const updateUserPasswordHandler = async (req, res, next) => {
             };
             res.status(200).json(response);
         } else {
-            const error = new Error('Old password is incorrect!');
-            error.statusCode = 403;
-            throw error;
+            const response = {
+                status: 403,
+                message: 'Old password is incorrect!',
+            };
+            res.status(403).json(response);
         }
     } catch (e) {
         next(e);
@@ -192,6 +190,8 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
         const newPassword = req.body.new_password;
         const newPassword2 = req.body.new_password2;
 
+        let user = await getUserById(req.user.id);
+
         if (!newPassword || !newPassword2) {
             res.status(403).json({
                 status: 403,
@@ -199,14 +199,14 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
             });
         }
 
-        if (newPassword !== newPassword2) {
+        else if (newPassword !== newPassword2) {
             res.status(403).json({
                 status: 403,
                 message: 'New password mismatch! please write the same new password in both fields!',
             });
         }
 
-        if (!validatePassword(newPassword)) {
+        else if (!validatePassword(newPassword)) {
             res.status(403).json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
@@ -214,15 +214,13 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
                     `2- One small letter.`,
                     `3- One special character.`,
                     `4- One number.`,
-                    `5- No periods.`,
-                    `6- Characters between 6-16.`,
+                    `5- Characters between 6-16.`,
                     `ex:Ax@123`]
             });
         }
 
-        let user = await getUserById(req.user.id);
 
-        if (user) {
+        else if (user) {
             user = await updateUserPassword(user.id, newPassword);
             const response = {
                 status: 200,
@@ -232,7 +230,7 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
         } else {
             res.status(403).json({
                 status: 403,
-                message: 'Something went wrong!',
+                message: 'Something went wrong while changing your password!',
             });
         }
     } catch (e) {
@@ -246,6 +244,8 @@ const updateUserEmailHandler = async (req, res, next) => {
         const oldEmail = req.body.old_email;
         const newEmail = req.body.new_email;
 
+        let user = await getUserById(req.user.id);
+
         if (!oldEmail || !newEmail) {
             res.status(403).json({
                 status: 403,
@@ -253,10 +253,7 @@ const updateUserEmailHandler = async (req, res, next) => {
             });
         }
 
-        let user = await getUserById(req.user.id);
-
-
-        if (user) {
+        else if (user) {
 
             let fixedEmailOld = oldEmail.toLowerCase().trim();
             let fixedEmailNew = newEmail.toLowerCase().trim();
@@ -268,19 +265,23 @@ const updateUserEmailHandler = async (req, res, next) => {
                 });
             }
 
-            if (user.email !== fixedEmailOld) {
+            else if (user.email !== fixedEmailOld) {
                 res.status(403).json({
                     status: 403,
                     message: 'Old email entry does not match your own email!',
                 });
             }
-            user = await updateUserEmail(req.user.id, fixedEmailNew);
-            const response = {
-                status: 200,
-                message: 'Email updated successfully',
-            };
-            res.status(200).json(response);
-        } else {
+            else {
+
+                user = await updateUserEmail(req.user.id, fixedEmailNew);
+                const response = {
+                    status: 200,
+                    message: 'Email updated successfully',
+                };
+                res.status(200).json(response);
+            }
+        }
+        else {
             res.status(403).json({
                 status: 403,
                 message: 'Something went wrong while getting user data!',
@@ -298,6 +299,8 @@ const updateUserMobileHandler = async (req, res, next) => {
         const oldMobile = req.body.old_mobile;
         const newMobile = req.body.new_mobile;
 
+        let user = await getUserById(id);
+
         if (!oldMobile || !newMobile || !country) {
             res.status(403).json({
                 status: 403,
@@ -305,11 +308,7 @@ const updateUserMobileHandler = async (req, res, next) => {
             });
         }
 
-
-        let user = await getUserById(id);
-        
-
-        if (user) {
+        else if (user) {
             let fixedMobileOld = oldMobile.trim();
             let fixedMobileNew = newMobile.trim();
 
@@ -319,20 +318,23 @@ const updateUserMobileHandler = async (req, res, next) => {
                     message: 'Old mobile entry does not match your mobile number!',
                 });
             }
+            else {
 
-            let result = await updateUserMobile(id, country, fixedMobileNew);
-            let resultFromProfile = await updateProfileMobile(id,fixedMobileNew);
-            let token = await getTokenByUserId(id)
-            
-            const response = {
-                status: 200,
-                message: 'mobile updated successfully please verify your mobile number!',
-                user:result,
-                profile: resultFromProfile,
-                token:token
-            };
-            res.status(200).send(response);
-        } else {
+                let result = await updateUserMobile(id, country, fixedMobileNew);
+                let resultFromProfile = await updateProfileMobile(id, fixedMobileNew);
+                let token = await getTokenByUserId(id)
+
+                const response = {
+                    status: 200,
+                    message: 'mobile updated successfully please verify your mobile number!',
+                    user: result,
+                    profile: resultFromProfile,
+                    token: token
+                };
+                res.status(200).send(response);
+            }
+        }
+        else {
             res.status(403).json({
                 status: 403,
                 message: 'Old mobile is incorrect!',
@@ -362,8 +364,7 @@ const resetPasswordHandler = async (req, res, next) => {
                     `2- One small letter.`,
                     `3- One special character.`,
                     `4- One number.`,
-                    `5- No periods.`,
-                    `6- Characters between 6-16.`,
+                    `5- Characters between 6-16.`,
                     `ex:Ax@123`]
             });
         }
@@ -399,10 +400,10 @@ const refreshHandler = async (req, res, next) => {
 
 const addAdminHandler = async (req, res, next) => {
     try {
-        
+
         let admin = await addAdmin(req.user.id);
 
-        if (admin) { 
+        if (admin) {
             res.status(200).json('Adminstrator has been added!')
 
         } else {
@@ -433,17 +434,17 @@ const addModHandler = async (req, res, next) => {
                 message: 'This mobile number does not exist!',
             });
         }
-        
+
         if (mod === 1) {
             res.status(403).json({
                 status: 403,
                 message: 'This user is already a moderator!',
             });
         }
-        
+
         if (mod) {
             res.status(200).json('Moderator has been added!')
-        
+
         }
         else {
             res.status(403).json({
@@ -544,7 +545,7 @@ const deactivateAccountHandler = async (req, res, next) => {
         let resdd = await deactivateAccount(req.user.id)
         res.send('your account has been deactivated')
     } catch (error) {
-        res.status(403).send(error.message)
+        next(error);
     }
 };
 
@@ -564,5 +565,6 @@ module.exports = {
     resetPasswordHandler,
     refreshHandler,
     getAllUsersHandler,
-    updateProfilers,deactivateAccountHandler
+    updateProfilers,
+    deactivateAccountHandler
 }
