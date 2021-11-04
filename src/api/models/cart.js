@@ -46,7 +46,7 @@ try {
 }
 const removeCartItemModel = async(id) =>{
 try {
-    let SQL = 'DELETE from cart_item WHERE id =$1';
+    let SQL = 'DELETE from cart_item WHERE cart_id =$1';
     let safeValue = [id];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
@@ -109,5 +109,46 @@ const getAllCartModel = async id => {
         return response;
     }
 }
+const getCartItemByProductId = async id => {
+    try {
+        let SQL = 'SELECT * FROM cart_item WHERE product_id =$1 ;';
+        let safeValue = [id];
+        let result = await client.query(SQL,safeValue)
+        return result.rows[0];
+        
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
+const getALLCartItemByCartId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM cart_item WHERE cart_id =$1 ;';
+        let safeValue = [id];
+        let result = await client.query(SQL,safeValue)
+        return result.rows;
+        
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
+const removeCartByProfileId = async(id) => {
+    try {
+        let SQL = 'DELETE from cart WHERE profile_id =$1';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0];
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
 
-module.exports = {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModel,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel};
+module.exports = {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModel,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel,getCartItemByProductId,getALLCartItemByCartId,removeCartByProfileId};
