@@ -23,14 +23,12 @@ const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,update
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
 
-// const  {createStoreHandler, getStoreHandler, deleteStoreHandler, updateStoreHandler, updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler} = require('../api/controllers/storesController')
+
 const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
 const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
-
 const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
 
-// const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByOrderIdHandler} = require('../api/controllers/orderNotificationController')
 
 
 
