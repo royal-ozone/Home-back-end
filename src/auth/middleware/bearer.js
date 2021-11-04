@@ -33,9 +33,7 @@ module.exports = async (req, res, next) => {
         }
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        next(error);
     }
     function _authError() {
         res.status(403).send('Header authorization is not provided');
