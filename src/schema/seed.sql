@@ -29,6 +29,12 @@ INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile) VALUES
 ('3be97674-8ce4-49a8-a378-605965c4b98c','507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam','al-masri','irbid','jordan','009627966851');
 
 
+------------------------- Administrator Table ----------------------------------
+INSERT INTO ADMINISTRATOR (id,user_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e83d22','4b9a4f7b-6c1c-4039-9e29-26909a63021c');
+
+------------------------- Moderator Table ----------------------------------
+INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec','14a60467-c390-4ca7-a1be-5d0ee11d9ad8');
+
 ------------------------- Stores Table ----------------------------------
 INSERT INTO store(id,profile_id,store_name,city,address,mobile,caption,about,store_picture,store_rating) VALUES 
 ('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','دوار الداخلية عمارة رقم 13 ','0695821','love live love dk-beauty','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','5');

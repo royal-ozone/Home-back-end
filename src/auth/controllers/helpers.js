@@ -18,7 +18,8 @@ async function checkPassword(password, encryptedPassword) {
     const valid = await bcrypt.compare(password, encryptedPassword);
     return valid;
   } catch (e) {
-    throw new Error(e);
+    // throw new Error(e);
+    return e;
   }
 }
 

@@ -24,7 +24,7 @@ let productComment = async (req, res, next) => {
 
 let profileView = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM profiles WHERE id=$1;`;
+        let SQL = `SELECT * FROM PROFILE WHERE id=$1;`;
         let safeValue = [req.params.id];
         let result = await client.query(SQL, safeValue);
         if (req.user.profile_id === result.rows[0].id) {
