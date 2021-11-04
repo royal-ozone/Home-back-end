@@ -12,7 +12,7 @@ const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,g
 
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
 const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
-const {addOrderHandler} = require('../api/controllers/orderControllers');
+const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler} = require('../api/controllers/orderControllers');
 
 
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
@@ -23,10 +23,12 @@ const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,update
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
 const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
 
+
 const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
 const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
 const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
+
 
 
 
@@ -92,6 +94,9 @@ router.get('/getAll/cart_item',bearer,getAllCartItemHandler);
 router.get('/getAll/cart',bearer,getAllCartHandler); 
 
 router.post('/add/order',bearer,addOrderHandler);
+router.post('/add/order_item',bearer,addOrderItemHandler);
+router.put('/update/status/:id',bearer,updateOrderStatusHandler);
+router.get('/getAll/order',bearer,getAllOrderHandler);
 
 
 
