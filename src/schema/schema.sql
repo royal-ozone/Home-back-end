@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
 
-DROP TABLE IF EXISTS product_pictures;
+DROP TABLE IF EXISTS product_picture;
 DROP TABLE IF EXISTS profile_picture;
 
 DROP TABLE IF EXISTS store_picture;
@@ -230,12 +230,12 @@ CREATE TABLE product_rating(
 );
 
 
-CREATE TABLE product_pictures(
+CREATE TABLE product_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  product_picture uuid NOT NULL,
-  FOREIGN KEY (product_id) REFERENCES product(id),
-  FOREIGN KEY (product_picture) REFERENCES user_file(id)
+  product_picture TEXT NOT NULL,
+  FOREIGN KEY (product_id) REFERENCES product(id)
+  -- FOREIGN KEY (product_picture) REFERENCES user_file(id)
 );
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,

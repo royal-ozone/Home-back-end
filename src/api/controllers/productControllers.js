@@ -2,12 +2,28 @@ const {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus,
 const {deleteProductReviewByProductId} = require('../models/productReview')
 const {deleteProductTagByProductId} = require('../models/productTag')
 const {deleteProductRatingByProductId} = require('../models/productRating')
+const {
+  addProductPicture,
+  getProductPicturesById,
+  deleteProductPictureById,
+  deleteProductPictureByProductId
+} = require('../models/productPicture')
+
+const { deleteRemoteFile} = require('../middleware/uploader')
+
 
 
 const addProductHandler = async(req, res, next) => {
     try {
         let result = await addProduct({store_id: req.user.store_id,...req.body})
-        res.status(201).json(result)
+        let pictures =[];
+        if(req.files){
+           pictures = await req.files.map(async (file) => {
+            let pic = await addProductPicture({product_id:result.id, product_picture:file.location})
+           return pic 
+          })
+        }
+        res.status(201).json({result, pictures: await Promise.all(pictures)})
     } catch (error) {
       res.send(error.message)
     }
@@ -16,7 +32,13 @@ const addProductHandler = async(req, res, next) => {
 const getAllProductHandler = async(req, res, next) => {
     try {
         let result = await getAllProduct()
-        res.status(200).json(result)
+        let resultWthPics = await result.map(async (product) => {
+          let pictures = await getProductPicturesById(product.id)
+          product['pictures'] = pictures;
+          delete product.pictures.product_id
+          return product;
+        })
+        res.status(200).json({result: await Promise.all(resultWthPics)})
     } catch (error) {
       res.send(error.message)
     }
@@ -26,6 +48,8 @@ const getProductHandler = async(req, res, next) => {
     try {
         let id = req.params.id;
         let result = await getProduct(id);
+        let pictures = await getProductPicturesById(id)
+        result['pictures']= pictures;
         res.status(200).json(result);
     } catch (error) {
       res.send(error.message)
@@ -48,6 +72,12 @@ const deleteProductHandler = async(req, res, next) => {
         await deleteProductReviewByProductId(id);
         await deleteProductTagByProductId(id);
         await deleteProductRatingByProductId(id);
+        let pictures = await getProductPicturesById(id)
+       await pictures.map(async file =>{
+         await deleteRemoteFile(file.product_picture)
+          
+        })
+        await deleteProductPictureByProductId(id);
         let result = await deleteProduct(id);
         res.status(200).json(result);
     } catch (error) {
