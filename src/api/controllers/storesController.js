@@ -1,5 +1,6 @@
 'use strict';
 
+const events = require('../../socket/event');
 const {
     createStore,
     getStore,
@@ -21,7 +22,7 @@ const {
     getStoreFollowers,
     deleteStoreFollower} = require('../models/stores');
 
-
+ 
 
 // Store handlers----------------------------------------------------------------------------------------------
 const createStoreHandler = async (req, res) => {
@@ -230,6 +231,7 @@ const createStoreReviewHandler = async (req, res) => {
             })
         }
         if (storeReview) {
+            events.emit('storeReview', storeReview)
             res.status(200).json({
                 status: 200,
                 message: 'Store review has been posted successfully!'

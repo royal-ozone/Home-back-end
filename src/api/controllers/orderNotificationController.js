@@ -1,9 +1,11 @@
 const {addOrderNotification,getOrderNotification,getOrderNotificationByStoreId} = require('../models/orderNotifications')
+const events = require('../../socket/event');
 
 
 const addOrderNotificationHandler = async (req, res) =>{
     try {
         let result = await addOrderNotification(req.body)
+        events.emit('orderNotifications',result)
         res.status(201).send('notification has been created successfully')
     } catch (error) {
         res.status(403).send(error.message);
