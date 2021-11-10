@@ -18,7 +18,7 @@ const { signup,
 } = require('../models/user')
 
 const { authenticateWithToken, getToken } = require('../models/helpers')
-
+const {addProfilePicture} = require('../../api/models/profilePicture')
 const { createToken, deleteToken } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 
@@ -74,7 +74,13 @@ const signupHandler = async (req, res, next) => {
         else {
             let result = await signup(req.body)
 
-            await createProfile(result);
+            let result2 = await createProfile(result);
+            if(req.file){
+               await addProfilePicture({profile_id: result2.id, profile_picture: req.file.location})
+            } else {
+                await addProfilePicture({profile_id: result2.id, profile_picture: process.env.DEFAULT_PROFILE_PICTURE})
+            }
+            
             let userTokens = await createToken(result.id)
             res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
         }

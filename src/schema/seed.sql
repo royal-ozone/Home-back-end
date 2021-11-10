@@ -81,13 +81,13 @@ VALUES('d4df9477-0b36-4376-8927-b5f974abfa98','771fea26-f56c-4e19-b842-9b136b889
 
 
 ------------------------------- product_pictures --------------------------------------
-INSERT INTO product_pictures(id,product_id,product_picture) VALUES 
-('b7f0ab0c-1b3a-405c-8935-fea9232e0f28','0047da41-5e33-460a-88da-5cfa2b9d8724','0047da41-5e33-460a-88da-5cfa2b9d8724');
+INSERT INTO product_picture(id,product_id,product_picture) VALUES 
+('b7f0ab0c-1b3a-405c-8935-fea9232e0f28','0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
 
 ------------------------------ store_picture -----------------------------------------
 INSERT INTO store_picture (id,store_id,store_picture) VALUES 
-('8f236701-30e5-4277-9bc8-cec66d21aae0','72280f37-2ca7-4808-90d2-3ecec783b163','0047da41-5e33-460a-88da-5cfa2b9d8724');
+('8f236701-30e5-4277-9bc8-cec66d21aae0','72280f37-2ca7-4808-90d2-3ecec783b163','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
 
 

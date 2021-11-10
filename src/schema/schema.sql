@@ -240,16 +240,16 @@ CREATE TABLE product_picture(
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
-  profile_picture uuid NOT NULL,
-  FOREIGN KEY (profile_id) REFERENCES profile(id),
-  FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+  profile_picture TEXT NOT NULL,
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
+  -- FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 CREATE TABLE store_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
-  store_picture uuid NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES store(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+  store_picture TEXT NOT NULL,
+  FOREIGN KEY (store_id) REFERENCES store(id)
+  -- FOREIGN KEY (store_picture) REFERENCES user_file(id)
 );
 
 CREATE TABLE store_review(

@@ -30,6 +30,8 @@ const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOf
 const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
 const {uploadS3} = require('../api/middleware/uploader');
 const {uploadHandler} = require('../api/controllers/uploadController')
+const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
+
 
 
 
@@ -138,6 +140,10 @@ router.get('/offer/notification', getAllOfferNotificationsHandler)
 router.get('/offer/notification/store', getOfferNotificationByStoreIdHandler)
 
 router.post('/upload',uploadS3.array('file') ,uploadHandler)
+
+router.get('/profile/picture', getProfilePictureByProfileIdHandler)
+router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
+router.delete('/profile/picture', deleteProfilePictureHandler)
 
 // Test route
 router.get('/test', (req, res) => {

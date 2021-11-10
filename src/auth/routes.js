@@ -26,11 +26,11 @@ const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = r
 
 const googleAuth = require('./oauth/google-oauth');
 const facebookAuth = require('./oauth/facebook/facebook-oauth')
-
+const {uploadS3} = require('../api/middleware/uploader')
 authRouter.use(googleAuth); // calling google oauth
 authRouter.use(facebookAuth);
 
-authRouter.post('/signup', signupHandler);
+authRouter.post('/signup', uploadS3.single('image'), signupHandler);
 authRouter.post('/signin', basicAuth, checkActive,checkBan, signInHandler);
 authRouter.post('/signout', bearer, signOutHandler);
 authRouter.post('/user/verification', bearer, sendVerificationCodeHandler);

@@ -411,7 +411,9 @@ const activateAccount = async id => {
     } catch (error) {
         throw new Error(error.message);
     }
-}
+};
+
+
 
 module.exports = {
     signup,
