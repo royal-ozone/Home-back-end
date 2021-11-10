@@ -1,10 +1,12 @@
+const events = require('../../socket/event');
 const {addProductReview,getProductReview, deleteProductReview,updateProductReview} = require('../models/productReview');
 
 
 const addProductReviewHandler = async (req, res) => {
     try {
-        const result = await addProductReview(req.body)
-        res.status(201).json(result)
+        const result = await addProductReview(req.body);
+        events.emit('productReview', result);
+        res.status(201).json(result);
         
     } catch (error) {
         res.status(403).send(error.message);
