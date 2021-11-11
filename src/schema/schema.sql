@@ -70,11 +70,6 @@ CREATE TABLE jwt(
   FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
--- CREATE TABLE user_file(
---   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
---   file text NOT NULL,
---   created_at date not null default current_timestamp
--- );
 
 CREATE TABLE profile(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -89,7 +84,6 @@ CREATE TABLE profile(
   
 
   FOREIGN KEY (user_id) REFERENCES client(id)
-  -- FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
 CREATE TABLE administrator(
@@ -243,13 +237,7 @@ CREATE TABLE profile_picture(
   profile_picture TEXT NOT NULL,
   FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
--- CREATE TABLE store_picture(
---   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
---   store_id uuid NOT NULL,
---   store_picture TEXT NOT NULL,
---   FOREIGN KEY (store_id) REFERENCES store(id)
---  
--- );
+
 
 CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
