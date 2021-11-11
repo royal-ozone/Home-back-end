@@ -71,10 +71,6 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.params.id;
     let data = await updateOrderStatusModel(id, req.body);
-    console.log(
-      "🚀 ~ file: orderControllers.js ~ line 69 ~ updateOrderStatusHandler ~ data",
-      data
-    );
     let response = {
       message: `Successfully update status order to ${data.status}`,
       dataOrder: data,

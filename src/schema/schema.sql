@@ -387,12 +387,13 @@ CREATE TABLE order_notification(
 );
 
 
-CREATE TABLE return(
+CREATE TABLE return_request(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   store_id uuid NOT NULL,
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
+  status VARCHAR(15) DEFAULT 'pending',
   message text NOT NULL,
 
   FOREIGN KEY (store_id) REFERENCES store(id),
