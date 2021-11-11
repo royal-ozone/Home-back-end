@@ -2,7 +2,6 @@ const client = require('../../db')
 
 
 const createReturnRequest = async data => {
-console.log("🚀 ~ file: returnedOrder.js ~ line 5 ~ data", data)
     try {
         const {profile_id,store_id,order_id,product_id,message} = data;
         let SQL = 'INSERT INTO return_request (profile_id,store_id,order_id,product_id,message) VALUES ($1,$2,$3,$4,$5) RETURNING *;';
