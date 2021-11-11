@@ -130,9 +130,6 @@ INSERT INTO store_follower(id,store_id,follower)VALUES
 ('792d59a3-34b8-4838-8765-af9afe69e158','72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857');
 
 
-
-
-
 -----------------------------------comment ----------------
 INSERT INTO comment(id,comment,product_id,profile_id,store_id)VALUES 
 ('7a22194e-d7bc-417d-ba87-bec1c008ae1d','jhedjbbedwde','0047da41-5e33-460a-88da-5cfa2b9d8724','fca8e07b-ac7d-4ce8-8437-53c54ca85857','72280f37-2ca7-4808-90d2-3ecec783b163');

@@ -12,7 +12,8 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 const http = require('http');
-
+const multer = require('multer');
+let upload = multer()
 const events =require('./socket/event')
 
 const server = http.createServer(app);
@@ -28,13 +29,13 @@ const io =  socket(server ,{
 /// server ///
 
 app.use(cors());
+app.use(upload.none())
 app.use(express.json()); ///
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname,'../public')));
 
 app.use('/auth', authRouter);
 app.use('/api/v1', v1Router);
-
 
 /// routers /// 
 // const  HomePage = (req,res,next) =>{

@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 const express = require('express');
 const router = express.Router();
 const bearer = require('../auth/middleware/bearer');
@@ -35,12 +37,17 @@ const {uploadS3} = require('../api/middleware/uploader');
 const {uploadHandler} = require('../api/controllers/uploadController')
 const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
 
+const {
+  createReturnRequestHandler,
+  getAllReturnRequestsHandler,
+  updateReturnRequestStatusHandler
+} = require('../api/controllers/returnRequestController')
+
 
 
 
 // Global middleware
 router.use(bearer);
-
 
 router.post('/store',uploadS3.single('image'), createStoreHandler);
 router.put('/store',checkStoreAuth,updateStoreHandler);
@@ -150,6 +157,10 @@ router.post('/upload',uploadS3.array('file') ,uploadHandler)
 router.get('/profile/picture', getProfilePictureByProfileIdHandler)
 router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
 router.delete('/profile/picture', deleteProfilePictureHandler)
+
+router.post('/return',  createReturnRequestHandler)
+router.get('/return', getAllReturnRequestsHandler)
+router.put('/return', updateReturnRequestStatusHandler)
 
 // Test route
 router.get('/test', (req, res) => {
