@@ -11,11 +11,11 @@ INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first
 
 
 ------------------------- User File Table --------------------------------
-INSERT INTO user_file(id,file) VALUES ('e9b6516a-16b8-43fd-836c-9df52dbd55e1','https://blog.photofeeler.com/wp-content/uploads/2017/09/tinder-photo-size-tinder-picture-size-tinder-aspect-ratio-image-dimensions-crop.jpg');
-INSERT INTO user_file(id,file) VALUES ('3b47e66c-690b-4eb2-8c24-4f0117c9ab83','https://static.independent.co.uk/2021/04/05/12/SWNS_SOCIETY_PHOTOS_03.jpg?width=982&height=726&auto=webp&quality=75');
-INSERT INTO user_file(id,file) VALUES ('5f04b02b-a142-4445-a65f-bf5542d1fbd4','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-most-beautiful-places-matterhorn.jpg');
-INSERT INTO user_file(id,file) VALUES ('b6d0861e-90ac-48d6-9460-5aed8515ecbf','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
-INSERT INTO user_file(id,file) VALUES ('0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
+-- INSERT INTO user_file(id,file) VALUES ('e9b6516a-16b8-43fd-836c-9df52dbd55e1','https://blog.photofeeler.com/wp-content/uploads/2017/09/tinder-photo-size-tinder-picture-size-tinder-aspect-ratio-image-dimensions-crop.jpg');
+-- INSERT INTO user_file(id,file) VALUES ('3b47e66c-690b-4eb2-8c24-4f0117c9ab83','https://static.independent.co.uk/2021/04/05/12/SWNS_SOCIETY_PHOTOS_03.jpg?width=982&height=726&auto=webp&quality=75');
+-- INSERT INTO user_file(id,file) VALUES ('5f04b02b-a142-4445-a65f-bf5542d1fbd4','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-most-beautiful-places-matterhorn.jpg');
+-- INSERT INTO user_file(id,file) VALUES ('b6d0861e-90ac-48d6-9460-5aed8515ecbf','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
+-- INSERT INTO user_file(id,file) VALUES ('0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
       
 -------------------------- profile Table --------------------------------
@@ -52,12 +52,12 @@ INSERT INTO grandchild_category(id,parent_id,entitle,artitle,metaTitle,content) 
 ('257750e6-0e74-424e-9f45-34317a397480','84ba935f-61a3-4ae7-97b6-1c04b016c920','summer','الصيف','the clothes are perfect with summer', 'summer');
 
 ------------------------- Product Table ----------------------------------
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls',false,'0.02','12.99','DK','boot very nive and beautiful ','5');
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls',false,'0.01','5.99','DK','boot very nive and beautiful ','5');
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A',false,'0.01','15.99','DK','nice','5');
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
+('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ','5');
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
+('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ','5');
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
+('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice','5');
 
 ----------------------------- product_review ------------------------------------
 INSERT INTO product_review(id,profile_id,product_id,review,rate,votes)
@@ -85,9 +85,9 @@ INSERT INTO product_picture(id,product_id,product_picture) VALUES
 ('b7f0ab0c-1b3a-405c-8935-fea9232e0f28','0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
 
------------------------------- store_picture -----------------------------------------
-INSERT INTO store_picture (id,store_id,store_picture) VALUES 
-('8f236701-30e5-4277-9bc8-cec66d21aae0','72280f37-2ca7-4808-90d2-3ecec783b163','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
+------------------------------ profile_picture -----------------------------------------
+INSERT INTO profile_picture (id,profile_id,profile_picture) VALUES 
+('8f236701-30e5-4277-9bc8-cec66d21aae0','fca8e07b-ac7d-4ce8-8437-53c54ca85857','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
 
 
 
@@ -139,8 +139,8 @@ INSERT INTO store_follower(id,store_id,follower)VALUES
 
 
 ---------------------------------- attachment ---------------------
-INSERT INTO attachment(id,file_id)VALUES 
-('5b5ae572-59a1-45cf-8cdf-4f642340f1b9','e9b6516a-16b8-43fd-836c-9df52dbd55e1');
+-- INSERT INTO attachment(id,file_id)VALUES 
+-- ('5b5ae572-59a1-45cf-8cdf-4f642340f1b9','e9b6516a-16b8-43fd-836c-9df52dbd55e1');
 
 
 -----------------------------------comment ----------------

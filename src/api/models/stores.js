@@ -1,13 +1,13 @@
 'use strict';
 const client = require('../../db')
-
+const { deleteRemoteFile} = require('../middleware/uploader');
 // store handlers ---------------------------------------------------------------------------------------------------
 
 const createStore = async data => {
     try {
-        let { profile_id, store_name, city, address, mobile, caption, about } = data;
-        let SQL = 'INSERT INTO STORE (profile_id, store_name, city, address, mobile,caption, about) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;';
-        let safeValues = [profile_id, store_name, city, address, mobile, caption, about]
+        let { profile_id, store_name, city, address, mobile, caption, about, store_picture } = data;
+        let SQL = 'INSERT INTO STORE (profile_id, store_name, city, address, mobile,caption, about,store_picture) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;';
+        let safeValues = [profile_id, store_name, city, address, mobile, caption, about, store_picture]
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -262,6 +262,33 @@ const deleteStoreFollower = async (profileId, storeId) => {
         throw new Error(error.message)
     }
 }
+
+const updateStorePicture = async (id, data) => {
+    try {
+        let SQL = 'UPDATE STORE SET store_picture=$1 where id=$2 RETURNING *;'
+        let safeValues = [data,id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+};
+
+const deleteStorePicture = async (id, storeId) => {
+    try {
+        let result = await getStore(id);
+        await deleteRemoteFile(result.store_picture)
+        let SQL = 'UPDATE STORE SET store_picture=$1 where id=$2 RETURNING *;'
+        let safeValues = [process.env.DEFAULT_STORE_PICTURE,storeId];
+        let result2 = await client.query(SQL, safeValues);
+        return result2.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+
+
 module.exports = {
     createStore,
     getStore,
@@ -281,5 +308,7 @@ module.exports = {
     createStoreFollower,
     getAllStoreFollowers,
     getStoreFollowers,
-    deleteStoreFollower
+    deleteStoreFollower,
+    updateStorePicture,
+    deleteStorePicture
 };

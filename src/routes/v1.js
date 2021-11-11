@@ -27,7 +27,8 @@ const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHand
 const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
 const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
-const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
+const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler, updateStorePictureHandler,
+  deleteStorePictureHandler} = require('../api/controllers/storesController')
 const {uploadS3} = require('../api/middleware/uploader');
 const {uploadHandler} = require('../api/controllers/uploadController')
 const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
@@ -39,7 +40,7 @@ const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictu
 router.use(bearer);
 
 
-router.post('/store', createStoreHandler);
+router.post('/store',uploadS3.single('image'), createStoreHandler);
 router.put('/store',checkStoreAuth,updateStoreHandler);
 router.delete('/store',checkStoreAuth, deleteStoreHandler);
 router.get('/store', getStoreHandler);
@@ -48,6 +49,9 @@ router.put('/store/status',checkAuth, updateStoreStatusHandler);
 router.get('/store/all', getAllStoresHandler)
 router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
+
+router.put('/store/picture',uploadS3.single('image'), updateStorePictureHandler);
+router.delete('/store/picture', deleteStorePictureHandler)
 
 router.get('/store/review', getAllStoreReviewHandler)
 router.get('/store/review/:storeId', getStoreReviewHandler)

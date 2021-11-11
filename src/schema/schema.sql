@@ -70,11 +70,11 @@ CREATE TABLE jwt(
   FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
-CREATE TABLE user_file(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  file text NOT NULL,
-  created_at date not null default current_timestamp
-);
+-- CREATE TABLE user_file(
+--   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+--   file text NOT NULL,
+--   created_at date not null default current_timestamp
+-- );
 
 CREATE TABLE profile(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -84,12 +84,12 @@ CREATE TABLE profile(
   city VARCHAR (250) NOT NULL,
   country VARCHAR (250) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
-  profile_picture uuid,
+  profile_picture TEXT,
   created_at timestamp not null default current_timestamp,
   
 
-  FOREIGN KEY (user_id) REFERENCES client(id),
-  FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
+  -- FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
 
 CREATE TABLE administrator(
@@ -123,38 +123,34 @@ CREATE TABLE store(
   mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
-  store_picture uuid,
-  store_rating REAL NOT NULL DEFAULT '0',
+  store_picture TEXT,
+  store_rating REAL NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
   rejected_reason TEXT DEFAULT '',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profile(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 
 
 CREATE TABLE parent_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  -- child_id uuid NOT NULL,
-  entitle VARCHAR(75),
-  artitle VARCHAR(75),
+  entitle VARCHAR(75) UNIQUE,
+  artitle VARCHAR(75) UNIQUE,
   metaTitle VARCHAR(100),
   content TEXT,
   created_at timestamp not null default current_timestamp
-  -- FOREIGN KEY (child_id) REFERENCES child_category(id)
+  
 );
 CREATE TABLE child_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   parent_id uuid NOT NULL,
-  -- product_id uuid,
   entitle VARCHAR(75),
   artitle VARCHAR(75),
   metaTitle VARCHAR(100),
   content TEXT,
    FOREIGN KEY (parent_id) REFERENCES parent_category(id),
-  -- FOREIGN KEY (product_id) REFERENCES product(id)
   created_at timestamp not null default current_timestamp
 );
 CREATE TABLE grandchild_category(
@@ -176,6 +172,9 @@ CREATE TABLE product(
   arTitle VARCHAR(250) NOT NULL,
   metaTitle VARCHAR(100),
   sku VARCHAR(100),
+  parent_category_id uuid NOT NULL,
+  child_category_id uuid NOT NULL,
+  grandchild_category_id uuid,
   discount BOOLEAN DEFAULT FALSE,
   discount_rate FLOAT DEFAULT 0,
   price REAL NOT NULL,
@@ -183,10 +182,13 @@ CREATE TABLE product(
   brand_name VARCHAR(250),
   description text NOT NULL,
   quantity INT NOT NULL DEFAULT 0,
-  status VARCHAR(250) DEFAULT 'Pending',
+  status VARCHAR(250) DEFAULT 'pending',
   created_at timestamp not null default current_timestamp,
   
-  FOREIGN KEY (store_id) REFERENCES store(id)
+  FOREIGN KEY (store_id) REFERENCES store(id),
+  FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
+  FOREIGN KEY (child_category_id) REFERENCES child_category(id),
+  FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id)
 );
 
 CREATE TABLE product_review(
@@ -195,7 +197,7 @@ CREATE TABLE product_review(
   product_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate VARCHAR(1) NOT NULL,
-  votes INT DEFAULT 0 ,
+  votes INT DEFAULT 0,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profile(id),
@@ -222,10 +224,9 @@ CREATE TABLE product_tag(
 CREATE TABLE product_rating(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  rating REAL NOT NULL DEFAULT '0',
-  votes VARCHAR(250) DEFAULT '0',
+  rating REAL NOT NULL DEFAULT 0,
+  votes REAL DEFAULT 0,
 
-  
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
 
@@ -235,29 +236,27 @@ CREATE TABLE product_picture(
   product_id uuid NOT NULL,
   product_picture TEXT NOT NULL,
   FOREIGN KEY (product_id) REFERENCES product(id)
-  -- FOREIGN KEY (product_picture) REFERENCES user_file(id)
 );
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   profile_picture TEXT NOT NULL,
   FOREIGN KEY (profile_id) REFERENCES profile(id)
-  -- FOREIGN KEY (profile_picture) REFERENCES user_file(id)
 );
-CREATE TABLE store_picture(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  store_id uuid NOT NULL,
-  store_picture TEXT NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES store(id)
-  -- FOREIGN KEY (store_picture) REFERENCES user_file(id)
-);
+-- CREATE TABLE store_picture(
+--   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+--   store_id uuid NOT NULL,
+--   store_picture TEXT NOT NULL,
+--   FOREIGN KEY (store_id) REFERENCES store(id)
+--  
+-- );
 
 CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
   store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
-  rate FLOAT NOT NULL DEFAULT '0',
+  rate FLOAT NOT NULL DEFAULT 0,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profile(id),
@@ -273,7 +272,7 @@ CREATE TABLE new_order(
   status VARCHAR (250)  DEFAULT 'pending',
   tax FLOAT,
   shipping FLOAT,
-  discount FLOAT DEFAULT '0',
+  discount FLOAT DEFAULT 0,
   sub_total FLOAT NOT NULL,
   grand_total FLOAT NOT NULL,
   mobile VARCHAR (15) NOT NULL, 
@@ -288,8 +287,8 @@ CREATE TABLE order_item (
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
   price FLOAT NOT NULL,
-  discount FLOAT DEFAULT '0',
-  quantity VARCHAR(6) DEFAULT '1',
+  discount FLOAT DEFAULT 0,
+  quantity REAL DEFAULT 1,
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
@@ -342,8 +341,8 @@ CREATE TABLE cart_item(
   cart_id uuid NOT NULL,
   product_id uuid NOT NULL,
   price FLOAT NOT NULL,
-  discount FLOAT DEFAULT '0',
-  quantity VARCHAR(6) DEFAULT '1',
+  discount FLOAT DEFAULT 0,
+  quantity REAL DEFAULT 1,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (cart_id) REFERENCES cart(id),
@@ -360,13 +359,6 @@ CREATE TABLE store_follower(
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
  
-
-CREATE TABLE attachment(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  file_id uuid NOT NULL,
-  created_at timestamp not null default current_timestamp,
-   FOREIGN KEY (file_id) REFERENCES user_file(id)
-);
 
 CREATE TABLE comment(
     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
