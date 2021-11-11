@@ -20,14 +20,16 @@ const {
     createStoreFollower,
     getAllStoreFollowers,
     getStoreFollowers,
-    deleteStoreFollower} = require('../models/stores');
+    deleteStoreFollower,
+    updateStorePicture,
+    deleteStorePicture} = require('../models/stores');
 
  
 
 // Store handlers----------------------------------------------------------------------------------------------
 const createStoreHandler = async (req, res) => {
     try {
-        let result = await createStore({ profile_id: req.user.profile_id, ...req.body })
+        let result = await createStore({ profile_id: req.user.profile_id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE, ...req.body })
         if (result) {
             res.status(200).json({
                 status: 200,
@@ -357,6 +359,31 @@ const deleteStorefollowerHandler = async (req, res) => {
     }
 }
 
+const updateStorePictureHandler = async(req, res) => {
+    try {
+        let result = await updateStorePicture(req.user.store_id, req.file.location)
+        res.status(200).json({
+            message: 'store picture has been updated successfully',
+            result: result
+        })
+        
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
+const deleteStorePictureHandler = async(req, res) => {
+    try {
+        let result = await deleteStorePicture(req.user.profile_id,req.user.store_id)
+        res.status(200).json({
+            message: 'store picture has been deleted successfully',
+            result: result
+        })
+    } catch (error) {
+        res.status(403).send(error.message)
+    }
+}
+
 
 
 module.exports = {
@@ -377,5 +404,8 @@ module.exports = {
     getAllStorefollowersHandler,
     getStorefollowersHandler,
     createStorefollowerHandler,
-    deleteStorefollowerHandler
+    deleteStorefollowerHandler,
+    updateStorePictureHandler,
+    deleteStorePictureHandler
+
 }

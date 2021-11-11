@@ -29,7 +29,11 @@ const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHand
 const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
 const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
-const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler} = require('../api/controllers/storesController')
+const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler, updateStorePictureHandler,
+  deleteStorePictureHandler} = require('../api/controllers/storesController')
+const {uploadS3} = require('../api/middleware/uploader');
+const {uploadHandler} = require('../api/controllers/uploadController')
+const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
 
 
 
@@ -38,7 +42,7 @@ const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler
 router.use(bearer);
 
 
-router.post('/store', createStoreHandler);
+router.post('/store',uploadS3.single('image'), createStoreHandler);
 router.put('/store',checkStoreAuth,updateStoreHandler);
 router.delete('/store',checkStoreAuth, deleteStoreHandler);
 router.get('/store', getStoreHandler);
@@ -47,6 +51,9 @@ router.put('/store/status',checkAuth, updateStoreStatusHandler);
 router.get('/store/all', getAllStoresHandler)
 router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
 router.get('/store/name/:name', getStoreByNameHandler)
+
+router.put('/store/picture',uploadS3.single('image'), updateStorePictureHandler);
+router.delete('/store/picture', deleteStorePictureHandler)
 
 router.get('/store/review', getAllStoreReviewHandler)
 router.get('/store/review/:storeId', getStoreReviewHandler)
@@ -108,7 +115,7 @@ router.delete('/tag/:id',deleteTagHandler)
 router.put('/tag/:id', updateTagHandler)
 router.get('/tag', getAllTagsHandler)
 
-router.post('/product', addProductHandler)
+router.post('/product', uploadS3.array('image'), addProductHandler)
 router.get('/product', getAllProductHandler)
 router.get('/product/:id', getProductHandler)
 router.put('/product/:id', updateProductHandler)
@@ -138,6 +145,11 @@ router.post('/offer/notification', addOfferNotificationHandler)
 router.get('/offer/notification', getAllOfferNotificationsHandler)
 router.get('/offer/notification/store', getOfferNotificationByStoreIdHandler)
 
+router.post('/upload',uploadS3.array('file') ,uploadHandler)
+
+router.get('/profile/picture', getProfilePictureByProfileIdHandler)
+router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
+router.delete('/profile/picture', deleteProfilePictureHandler)
 
 // Test route
 router.get('/test', (req, res) => {
