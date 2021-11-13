@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_review;
 
 
-DROP TABLE IF EXISTS return;
+DROP TABLE IF EXISTS return_request;
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS cart_item;
@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
 DROP TABLE IF EXISTS order_notification;
 
-DROP TABLE IF EXISTS attachment;
+ DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
@@ -39,6 +39,8 @@ DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
 DROP TABLE IF EXISTS banned_user;
 DROP TABLE IF EXISTS client;
+
+DROP TABLE IF EXISTS discount_code;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -401,6 +403,22 @@ CREATE TABLE return_request(
   FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
+
+CREATE TABLE discount_code(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  discount_code VARCHAR(250) UNIQUE NOT NULL,
+  year VARCHAR(250) NOT NULL,
+  month VARCHAR (250) NOT NULL,
+  day VARCHAR (250) NOT NULL,
+  hour VARCHAR (250) NOT NULL,
+  minute VARCHAR (250) NOT NULL,
+  second VARCHAR (250) NOT NULL,
+  counter VARCHAR(250) default 0,
+  max_counter VARCHAR (250) default 50,
+  discount FLOAT DEFAULT 0,
+  active Boolean DEFAULT FALSE,
+  created_at timestamp not null default current_timestamp
+)
 
 
 -- idea : add count interaction to post tabel

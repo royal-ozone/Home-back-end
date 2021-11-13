@@ -43,6 +43,15 @@ const {
   updateReturnRequestStatusHandler
 } = require('../api/controllers/returnRequestController')
 
+const {
+  createDiscountCodeHandler,
+  updateActiveDiscountCodeHandler,
+  updateDisconnectHandler,
+  removeDiscountHandler,
+  getAllDiscountHandlers,
+  checkCodeHandler
+} = require('../api/controllers/discountCodeControllers')
+
 
 
 
@@ -161,6 +170,13 @@ router.delete('/profile/picture', deleteProfilePictureHandler)
 router.post('/return',  createReturnRequestHandler)
 router.get('/return', getAllReturnRequestsHandler)
 router.put('/return', updateReturnRequestStatusHandler)
+
+router.post('/add/discount',bearer,checkAdmin,createDiscountCodeHandler);
+router.put('/update/active/:id',bearer,checkAdmin,updateActiveDiscountCodeHandler);
+router.put('/update/:id',bearer,checkAdmin,updateDisconnectHandler);
+router.delete('/remove/:id',bearer,checkAdmin,removeDiscountHandler);
+router.get('/getAll',bearer,checkAdmin,getAllDiscountHandlers);
+router.post('/checkCode',bearer,checkCodeHandler);
 
 // Test route
 router.get('/test', (req, res) => {
