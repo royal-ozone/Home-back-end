@@ -1,6 +1,11 @@
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
+DROP TABLE IF EXISTS courier_feedback;
+DROP TABLE IF EXISTS courier_task;
+DROP TABLE IF EXISTS delivery_task;
+DROP TABLE IF EXISTS courier;
+DROP TABLE IF EXISTS courier_company;
 
 DROP TABLE IF EXISTS product_picture;
 DROP TABLE IF EXISTS profile_picture;
@@ -418,7 +423,69 @@ CREATE TABLE discount_code(
   discount FLOAT DEFAULT 0,
   active Boolean DEFAULT FALSE,
   created_at timestamp not null default current_timestamp
+);
+
+CREATE TABLE courier_company(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_name VARCHAR(75) NOT NULL,
+  name_is_changed BOOLEAN DEFAULT FALSE,
+  status VARCHAR (50) DEFAULT 'pending',
+  rejected_reason TEXT,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
+);
+
+CREATE TABLE courier(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_id uuid,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id)
+);
+
+CREATE TABLE delivery_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  order_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'not assigned',
+  company_id uuid,
+  courier_id uuid, 
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+CREATE TABLE courier_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  task_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id)
+);
+
+
+CREATE TABLE courier_feedback(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
+  rate INT DEFAULT 0,
+  review VARCHAR(250),
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
 )
+
+
+
+
+
+
+
 
 
 -- idea : add count interaction to post tabel

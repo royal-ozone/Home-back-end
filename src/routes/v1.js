@@ -52,6 +52,10 @@ const {
   checkCodeHandler
 } = require('../api/controllers/discountCodeControllers')
 
+const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
+
+const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler} = require('../api/controllers/courierController')
+
 
 
 
@@ -177,6 +181,18 @@ router.put('/update/:id',bearer,checkAdmin,updateDisconnectHandler);
 router.delete('/remove/:id',bearer,checkAdmin,removeDiscountHandler);
 router.get('/getAll',bearer,checkAdmin,getAllDiscountHandlers);
 router.post('/checkCode',bearer,checkCodeHandler);
+
+router.post('/courierCompany', createCourierCompanyHandler);
+router.get('/courierCompanies', getAllCourierCompaniesHandler)
+router.get('/courierCompany', getCourierCompanyByCompanyIdHandler)
+router.put('/courierCompany/name', updateCourierCompanyNameHandler)
+router.put('/courierCompany/status/:id', updateCourierCompanyStatusHandler)
+
+router.post('/courier', createCourierHandler)
+router.put('/courier', updateCourierStatusHandler) 
+router.delete('/courier', deleteCourierHandler)
+router.get('/couriers', getAllCouriersHandler)
+router.get('/courier', getCourierByIdHandler)
 
 // Test route
 router.get('/test', (req, res) => {
