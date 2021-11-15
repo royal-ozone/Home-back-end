@@ -1,5 +1,8 @@
 "use strict";
 
+
+const {addDeliveryTask} = require('../models/deliveryTask');
+
 const {
   getCartByProfileIdModel,
   getCartItemByProductId,
@@ -71,6 +74,9 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.params.id;
     let data = await updateOrderStatusModel(id, req.body);
+    if(data.status === 'approved' || data.status === 'accepted') {
+      await addDeliveryTask({order_id: data.id})
+    }
     let response = {
       message: `Successfully update status order to ${data.status}`,
       dataOrder: data,

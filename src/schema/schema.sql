@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS tag;
 
 DROP TABLE IF EXISTS courier_feedback;
 DROP TABLE IF EXISTS courier_task;
+DROP TABLE IF EXISTS delivery_task_notification;
 DROP TABLE IF EXISTS delivery_task;
 DROP TABLE IF EXISTS courier;
 DROP TABLE IF EXISTS courier_company;
@@ -10,7 +11,7 @@ DROP TABLE IF EXISTS courier_company;
 DROP TABLE IF EXISTS product_picture;
 DROP TABLE IF EXISTS profile_picture;
 
-DROP TABLE IF EXISTS store_picture;
+-- DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_review;
@@ -28,7 +29,7 @@ DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
 DROP TABLE IF EXISTS order_notification;
 
- DROP TABLE IF EXISTS attachment;
+--  DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
@@ -38,7 +39,7 @@ DROP TABLE IF EXISTS new_order;
 DROP TABLE IF EXISTS store;
 
 DROP TABLE IF EXISTS profile;
-DROP TABLE IF EXISTS user_file;
+-- DROP TABLE IF EXISTS user_file;
 
 DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
@@ -460,13 +461,30 @@ CREATE TABLE delivery_task(
   FOREIGN KEY (company_id) REFERENCES courier_company(id),
   FOREIGN KEY (courier_id) REFERENCES courier(id)
 );
+
+CREATE TABLE delivery_task_notification(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  task_id uuid NOT NULL,
+  company_id uuid,
+  courier_id uuid,
+  message text NOT NULL,
+  seen BOOLEAN DEFAULT FALSE,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
 CREATE TABLE courier_task(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
   task_id uuid NOT NULL,
   status VARCHAR (50) DEFAULT 'pending',
 
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (task_id) REFERENCES delivery_task(id)
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
 );
 
 
