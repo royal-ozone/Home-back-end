@@ -52,6 +52,15 @@ const {
   checkCodeHandler
 } = require('../api/controllers/discountCodeControllers')
 
+const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
+
+const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler} = require('../api/controllers/courierController')
+
+const {addCourierTaskHandler,getAllCourierTasksHandler,getCourierTaskByIdHandler,updateCourierTaskStatusHandler,updateCourierTaskCourierIdHandler} = require('../api/controllers/courierTaskController');
+
+const {addDeliveryTaskHandler,getAllDeliveryTasksHandler,updateDeliveryTaskCompanyIdHandler,updateDeliveryTaskCourierIdHandler,getDeliveryTaskByIdHandler} = require('../api/controllers/deliveryTaskController');
+
+
 
 
 
@@ -177,6 +186,31 @@ router.put('/update/:id',bearer,checkAdmin,updateDisconnectHandler);
 router.delete('/remove/:id',bearer,checkAdmin,removeDiscountHandler);
 router.get('/getAll',bearer,checkAdmin,getAllDiscountHandlers);
 router.post('/checkCode',bearer,checkCodeHandler);
+
+router.post('/courierCompany', createCourierCompanyHandler);
+router.get('/courierCompanies', getAllCourierCompaniesHandler)
+router.get('/courierCompany', getCourierCompanyByCompanyIdHandler)
+router.put('/courierCompany/name', updateCourierCompanyNameHandler)
+router.put('/courierCompany/status/:id', updateCourierCompanyStatusHandler)
+
+router.post('/courier', createCourierHandler)
+router.put('/courier', updateCourierStatusHandler) 
+router.delete('/courier', deleteCourierHandler)
+router.get('/couriers', getAllCouriersHandler)
+router.get('/courier', getCourierByIdHandler)
+
+router.post('/courierTask', addCourierTaskHandler)
+router.get('/courierTasks', getAllCourierTasksHandler)
+router.get('/courierTask', getCourierTaskByIdHandler)
+router.put('/courierTask/status', updateCourierTaskStatusHandler)
+router.put('/courierTask/courierId', updateCourierTaskCourierIdHandler)
+
+router.post('/deliveryTask', addDeliveryTaskHandler)
+router.get('/deliveryTasks', getAllDeliveryTasksHandler)
+router.put('/deliveryTask/companyId', updateDeliveryTaskCompanyIdHandler)
+router.put('/deliveryTask/courierId', updateDeliveryTaskCourierIdHandler)
+router.get('/deliveryTask/:id', getDeliveryTaskByIdHandler)
+
 
 // Test route
 router.get('/test', (req, res) => {
