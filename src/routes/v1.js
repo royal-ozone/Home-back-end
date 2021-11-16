@@ -60,6 +60,7 @@ const {addCourierTaskHandler,getAllCourierTasksHandler,getCourierTaskByIdHandler
 
 const {addDeliveryTaskHandler,getAllDeliveryTasksHandler,updateDeliveryTaskCompanyIdHandler,updateDeliveryTaskCourierIdHandler,getDeliveryTaskByIdHandler} = require('../api/controllers/deliveryTaskController');
 
+const {addDeliveryTaskNotificationHandler, getDeliveryTaskNotificationByIdHandler, updateDeliveryTaskHandler} = require('../api/controllers/deliveryTaskNotificationController')
 
 
 
@@ -198,6 +199,7 @@ router.put('/courier', updateCourierStatusHandler)
 router.delete('/courier', deleteCourierHandler)
 router.get('/couriers', getAllCouriersHandler)
 router.get('/courier', getCourierByIdHandler)
+router.get('/courier/:id', getCourierByIdHandler)
 
 router.post('/courierTask', addCourierTaskHandler)
 router.get('/courierTasks', getAllCourierTasksHandler)
@@ -210,6 +212,10 @@ router.get('/deliveryTasks', getAllDeliveryTasksHandler)
 router.put('/deliveryTask/companyId', updateDeliveryTaskCompanyIdHandler)
 router.put('/deliveryTask/courierId', updateDeliveryTaskCourierIdHandler)
 router.get('/deliveryTask/:id', getDeliveryTaskByIdHandler)
+
+router.post('/deliveryTask/notification', addDeliveryTaskNotificationHandler)
+router.get('/deliveryTask/notification',getDeliveryTaskNotificationByIdHandler)
+router.put('/deliveryTask/notification', updateDeliveryTaskHandler)
 
 
 // Test route

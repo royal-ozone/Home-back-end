@@ -49,7 +49,7 @@ const getAllCouriersHandler = async (req, res) => {
 
 const getCourierByIdHandler = async (req, res) =>{
     try {
-        let id = req.body.id? req.body.id : req.user.courier_id;
+        let id = req.params.id? req.params.id : req.user.courier_id;
         let result = await getCourierById(id);
         res.status(200).json(result)
     } catch (error) {
