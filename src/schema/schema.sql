@@ -32,6 +32,10 @@ DROP TABLE IF EXISTS new_order;
 
 DROP TABLE IF EXISTS store;
 
+DROP TABLE IF EXISTS suggestion;
+DROP TABLE IF EXISTS promo;
+DROP TABLE IF EXISTS discount_code;
+
 DROP TABLE IF EXISTS profile;
 DROP TABLE IF EXISTS user_file;
 
@@ -40,7 +44,7 @@ DROP TABLE IF EXISTS moderator;
 DROP TABLE IF EXISTS banned_user;
 DROP TABLE IF EXISTS client;
 
-DROP TABLE IF EXISTS discount_code;
+
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -404,6 +408,7 @@ CREATE TABLE return_request(
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
 
+
 CREATE TABLE discount_code(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   discount_code VARCHAR(250) UNIQUE NOT NULL,
@@ -414,11 +419,31 @@ CREATE TABLE discount_code(
   minute VARCHAR (250) NOT NULL,
   second VARCHAR (250) NOT NULL,
   counter VARCHAR(250) default 0,
-  max_counter VARCHAR (250) default 50,
+  max_counter VARCHAR (250) NOT NULL default 50,
   discount FLOAT DEFAULT 0,
   active Boolean DEFAULT FALSE,
+  number_of_time VARCHAR(2) NOT NULL,
   created_at timestamp not null default current_timestamp
-)
+);
+CREATE TABLE promo(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  discount_id uuid NOT NULL,
+  discount_name VARCHAR(250) NOT NULL,
+  counter VARCHAR(15) NOT NULL default 0,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (discount_id) REFERENCES discount_code(id),
+  created_at timestamp not null default current_timestamp
+);
+
+CREATE TABLE suggestion(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  suggestion text NOT NULL,
+  status VARCHAR(15) DEFAULT 'pending',
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  created_at timestamp not null default current_timestamp
+);
 
 
 -- idea : add count interaction to post tabel
