@@ -3,9 +3,9 @@ const client = require('../../db');
 
 const addDeliveryTask = async data => {
     try {
-        let {order_id} = data;
-        let SQL = 'INSERT INTO delivery_task (order_id) VALUES ($1) RETURNING *;';
-        let safeValues = [order_id];
+        let {order_id,address_id} = data;
+        let SQL = 'INSERT INTO delivery_task (order_id,address_id) VALUES ($1,$2) RETURNING *;';
+        let safeValues = [order_id,address_id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {

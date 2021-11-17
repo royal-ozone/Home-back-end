@@ -26,9 +26,9 @@ const addOrderHandler = async (req, res, next) => {
     let cartData = await getCartByProfileIdModel(req.user.profile_id);
     let profileData = await getProfileByUserId(req.user.id);
     const { tax, discount, shipping, sub_total } = req.body;
-
+    let profile_id =req.user.profile_id;
     let grand_total = calculation(tax, discount, shipping, sub_total);
-    let data = await addOrderModel(req.body, profileData, grand_total);
+    let data = await addOrderModel(req.body, cartData,profile_id, grand_total);
     let response = {
       message: "successfully add new order",
       new_order: data,
@@ -75,7 +75,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
     let id = req.params.id;
     let data = await updateOrderStatusModel(id, req.body);
     if(data.status === 'approved' || data.status === 'accepted') {
-      await addDeliveryTask({order_id: data.id})
+      await addDeliveryTask({order_id: data.id,address_id:data.address_id});
     }
     let response = {
       message: `Successfully update status order to ${data.status}`,
