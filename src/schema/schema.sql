@@ -1,11 +1,17 @@
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
+DROP TABLE IF EXISTS courier_feedback;
+DROP TABLE IF EXISTS courier_task;
+DROP TABLE IF EXISTS delivery_task_notification;
+DROP TABLE IF EXISTS delivery_task;
+DROP TABLE IF EXISTS courier;
+DROP TABLE IF EXISTS courier_company;
 
 DROP TABLE IF EXISTS product_picture;
 DROP TABLE IF EXISTS profile_picture;
 
-DROP TABLE IF EXISTS store_picture;
+-- DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_review;
@@ -23,7 +29,7 @@ DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
 DROP TABLE IF EXISTS order_notification;
 
- DROP TABLE IF EXISTS attachment;
+--  DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
@@ -37,7 +43,7 @@ DROP TABLE IF EXISTS promo;
 DROP TABLE IF EXISTS discount_code;
 
 DROP TABLE IF EXISTS profile;
-DROP TABLE IF EXISTS user_file;
+-- DROP TABLE IF EXISTS user_file;
 
 DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
@@ -436,6 +442,7 @@ CREATE TABLE promo(
   created_at timestamp not null default current_timestamp
 );
 
+
 CREATE TABLE suggestion(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
@@ -444,6 +451,86 @@ CREATE TABLE suggestion(
   FOREIGN KEY (profile_id) REFERENCES profile(id),
   created_at timestamp not null default current_timestamp
 );
+
+CREATE TABLE courier_company(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_name VARCHAR(75) NOT NULL,
+  name_is_changed BOOLEAN DEFAULT FALSE,
+  status VARCHAR (50) DEFAULT 'pending',
+  rejected_reason TEXT,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
+);
+
+CREATE TABLE courier(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_id uuid,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id)
+);
+
+CREATE TABLE delivery_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  order_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'not assigned',
+  company_id uuid,
+  courier_id uuid, 
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+CREATE TABLE delivery_task_notification(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  task_id uuid NOT NULL,
+  company_id uuid,
+  courier_id uuid,
+  message text NOT NULL,
+  seen BOOLEAN DEFAULT FALSE,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+CREATE TABLE courier_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
+  task_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+
+CREATE TABLE courier_feedback(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
+  rate INT DEFAULT 0,
+  review VARCHAR(250),
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+)
+
+
+
+
+
+
+
+
 
 
 -- idea : add count interaction to post tabel

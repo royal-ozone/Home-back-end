@@ -413,6 +413,26 @@ const activateAccount = async id => {
     }
 };
 
+const getCompanyByProfileId = async id => {
+    try {
+        let SQL = 'SELECT * FROM courier_company WHERE profile_id= $1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getCourierByProfileId = async id => {
+    try {
+        let SQL = 'SELECT * FROM courier WHERE profile_id=$1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -445,6 +465,8 @@ module.exports = {
     getAddressByProfileId,
     getStoreIdByProfileId,
     deactivateAccount,
-    activateAccount
+    activateAccount,
+    getCompanyByProfileId,
+    getCourierByProfileId
 }
 
