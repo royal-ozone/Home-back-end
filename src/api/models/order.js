@@ -1,24 +1,20 @@
 "use strict";
 const client = require("../../db");
-const addOrderModel = async (data, profileData, grand_total) => {
+const addOrderModel = async (data,cartData,profile_id, grand_total) => {
   try {
     const { status, tax, shipping, discount, sub_total } = data;
-    const { id, first_name, last_name, mobile, city, country } = profileData;
+    
     let SQL =
-      "INSERT INTO new_order(profile_id,first_name,last_name,status,tax,shipping,discount,sub_total,grand_total,mobile,city,country) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
     let safeValue = [
-      id,
-      first_name,
-      last_name,
-      status,
+      profile_id,
+      cartData.address_id,
       tax,
       shipping,
       discount,
       sub_total,
       grand_total,
-      mobile,
-      city,
-      country,
+    
     ];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];

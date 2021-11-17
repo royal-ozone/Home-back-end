@@ -88,9 +88,15 @@ INSERT INTO store_review(id,profile_id,store_id,review,rate)VALUES
 ('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3');
 
 
+----------------------------------address -----------------------------
+INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
+('7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','fca8e07b-ac7d-4ce8-8437-53c54ca85857','jordan','amman','emran','aloul','0798009950','abdallah alnazhan','13','2');
+INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
+('9e0e31ac-757b-4f25-afe1-61ed9ccb40d2','fca8e07b-ac7d-4ce8-8437-53c54ca85857','uae','dubai','emran','aloul','0798009950','abdallah alnazhan','13','8');
+
 --------------------------------- new_order ----------------------------------------
-INSERT INTO new_order(id,profile_id,first_name,last_name,status,tax,shipping,discount,sub_total,grand_total,mobile,city,country)VALUES
-('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','emran','aloul','pending','0.01','0.02','0','20','22','0798009950','amman','jordan');
+INSERT INTO new_order(id,profile_id,address_id,status,tax,shipping,discount,sub_total,grand_total)VALUES
+('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','pending','0.01','0.02','0','20','22');
 
 
 -------------------------------- order_item ----------------------------------------
@@ -103,11 +109,7 @@ INSERT INTO transaction(id,profile_id,order_id,code,type,mode,status)VALUES
 ('b90a2a5a-891d-4baa-b63a-01bce1ee570d','fca8e07b-ac7d-4ce8-8437-53c54ca85857','82e018d1-b731-489c-a62b-f719cdf4bb8b','55456186222s6','mastercard','Read-Only','approved');
 
 
-----------------------------------address -----------------------------
-INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
-('7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','fca8e07b-ac7d-4ce8-8437-53c54ca85857','jordan','amman','emran','aloul','0798009950','abdallah alnazhan','13','2');
-INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
-('9e0e31ac-757b-4f25-afe1-61ed9ccb40d2','fca8e07b-ac7d-4ce8-8437-53c54ca85857','uae','dubai','emran','aloul','0798009950','abdallah alnazhan','13','8');
+
 
 ---------------------------------- cart -----------------------------
 INSERT INTO cart(id,profile_id,address_id,first_name,last_name,mobile)VALUES 
@@ -144,3 +146,26 @@ INSERT INTO offer_notification(id,receiver_id,message,store_id,product_id)VALUES
 INSERT INTO order_notification(id,receiver_id,order_id,message)VALUES
 ('6007f70b-2afa-46a9-a6cc-777b224700be','72280f37-2ca7-4808-90d2-3ecec783b163','82e018d1-b731-489c-a62b-f719cdf4bb8b','hduwegewgdsgdsgdsaaa');
 
+-------------------------- courier_company -------------------------
+INSERT INTO courier_company (id,profile_id,company_name,status)VALUES 
+('6026735d-0ed1-47d5-98cf-8a18ef763b71','fca8e07b-ac7d-4ce8-8437-53c54ca85857','emran','approved');
+
+--------------------------- courier ------------------------------
+INSERT INTO courier (id,profile_id,company_id)VALUES 
+('d5674198-db4e-42f0-a164-cd8f939631f5','1821db68-97c9-4380-9a55-ad8bc7f16eda','6026735d-0ed1-47d5-98cf-8a18ef763b71');
+
+--------------------------- courier ------------------------------
+INSERT INTO courier(id,profile_id)VALUES
+('46a3f3a3-8050-4d48-8548-d81618af2a29','d7a36645-a598-4584-a158-23615a865ac9');
+
+--------------------------- delivery_task ------------------------------
+INSERT INTO delivery_task(id,order_id)VALUES
+('10d433fd-4b84-4059-a214-85af962d3a2d','82e018d1-b731-489c-a62b-f719cdf4bb8b');
+
+------------------------- courier_task ------------------------------
+INSERT INTO courier_task(id,courier_id,task_id)VALUES
+('1beb2148-cdd5-44e4-b1d6-2a6e6e8af454','d5674198-db4e-42f0-a164-cd8f939631f5','10d433fd-4b84-4059-a214-85af962d3a2d');
+
+-------------------------- courier_feedback Table --------------------------
+INSERT INTO courier_feedback(id,courier_id,rate,review)VALUES
+('9a58e0fe-ab3c-4321-b93e-af33b25919ab','d5674198-db4e-42f0-a164-cd8f939631f5','2','very tired ');

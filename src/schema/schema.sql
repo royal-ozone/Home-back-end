@@ -16,10 +16,12 @@ DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_review;
 
-
-DROP TABLE IF EXISTS return_request;
-DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS order_item;
+DROP TABLE IF EXISTS return_request;
+DROP TABLE IF EXISTS order_notification;
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS new_order;
+
 DROP TABLE IF EXISTS cart_item;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS address;
@@ -27,14 +29,12 @@ DROP TABLE IF EXISTS jwt;
 DROP TABLE IF EXISTS store_follower;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
-DROP TABLE IF EXISTS order_notification;
 
 --  DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
 DROP TABLE IF EXISTS parent_category;
-DROP TABLE IF EXISTS new_order;
 
 DROP TABLE IF EXISTS store;
 
@@ -264,22 +264,38 @@ CREATE TABLE store_review(
 );
 
 
+CREATE TABLE address(
+   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+   profile_id uuid NOT NULL,
+   country VARCHAR (250) NOT NULL DEFAULT 'jordan',
+   city VARCHAR(250) NOT NULL,
+   first_name VARCHAR (250) NOT NULL,
+   last_name VARCHAR (250) NOT NULL,
+   mobile VARCHAR (15) NOT NULL,
+   street_name VARCHAR(250) NOT NULL,
+   building_number VARCHAR (250) NOT NULL,
+   apartment_number VARCHAR (250),
+   FOREIGN KEY (profile_id) REFERENCES profile(id)
+);
+
 CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
-  first_name VARCHAR (250) NOT NULL,
-  last_name VARCHAR (250) NOT NULL,
+  address_id uuid NOT NULL,
+  -- first_name VARCHAR (250) NOT NULL,
+  -- last_name VARCHAR (250) NOT NULL,
   status VARCHAR (250)  DEFAULT 'pending',
   tax FLOAT,
   shipping FLOAT,
   discount FLOAT DEFAULT 0,
   sub_total FLOAT NOT NULL,
   grand_total FLOAT NOT NULL,
-  mobile VARCHAR (15) NOT NULL, 
-  city VARCHAR (250) NOT NULL,
-  country VARCHAR (250) NOT NULL,
+  -- mobile VARCHAR (15) NOT NULL, 
+  -- city VARCHAR (250) NOT NULL,
+  -- country VARCHAR (250) NOT NULL,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (profile_id) REFERENCES profile(id)
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (address_id) REFERENCES address(id)
   );
 
 CREATE TABLE order_item (
@@ -310,19 +326,6 @@ CREATE TABLE transaction(
 );
 
 
-CREATE TABLE address(
-   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-   profile_id uuid NOT NULL,
-   country VARCHAR (250) NOT NULL DEFAULT 'jordan',
-   city VARCHAR(250) NOT NULL,
-   first_name VARCHAR (250) NOT NULL,
-   last_name VARCHAR (250) NOT NULL,
-   mobile VARCHAR (15) NOT NULL,
-   street_name VARCHAR(250) NOT NULL,
-   building_number VARCHAR (250) NOT NULL,
-   apartment_number VARCHAR (250),
-   FOREIGN KEY (profile_id) REFERENCES profile(id)
-);
 CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
      profile_id uuid NOT NULL,
@@ -477,7 +480,7 @@ CREATE TABLE courier(
 
 CREATE TABLE delivery_task(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  order_id uuid NOT NULL,
+  order_id uuid NOT NULL UNIQUE,
   status VARCHAR (50) DEFAULT 'not assigned',
   company_id uuid,
   courier_id uuid, 
