@@ -49,8 +49,20 @@ const {
   updateDisconnectHandler,
   removeDiscountHandler,
   getAllDiscountHandlers,
-  checkCodeHandler
+  checkCodeHandler,
+  getAllPromoHandler,
+  getPromoHandler
 } = require('../api/controllers/discountCodeControllers')
+
+
+const {
+  addSuggestionHandler,
+  removeSuggestionHandler,
+  updateSuggestionHandler,
+  updateStatusSuggestionHandler,
+  getAllSuggestionHandler,
+  getMySuggestionHandler,
+} = require ('../api/controllers/suggestionControllers')
 
 const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
 
@@ -61,6 +73,7 @@ const {addCourierTaskHandler,getAllCourierTasksHandler,getCourierTaskByIdHandler
 const {addDeliveryTaskHandler,getAllDeliveryTasksHandler,updateDeliveryTaskCompanyIdHandler,updateDeliveryTaskCourierIdHandler,getDeliveryTaskByIdHandler} = require('../api/controllers/deliveryTaskController');
 
 const {addDeliveryTaskNotificationHandler, getDeliveryTaskNotificationByIdHandler, updateDeliveryTaskHandler} = require('../api/controllers/deliveryTaskNotificationController')
+
 
 
 
@@ -187,6 +200,15 @@ router.put('/update/:id',bearer,checkAdmin,updateDisconnectHandler);
 router.delete('/remove/:id',bearer,checkAdmin,removeDiscountHandler);
 router.get('/getAll',bearer,checkAdmin,getAllDiscountHandlers);
 router.post('/checkCode',bearer,checkCodeHandler);
+router.get('/getAll/promo',bearer,checkAdmin,getAllPromoHandler);
+router.get('/get/:id',bearer,getPromoHandler);
+
+router.post('/add/suggestion',bearer,addSuggestionHandler);
+router.delete('/remove/suggestion/:id',bearer,removeSuggestionHandler);
+router.put('/update/suggestion/:id',bearer,updateSuggestionHandler);
+router.get('/getAll/suggestion',bearer,checkAdmin,getAllSuggestionHandler);
+router.get('/get/mySuggestion/:id',bearer,getMySuggestionHandler);
+router.put('/update/suggestion/status/:id',bearer,checkAdmin,updateStatusSuggestionHandler);
 
 router.post('/courierCompany', createCourierCompanyHandler);
 router.get('/courierCompanies', getAllCourierCompaniesHandler)
