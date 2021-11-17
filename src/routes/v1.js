@@ -64,6 +64,13 @@ const {
   getMySuggestionHandler,
 } = require ('../api/controllers/suggestionControllers')
 
+const {
+  addCourierFeedback,
+  removeCourierFeedback,
+  updateCourierFeedback,
+  getCourierFeedback,
+  getAllCouriersFeedback,
+} = require ('../api/controllers/courierFeedbackControllers')
 const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
 
 const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler} = require('../api/controllers/courierController')
@@ -239,6 +246,11 @@ router.post('/deliveryTask/notification', addDeliveryTaskNotificationHandler)
 router.get('/deliveryTask/notification',getDeliveryTaskNotificationByIdHandler)
 router.put('/deliveryTask/notification', updateDeliveryTaskHandler)
 
+router.post('/add/courier/feedback',bearer,addCourierFeedback);
+router.delete('/remove/courier/feedback/:id',bearer,removeCourierFeedback);
+router.put('/update/courier/feedback/:id',bearer,updateCourierFeedback);
+router.get('/get/courier/feedback/:id',bearer,getCourierFeedback);
+router.get('/getAll/courier/feedback',bearer,getAllCouriersFeedback);
 
 // Test route
 router.get('/test', (req, res) => {
