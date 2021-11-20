@@ -26,7 +26,7 @@ const updateCourierStatus = async (id,data) => {
 
 const deleteCourier = async (id) => {
     try {
-        let SQL = 'DELETE FROM courier WHERE id=$1 RETURNING *;'
+        let SQL = 'DELETE FROM courier WHERE id=$1 OR profile_id=$1 RETURNING *;'
         let result = await client.query(SQL, [id]);
         return result.rows[0];
     } catch (error) {
@@ -54,4 +54,14 @@ const getCourierById = async (id) =>{
     }
 }
 
-module.exports = {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById}
+const getCouriersByCompanyId = async (id) =>{
+    try {
+        let SQL = 'SELECT * FROM courier WHERE Company_id=$1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+module.exports = {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById,getCouriersByCompanyId}

@@ -62,10 +62,10 @@ const getStore = async (id) => {
     }
 }
 
-const updateStoreStatus = async (id, data) => {
+const updateStoreStatus = async ( data) => {
     try {
-        let { status, rejected_reason } = data;
-        let SQL = 'UPDATE STORE SET status=$1, rejected_reason=$2 WHERE profile_id=$3 RETURNING *;';
+        let { status, rejected_reason , id} = data;
+        let SQL = 'UPDATE STORE SET status=$1, rejected_reason=$2 WHERE id=$3 RETURNING *;';
         let safeValues = [status, rejected_reason, id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];

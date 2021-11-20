@@ -1,6 +1,6 @@
 'use strict';
 
-const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel} =require('../models/address');
+const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel} =require('../models/address');
 const {getUserById,getProfileByUserId,getAddressByProfileId}=require('../../auth/models/user')
 
 
@@ -9,7 +9,6 @@ const addAddressHandler =async(req, res, next) => {
         
         let oldData =await getUserById(req.user.id)
         let profileId = await getProfileByUserId(req.user.id);
-        console.log("🚀 ~ file: addressControllers.js ~ line 10 ~ addressHandler ~ profileId", profileId)
         let data= await addAddressModel(req.body,oldData,profileId)
         let response ={
             message:'Successfully add address',
@@ -24,7 +23,6 @@ const removeAddressHandler= async (req, res,next) => {
 
     try {
         
-        console.log("🚀 ~ file: addressControllers.js ~ line 26 ~ removeAddressHandler ~ req.user.profile_id", req.user.profile_id)
         let address = await getAddressByProfileId(req.user.profile_id)
         if(address) {
 
@@ -75,4 +73,13 @@ const getAllAddressHandler =async (req, res, next)=>{
     }
 }
 
-module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler}
+const getAddressByProfileIdModelHandler =async (req, res, next)=>{
+    try {
+        let result = await getAddressByProfileIdModel(req.user.profile_id)
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(400).send(error.message)
+    }
+}
+
+module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler}

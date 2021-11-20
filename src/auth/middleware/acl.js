@@ -1,6 +1,9 @@
 const client = require('../../db')
 const { getProfileByUserId, activateAccount } = require('../models/user')
 
+const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany')
+const {getCourierById} = require('../../api/models/courier')
+
 // comment on product
 
 let productComment = async (req, res, next) => {
@@ -164,4 +167,65 @@ const checkActive = async (req, res, next) =>{
     }
 }
 
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive };
+const checkCourierCompany = async (req, res, next) =>{
+    try {
+        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
+        let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
+        let safeValue = [req.user.id];
+        let result = await client.query(SQL, safeValue);
+        let result2 = await client.query(SQL2, safeValue);
+        if(req.user.courier_company_id || result.rows[0] ||result2.rows[0] ){
+            next();
+        } else{
+            res.status(403).send('your are not a courier company')
+        }
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+const checkCourier = async (req, res, next) =>{
+    try {
+        if(req.user.courier_id){
+            next()
+        } else {
+            res.status(403).send('your are not a courier')
+        }
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+const checkCourierCompanyStatus = async (req, res, next) =>{
+    try {
+        let result = await getCourierCompanyByCompanyId(req.user.courier_company_id)
+        if(result.status === 'approved'){
+            next()
+        } else if(result.status === 'pending'){
+            res.status(403).send('your account status still pending')
+        } else if(result.status === 'rejected') {
+            res.status(403).send('your account status is rejected, please check rejection reason')
+        }  else {
+            res.status(403).send('please check your account status')
+        }
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+const checkCourierStatus = async (req, res, next) =>{
+    try {
+        let result = await getCourierById(req.user.courier_id);
+        if(result.status === 'approved'){
+            next()
+        } if(result.status === 'pending'){
+            res.status(403).send('your account status still pending,please approve the courier company request' )
+        } else {
+            res.status(403).send('please check your account status')
+        }
+    } catch (error) {
+        res.send(error.message)
+    }
+}
+
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus };

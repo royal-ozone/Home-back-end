@@ -29,7 +29,7 @@ const io =  socket(server ,{
 /// server ///
 
 app.use(cors());
-app.use(upload.none())
+// app.use(upload.none())
 app.use(express.json()); ///
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname,'../public')));

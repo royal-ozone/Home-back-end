@@ -1,14 +1,16 @@
-const {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById} = require('../models/courier');
-
-
+const {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById,getCouriersByCompanyId} = require('../models/courier');
+const {getProfileByEmail} = require('../../auth/models/user')
 const createCourierHandler = async (req, res) =>{
     try {
+        let profileData = await getProfileByEmail(req.body.email)
         let company_id = req.user.courier_company_id? req.user.courier_company_id : null;
-        let profile = req.body.profile_id? req.body.profile_id : req.user.profile_id;
+        let profile = profileData.id? profileData.id : req.user.profile_id;
         let result = await createCourier({company_id: company_id, profile_id: profile})
+        
         res.status(201).json({
             message: 'courier has been added successfully',
             ...result
+
         })
     } catch (error) {
         res.send(error.message)
@@ -17,7 +19,7 @@ const createCourierHandler = async (req, res) =>{
 
 const updateCourierStatusHandler = async (req, res) => {
     try {
-        let id = req.user.courier_id? req.user.courier_id : req.body.courier_id;
+        let id = req.user.courier_id;
         let result = await updateCourierStatus(id, req.body)
         res.status(200).json({
             message: 'courier status has been updated successfully', ...result 
@@ -30,9 +32,13 @@ const updateCourierStatusHandler = async (req, res) => {
 const deleteCourierHandler = async (req, res) => {
     try {
         let result = await deleteCourier(req.body.courier_id)
-        res.status(200).json({
-            message: 'courier has been removed successfully', ...result
-        })
+        if(result){
+            res.status(200).json({
+                message: 'courier has been removed successfully', ...result
+            })
+        } else {
+            res.status(403).send('there`s not courier with this id')
+        }
     } catch (error) {
         res.send(error.message)
     }
@@ -56,4 +62,13 @@ const getCourierByIdHandler = async (req, res) =>{
         throw new Error(error.message)
     }
 }
-module.exports = {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler}
+
+const getCouriersByCompanyIdHandler = async (req, res) => {
+    try {
+        let result = await getCouriersByCompanyId(req.user.courier_company_id);
+        res.status(200).json(result)
+    } catch (error) {
+        res.send(error.message)
+    }
+}
+module.exports = {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler,getCouriersByCompanyIdHandler}
