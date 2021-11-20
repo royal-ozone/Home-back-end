@@ -3,11 +3,10 @@ const client = require('../../db')
 const addAddressModel = async(data,oldData,profileId)=>{
     try {
         let SQL = 'INSERT INTO address(profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING * ;';
-        const {street_name,building_number,apartment_number} =data ;
-        const {country,city,first_name,last_name,mobile} =oldData;
+        const {street_name,building_number,apartment_number,city,first_name,last_name,mobile} =data ;
+        const {country} =oldData;
         let safeValue = [profileId.id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number];
         let result = await client.query(SQL,safeValue);
-        console.log("🚀 ~ file: address.js ~ line 10 ~ addAddressModel ~ result", result)
         return result.rows[0];
     } catch (error) {
         let response ={
@@ -61,7 +60,7 @@ const getAddressByProfileIdModel = async (id)=>{
         let SQL ='SELECT * FROM address WHERE profile_id= $1;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue)
-        return result.rows[0];
+        return result.rows;
     } catch (error) {
         let response = {
             message: error.message,

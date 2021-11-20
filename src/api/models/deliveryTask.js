@@ -23,9 +23,9 @@ const getAllDeliveryTasks = async () => {
     }
 }
 
-const updateDeliveryTaskCompanyId = async (data) => {
+const updateDeliveryTaskCompanyId = async (company_id, data) => {
     try {
-        let {company_id, id} = data;
+        let {id} = data;
         let SQL = 'UPDATE delivery_task SET company_id=$1, status=$2 WHERE id=$3 RETURNING*;';
         let safeValues = [company_id, 'assigned', id]
         let result = await client.query(SQL, safeValues);
@@ -51,7 +51,7 @@ const getDeliveryTaskById = async id =>{
     try {
         let SQL = 'SELECT * FROM delivery_task WHERE id=$1 OR courier_id=$1 OR company_id=$1;';
         let result = await client.query(SQL, [id]);
-        return result.rows[0];
+        return result.rows;
     } catch (error) {
         throw new Error(error.message)
     }

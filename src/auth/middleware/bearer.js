@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
         let token = req.headers.authorization.split(' ').pop();
 
         let tokenRecord = await getTokenRecord(token);
-
+        
         if (!tokenRecord) {
             res.status(403).json({
                 status: 403,
@@ -32,7 +32,8 @@ module.exports = async (req, res, next) => {
             req.user.store_id = store ? store.id : null;
             req.user.courier_company_id = company? company.id : null;
             req.user.courier_id = courier ? courier.id : null;
-
+            
+            // console.log("🚀 ~ file: bearer.js ~ line 7 ~ module.exports= ~ req", req.user)
             next();
         }
 

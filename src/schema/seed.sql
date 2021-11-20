@@ -11,14 +11,14 @@ INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first
 
       
 -------------------------- profile Table --------------------------------
-INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
-('fca8e07b-ac7d-4ce8-8437-53c54ca85857','2fa53b27-a3d7-406f-9f91-c7f3950e9078','emran','aloul','amman','jordan','0798009950','e9b6516a-16b8-43fd-836c-9df52dbd55e1');
-INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
-('d7a36645-a598-4584-a158-23615a865ac9','4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjad','mesmar','irbid','jordan','0796750891','3b47e66c-690b-4eb2-8c24-4f0117c9ab83');
-INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture) VALUES
-('1821db68-97c9-4380-9a55-ad8bc7f16eda','14a60467-c390-4ca7-a1be-5d0ee11d9ad8','ahmad','arman','amman','jordan','079655780751','5f04b02b-a142-4445-a65f-bf5542d1fbd4');
-INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile) VALUES
-('3be97674-8ce4-49a8-a378-605965c4b98c','507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam','al-masri','irbid','jordan','009627966851');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture, email) VALUES
+('fca8e07b-ac7d-4ce8-8437-53c54ca85857','2fa53b27-a3d7-406f-9f91-c7f3950e9078','emran','aloul','amman','jordan','0798009950','e9b6516a-16b8-43fd-836c-9df52dbd55e1','emranaloul@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture, email) VALUES
+('d7a36645-a598-4584-a158-23615a865ac9','4b9a4f7b-6c1c-4039-9e29-26909a63021c','amjad','mesmar','irbid','jordan','0796750891','3b47e66c-690b-4eb2-8c24-4f0117c9ab83','amjadmesmar@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_picture, email) VALUES
+('1821db68-97c9-4380-9a55-ad8bc7f16eda','14a60467-c390-4ca7-a1be-5d0ee11d9ad8','ahmad','arman','amman','jordan','079655780751','5f04b02b-a142-4445-a65f-bf5542d1fbd4','aa0796780751@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('3be97674-8ce4-49a8-a378-605965c4b98c','507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam','al-masri','irbid','jordan','009627966851','wesam@gmail.com');
 
 
 ------------------------- Administrator Table ----------------------------------
@@ -95,13 +95,17 @@ INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,stree
 ('9e0e31ac-757b-4f25-afe1-61ed9ccb40d2','fca8e07b-ac7d-4ce8-8437-53c54ca85857','uae','dubai','emran','aloul','0798009950','abdallah alnazhan','13','8');
 
 --------------------------------- new_order ----------------------------------------
-INSERT INTO new_order(id,profile_id,address_id,status,tax,shipping,discount,sub_total,grand_total)VALUES
-('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','pending','0.01','0.02','0','20','22');
+INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
+('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
+INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
+('95f3a0e3-aa40-47eb-8315-a58c42ed8697','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
 
 
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
 ('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
+INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
+('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
 
 
 -------------------------------- transaction ----------------------------
@@ -159,8 +163,10 @@ INSERT INTO courier(id,profile_id)VALUES
 ('46a3f3a3-8050-4d48-8548-d81618af2a29','d7a36645-a598-4584-a158-23615a865ac9');
 
 --------------------------- delivery_task ------------------------------
-INSERT INTO delivery_task(id,order_id)VALUES
-('10d433fd-4b84-4059-a214-85af962d3a2d','82e018d1-b731-489c-a62b-f719cdf4bb8b');
+INSERT INTO delivery_task(id,order_id,address_id)VALUES
+('10d433fd-4b84-4059-a214-85af962d3a2d','82e018d1-b731-489c-a62b-f719cdf4bb8b', '7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
+INSERT INTO delivery_task(id,order_id,address_id)VALUES
+('db8c37b3-28b4-4b11-ad37-fb676f03162a','95f3a0e3-aa40-47eb-8315-a58c42ed8697', '7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
 
 ------------------------- courier_task ------------------------------
 INSERT INTO courier_task(id,courier_id,task_id)VALUES

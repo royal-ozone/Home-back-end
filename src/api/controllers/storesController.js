@@ -179,7 +179,7 @@ const getStoreByNameHandler = async (req, res) => {
 const updateStoreStatusHandler = async (req, res) => {
     try {
 
-        let response = await updateStoreStatus(req.user.profile_id, req.body)
+        let response = await updateStoreStatus(req.body)
         res.status(200).json({
             status: 200,
             message: 'Store Status has been updated successfully'

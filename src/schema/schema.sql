@@ -89,6 +89,7 @@ CREATE TABLE profile(
   first_name VARCHAR (250) NOT NULL,
   last_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
+  email VARCHAR (250) NOT NULL,
   country VARCHAR (250) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
   profile_picture TEXT,
@@ -282,18 +283,14 @@ CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   address_id uuid NOT NULL,
-  -- first_name VARCHAR (250) NOT NULL,
-  -- last_name VARCHAR (250) NOT NULL,
   status VARCHAR (250)  DEFAULT 'pending',
   tax FLOAT,
   shipping FLOAT,
   discount FLOAT DEFAULT 0,
   sub_total FLOAT NOT NULL,
   grand_total FLOAT NOT NULL,
-  -- mobile VARCHAR (15) NOT NULL, 
-  -- city VARCHAR (250) NOT NULL,
-  -- country VARCHAR (250) NOT NULL,
   created_at timestamp not null default current_timestamp,
+
   FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (address_id) REFERENCES address(id)
   );
@@ -305,7 +302,10 @@ CREATE TABLE order_item (
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,
+  status VARCHAR (50) DEFAULT 'pending',
+  cancellation_reason TEXT,
   created_at timestamp not null default current_timestamp,
+  
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -481,6 +481,7 @@ CREATE TABLE courier(
 CREATE TABLE delivery_task(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   order_id uuid NOT NULL UNIQUE,
+  address_id uuid NOT NULL,
   status VARCHAR (50) DEFAULT 'not assigned',
   company_id uuid,
   courier_id uuid, 

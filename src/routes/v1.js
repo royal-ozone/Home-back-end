@@ -5,6 +5,8 @@
 const express = require('express');
 const router = express.Router();
 const bearer = require('../auth/middleware/bearer');
+const multer = require('multer');
+let upload = multer()
 
 
 const {addParentCategory,removeParentCategory,updateParentCategory,getParentCategoryById,getAllParentCategory,getParentCategoryByTitle} = require('../api/controllers/parentCategory');
@@ -12,14 +14,14 @@ const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategory
 const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
 
 
-const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler} = require('../api/controllers/addressControllers')
+const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler} = require('../api/controllers/addressControllers')
 const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
 const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler} = require('../api/controllers/orderControllers');
 
 
 
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive} = require ('../auth/middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus} = require ('../auth/middleware/acl')
 
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
@@ -73,7 +75,7 @@ const {
 } = require ('../api/controllers/courierFeedbackControllers')
 const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
 
-const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler} = require('../api/controllers/courierController')
+const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler,getCouriersByCompanyIdHandler} = require('../api/controllers/courierController')
 
 const {addCourierTaskHandler,getAllCourierTasksHandler,getCourierTaskByIdHandler,updateCourierTaskStatusHandler,updateCourierTaskCourierIdHandler} = require('../api/controllers/courierTaskController');
 
@@ -89,168 +91,170 @@ const {addDeliveryTaskNotificationHandler, getDeliveryTaskNotificationByIdHandle
 router.use(bearer);
 
 router.post('/store',uploadS3.single('image'), createStoreHandler);
-router.put('/store',checkStoreAuth,updateStoreHandler);
-router.delete('/store',checkStoreAuth, deleteStoreHandler);
-router.get('/store', getStoreHandler);
-router.put('/store/name',checkStoreAuth, updateStoreNameHandler);
-router.put('/store/status',checkAuth, updateStoreStatusHandler);
-router.get('/store/all', getAllStoresHandler)
-router.get('/store/status/:status',checkAuth, getStoreByStatusHandler)
-router.get('/store/name/:name', getStoreByNameHandler)
-
+router.put('/store',checkStoreAuth,upload.none(),updateStoreHandler);
+router.delete('/store',checkStoreAuth,upload.none(), deleteStoreHandler);
+router.get('/store',upload.none(), getStoreHandler);
+router.put('/store/name',checkStoreAuth, upload.none(),updateStoreNameHandler);
+router.put('/store/status',checkAuth, upload.none(),updateStoreStatusHandler);
+router.get('/store/all',upload.none(), getAllStoresHandler)
+router.get('/store/status/:status',checkAuth, upload.none(),getStoreByStatusHandler)
+router.get('/store/name/:name', upload.none(),getStoreByNameHandler)
 router.put('/store/picture',uploadS3.single('image'), updateStorePictureHandler);
-router.delete('/store/picture', deleteStorePictureHandler)
+router.delete('/store/picture',upload.none(), deleteStorePictureHandler)
 
-router.get('/store/review', getAllStoreReviewHandler)
-router.get('/store/review/:storeId', getStoreReviewHandler)
-router.post('/store/review',createStoreReviewHandler)
-router.put('/store/review/:storeId', updateStoreReviewHandler)
-router.delete('/store/review/:storeId', deleteStoreReviewHandler)
+router.get('/store/review',upload.none(), getAllStoreReviewHandler)
+router.get('/store/review/:storeId', upload.none(),getStoreReviewHandler)
+router.post('/store/review',upload.none(),createStoreReviewHandler)
+router.put('/store/review/:storeId',upload.none(), updateStoreReviewHandler)
+router.delete('/store/review/:storeId',upload.none(), deleteStoreReviewHandler)
 
-router.get('/store/follower', getAllStorefollowersHandler)
-router.get('/store/follower/:storeId', getStorefollowersHandler)
-router.post('/store/follower',createStorefollowerHandler)
-router.delete('/store/follower/:storeId', deleteStorefollowerHandler)
+router.get('/store/follower',upload.none(), getAllStorefollowersHandler)
+router.get('/store/follower/:storeId',upload.none(), getStorefollowersHandler)
+router.post('/store/follower',upload.none(),createStorefollowerHandler)
+router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandler)
 
-router.post('/add/PG',bearer,checkAdmin,addParentCategory);
-router.delete('/remove/PG/:idPG',bearer,checkAdmin,removeParentCategory);
-router.put('/update/PG/:idPG',bearer,checkAuth,updateParentCategory);
-router.get('/get/PG/:idPG',bearer,checkAuth,getParentCategoryById);
-router.get('/getAll/PG',bearer,getAllParentCategory);
-router.get('/search/title/PG',bearer,getParentCategoryByTitle);
-
-
-router.post('/add/CG',bearer,checkAuth,addChildCategory);
-router.delete('/remove/CG/:idCG',bearer,checkAuth,removeChildCategory);
-router.put('/update/CG/:idCG',bearer,checkAuth,updateChildCategory);
-router.get('/get/CG/:idCG',bearer,checkAuth,getChildCategoryById);
-router.get('/getAll/CG',bearer,getAllChildCategory);
-router.get('/search/title/CG',bearer,getChildCategoryByTitle);
+router.post('/add/PG',bearer,checkAdmin,upload.none(),addParentCategory);
+router.delete('/remove/PG/:idPG',bearer,upload.none(),checkAdmin,removeParentCategory);
+router.put('/update/PG/:idPG',bearer,upload.none(),checkAuth,updateParentCategory);
+router.get('/get/PG/:idPG',bearer,upload.none(),checkAuth,getParentCategoryById);
+router.get('/getAll/PG',bearer,upload.none(),getAllParentCategory);
+router.get('/search/title/PG',bearer,upload.none(),getParentCategoryByTitle);
 
 
-router.post('/add/GCG',bearer,checkAuth,addGrandChildCategory);
-router.delete('/remove/GCG/:idGCG',bearer,checkAuth,removeGrandChildCategory);
-router.put('/update/GCG/:idGCG',bearer,checkAuth,updateGrandChildCategory);
-router.get('/get/GCG/:idGCG',bearer,checkAuth,getGrandChildCategoryById);
-router.get('/getAll/GCG',bearer,getAllGrandChildCategory);
-router.get('/search/title/GCG',bearer,getGrandChildCategoryByTitle);
+router.post('/add/CG',bearer,upload.none(),checkAuth,addChildCategory);
+router.delete('/remove/CG/:idCG',upload.none(),bearer,checkAuth,removeChildCategory);
+router.put('/update/CG/:idCG',upload.none(),bearer,checkAuth,updateChildCategory);
+router.get('/get/CG/:idCG',upload.none(),bearer,checkAuth,getChildCategoryById);
+router.get('/getAll/CG',upload.none(),bearer,getAllChildCategory);
+router.get('/search/title/CG',bearer,upload.none(),getChildCategoryByTitle);
 
 
-
-router.post('/add/address',bearer,addAddressHandler);
-router.delete('/remove/address/:id',bearer,removeAddressHandler);
-router.put('/update/address/:id',bearer,updateAddressHandler);
-router.get('/getAll/address',bearer,getAllAddressHandler);
-
-router.post('/add/cart',bearer,addCartHandler);
-router.post('/add/cart_item',bearer,addCartItemHandler);
-router.delete('/remove/cart_item',bearer,removeCartItemHandler);
-router.get('/getAll/cart_item',bearer,getAllCartItemHandler);
-router.get('/getAll/cart',bearer,getAllCartHandler); 
-
-router.post('/add/order',bearer,addOrderHandler);
-router.post('/add/order_item',bearer,addOrderItemHandler);
-router.put('/update/status/:id',bearer,updateOrderStatusHandler);
-router.get('/getAll/order',bearer,getAllOrderHandler);
+router.post('/add/GCG',bearer,upload.none(),checkAuth,addGrandChildCategory);
+router.delete('/remove/GCG/:idGCG',bearer,upload.none(),checkAuth,removeGrandChildCategory);
+router.put('/update/GCG/:idGCG',bearer,upload.none(),checkAuth,updateGrandChildCategory);
+router.get('/get/GCG/:idGCG',bearer,upload.none(),checkAuth,getGrandChildCategoryById);
+router.get('/getAll/GCG',bearer,upload.none(),getAllGrandChildCategory);
+router.get('/search/title/GCG',bearer,upload.none(),getGrandChildCategoryByTitle);
 
 
 
-router.post('/tag',addTagHandler)
-router.get('/tag/:id',getTagHandler)
-router.delete('/tag/:id',deleteTagHandler)
-router.put('/tag/:id', updateTagHandler)
-router.get('/tag', getAllTagsHandler)
+router.post('/add/address',bearer,upload.none(),addAddressHandler);
+router.delete('/remove/address/:id',bearer,upload.none(),removeAddressHandler);
+router.put('/update/address/:id',bearer,upload.none(),updateAddressHandler);
+router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
+router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
+
+
+router.post('/add/cart',bearer,upload.none(),addCartHandler);
+router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
+router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemHandler);
+router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
+router.get('/getAll/cart',bearer,upload.none(),getAllCartHandler); 
+
+router.post('/add/order',bearer,upload.none(),addOrderHandler);
+router.post('/add/order_item',bearer,upload.none(),addOrderItemHandler);
+router.put('/update/status/:id',bearer,upload.none(),updateOrderStatusHandler);
+router.get('/getAll/order',bearer,upload.none(),getAllOrderHandler);
+
+
+
+router.post('/tag',upload.none(),addTagHandler)
+router.get('/tag/:id',upload.none(),getTagHandler)
+router.delete('/tag/:id',upload.none(),deleteTagHandler)
+router.put('/tag/:id', upload.none(),updateTagHandler)
+router.get('/tag',upload.none(), getAllTagsHandler)
 
 router.post('/product', uploadS3.array('image'), addProductHandler)
-router.get('/product', getAllProductHandler)
-router.get('/product/:id', getProductHandler)
-router.put('/product/:id', updateProductHandler)
-router.put('/product/status/:id', updateProductStatusHandler)
-router.delete('/product/:id', deleteProductHandler)
+router.get('/product',upload.none(), getAllProductHandler)
+router.get('/product/:id',upload.none(), getProductHandler)
+router.put('/product/:id',upload.none(), updateProductHandler)
+router.put('/product/status/:id',upload.none(), updateProductStatusHandler)
+router.delete('/product/:id',upload.none(), deleteProductHandler)
 
-router.post('/product/tag',addProductTagHandler)
-router.get('/product/tag/:id', getProductTagsHandler)
-router.delete('/product/tag/:id', deleteProductTagHandler)
-router.put('/product/tag/:id', updateProductTagsHandler)
+router.post('/product/tag',upload.none(),addProductTagHandler)
+router.get('/product/tag/:id',upload.none(), getProductTagsHandler)
+router.delete('/product/tag/:id',upload.none(), deleteProductTagHandler)
+router.put('/product/tag/:id',upload.none(), updateProductTagsHandler)
 
-router.post('/product/review',addProductReviewHandler)
-router.get('/product/review/:id', getProductReviewHandler)
-router.delete('/product/review/:id', deleteProductReviewHandler)
-router.put('/product/review/:id', updateProductReviewHandler)
+router.post('/product/review',upload.none(),addProductReviewHandler)
+router.get('/product/review/:id',upload.none(), getProductReviewHandler)
+router.delete('/product/review/:id',upload.none(), deleteProductReviewHandler)
+router.put('/product/review/:id',upload.none(), updateProductReviewHandler)
 
-router.post('/product/rating',addProductRatingHandler)
-router.get('/product/rating/:id', getProductRatingHandler)
-router.delete('/product/rating/:id', deleteProductRatingHandler)
-router.put('/product/rating/:id', updateProductRatingHandler)
+router.post('/product/rating',upload.none(),addProductRatingHandler)
+router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
+router.delete('/product/rating/:id', upload.none(),deleteProductRatingHandler)
+router.put('/product/rating/:id', upload.none(),updateProductRatingHandler)
 
-router.post('/order/notification', addOrderNotificationHandler)
-router.get('/order/notification/:id', getOrderNotificationHandler)
-router.get('/order/notifications', getOrderNotificationByStoreIdHandler)
+router.post('/order/notification', upload.none(),addOrderNotificationHandler)
+router.get('/order/notification/:id', upload.none(),getOrderNotificationHandler)
+router.get('/order/notifications', upload.none(),getOrderNotificationByStoreIdHandler)
 
-router.post('/offer/notification', addOfferNotificationHandler)
-router.get('/offer/notification', getAllOfferNotificationsHandler)
-router.get('/offer/notification/store', getOfferNotificationByStoreIdHandler)
+router.post('/offer/notification',upload.none(), addOfferNotificationHandler)
+router.get('/offer/notification', upload.none(),getAllOfferNotificationsHandler)
+router.get('/offer/notification/store',upload.none(), getOfferNotificationByStoreIdHandler)
 
 router.post('/upload',uploadS3.array('file') ,uploadHandler)
 
-router.get('/profile/picture', getProfilePictureByProfileIdHandler)
+router.get('/profile/picture', upload.none(),getProfilePictureByProfileIdHandler)
 router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
-router.delete('/profile/picture', deleteProfilePictureHandler)
+router.delete('/profile/picture', upload.none(),deleteProfilePictureHandler)
 
-router.post('/return',  createReturnRequestHandler)
-router.get('/return', getAllReturnRequestsHandler)
-router.put('/return', updateReturnRequestStatusHandler)
+router.post('/return', upload.none(), createReturnRequestHandler)
+router.get('/return',upload.none(), getAllReturnRequestsHandler)
+router.put('/return',upload.none(),updateReturnRequestStatusHandler)
 
-router.post('/add/discount',bearer,checkAdmin,createDiscountCodeHandler);
-router.put('/update/active/:id',bearer,checkAdmin,updateActiveDiscountCodeHandler);
-router.put('/update/:id',bearer,checkAdmin,updateDisconnectHandler);
-router.delete('/remove/:id',bearer,checkAdmin,removeDiscountHandler);
-router.get('/getAll',bearer,checkAdmin,getAllDiscountHandlers);
-router.post('/checkCode',bearer,checkCodeHandler);
-router.get('/getAll/promo',bearer,checkAdmin,getAllPromoHandler);
-router.get('/get/:id',bearer,getPromoHandler);
+router.post('/add/discount',bearer,upload.none(),checkAdmin,createDiscountCodeHandler);
+router.put('/update/active/:id',bearer,upload.none(),checkAdmin,updateActiveDiscountCodeHandler);
+router.put('/update/:id',bearer,upload.none(),checkAdmin,updateDisconnectHandler);
+router.delete('/remove/:id',bearer,upload.none(),checkAdmin,removeDiscountHandler);
+router.get('/getAll',bearer,upload.none(),checkAdmin,getAllDiscountHandlers);
+router.post('/checkCode',bearer,upload.none(),checkCodeHandler);
+router.get('/getAll/promo',bearer,upload.none(),checkAdmin,getAllPromoHandler);
+router.get('/get/:id',bearer,upload.none(),getPromoHandler);
 
-router.post('/add/suggestion',bearer,addSuggestionHandler);
-router.delete('/remove/suggestion/:id',bearer,removeSuggestionHandler);
-router.put('/update/suggestion/:id',bearer,updateSuggestionHandler);
-router.get('/getAll/suggestion',bearer,checkAdmin,getAllSuggestionHandler);
-router.get('/get/mySuggestion/:id',bearer,getMySuggestionHandler);
-router.put('/update/suggestion/status/:id',bearer,checkAdmin,updateStatusSuggestionHandler);
+router.post('/add/suggestion',bearer,upload.none(),addSuggestionHandler);
+router.delete('/remove/suggestion/:id',bearer,upload.none(),removeSuggestionHandler);
+router.put('/update/suggestion/:id',bearer,upload.none(),updateSuggestionHandler);
+router.get('/getAll/suggestion',bearer,upload.none(),checkAdmin,getAllSuggestionHandler);
+router.get('/get/mySuggestion/:id',bearer,upload.none(),getMySuggestionHandler);
+router.put('/update/suggestion/status/:id',bearer,upload.none(),checkAdmin,updateStatusSuggestionHandler);
 
-router.post('/courierCompany', createCourierCompanyHandler);
-router.get('/courierCompanies', getAllCourierCompaniesHandler)
-router.get('/courierCompany', getCourierCompanyByCompanyIdHandler)
-router.put('/courierCompany/name', updateCourierCompanyNameHandler)
-router.put('/courierCompany/status/:id', updateCourierCompanyStatusHandler)
+router.post('/courierCompany',upload.none(), createCourierCompanyHandler);
+router.get('/courierCompanies', upload.none(),getAllCourierCompaniesHandler)
+router.get('/courierCompany',upload.none(), getCourierCompanyByCompanyIdHandler)
+router.put('/courierCompany/name',upload.none(), updateCourierCompanyNameHandler)
+router.put('/courierCompany/status/:id',upload.none(),checkAuth, updateCourierCompanyStatusHandler)
 
-router.post('/courier', createCourierHandler)
-router.put('/courier', updateCourierStatusHandler) 
-router.delete('/courier', deleteCourierHandler)
-router.get('/couriers', getAllCouriersHandler)
-router.get('/courier', getCourierByIdHandler)
-router.get('/courier/:id', getCourierByIdHandler)
+router.post('/courier',upload.none(),checkCourierCompany, createCourierHandler)
+router.put('/courier',upload.none(),checkCourier, updateCourierStatusHandler) 
+router.delete('/courier',upload.none(),checkCourierCompany, deleteCourierHandler)
+router.get('/couriers',upload.none(), checkAuth,getAllCouriersHandler)
+router.get('/courier',upload.none(), checkCourierCompany,getCourierByIdHandler)
+router.get('/companyCouriers',upload.none(), checkCourierCompany,getCouriersByCompanyIdHandler)
+router.get('/courier/:id',upload.none(), checkCourierCompany,getCourierByIdHandler)
 
-router.post('/courierTask', addCourierTaskHandler)
-router.get('/courierTasks', getAllCourierTasksHandler)
-router.get('/courierTask', getCourierTaskByIdHandler)
-router.put('/courierTask/status', updateCourierTaskStatusHandler)
-router.put('/courierTask/courierId', updateCourierTaskCourierIdHandler)
+router.post('/courierTask',upload.none(), addCourierTaskHandler)
+router.get('/courierTasks', upload.none(),getAllCourierTasksHandler)
+router.get('/courierTask',upload.none(), getCourierTaskByIdHandler)
+router.put('/courierTask/status',upload.none(), updateCourierTaskStatusHandler)
+router.put('/courierTask/courierId',upload.none(), updateCourierTaskCourierIdHandler)
 
-router.post('/deliveryTask', addDeliveryTaskHandler)
-router.get('/deliveryTasks', getAllDeliveryTasksHandler)
-router.put('/deliveryTask/companyId', updateDeliveryTaskCompanyIdHandler)
-router.put('/deliveryTask/courierId', updateDeliveryTaskCourierIdHandler)
-router.get('/deliveryTask/:id', getDeliveryTaskByIdHandler)
+router.post('/deliveryTask',upload.none() ,addDeliveryTaskHandler)
+router.get('/deliveryTasks',upload.none(),checkCourierCompanyStatus, getAllDeliveryTasksHandler)
+router.put('/deliveryTask/companyId',upload.none(), updateDeliveryTaskCompanyIdHandler)
+router.put('/deliveryTask/courierId',upload.none(), updateDeliveryTaskCourierIdHandler)
+router.get('/deliveryTask',upload.none(), getDeliveryTaskByIdHandler)
 
-router.post('/deliveryTask/notification', addDeliveryTaskNotificationHandler)
-router.get('/deliveryTask/notification',getDeliveryTaskNotificationByIdHandler)
-router.put('/deliveryTask/notification', updateDeliveryTaskHandler)
+router.post('/deliveryTask/notification',upload.none(), addDeliveryTaskNotificationHandler)
+router.get('/deliveryTask/notification',upload.none(),getDeliveryTaskNotificationByIdHandler)
+router.put('/deliveryTask/notification',upload.none(), updateDeliveryTaskHandler)
 
-router.post('/add/courier/feedback',bearer,addCourierFeedback);
-router.delete('/remove/courier/feedback/:id',bearer,removeCourierFeedback);
-router.put('/update/courier/feedback/:id',bearer,updateCourierFeedback);
-router.get('/get/courier/feedback/:id',bearer,getCourierFeedback);
-router.get('/getAll/courier/feedback',bearer,getAllCouriersFeedback);
+router.post('/add/courier/feedback',bearer,upload.none(),addCourierFeedback);
+router.delete('/remove/courier/feedback/:id',bearer,upload.none(),removeCourierFeedback);
+router.put('/update/courier/feedback/:id',bearer,upload.none(),updateCourierFeedback);
+router.get('/get/courier/feedback/:id',bearer,upload.none(),getCourierFeedback);
+router.get('/getAll/courier/feedback',bearer,upload.none(),getAllCouriersFeedback);
 
 // Test route
 router.get('/test', (req, res) => {
