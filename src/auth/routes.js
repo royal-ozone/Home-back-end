@@ -22,9 +22,13 @@ const {
     updateUserEmailHandler,
     updateUserMobileHandler,
     refreshHandler,
-    getAllUsersHandler,updateProfilers,deactivateAccountHandler } = require('./controllers/authController')
+    getAllUsersHandler
+    ,updateProfilers,
+    deactivateAccountHandler,
+    codePasswordHandler 
+    } = require('./controllers/authController')
     
-    const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
+const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
 
 
 const googleAuth = require('./oauth/google-oauth');
@@ -40,18 +44,21 @@ authRouter.post('/user/verification', bearer,upload.none(), sendVerificationCode
 authRouter.post('/user/verify', bearer, upload.none(),verifyUserHandler);
 authRouter.post('/user/send/message',upload.none(),sendMessageHandler);
 authRouter.post('/refresh', upload.none(),refreshHandler);
-authRouter.post('/deactivate', bearer,upload.none(), deactivateAccountHandler)
+authRouter.post('/deactivate', bearer,upload.none(), deactivateAccountHandler);
 
 authRouter.put('/user/password', bearer, upload.none(),updateUserPasswordHandler);
-authRouter.put('/user/password/reset', bearer, upload.none(),resetPasswordHandler);
-authRouter.put('/user/password/change', bearer,upload.none(), updateUserResetPasswordHandler);
+
+authRouter.post('/user/password/reset/mobile/55555',upload.none(),resetPasswordHandler);
+authRouter.post('/user/password/reset/code',upload.none(),codePasswordHandler);
+authRouter.put('/user/password/change',upload.none(), updateUserResetPasswordHandler);
+
 authRouter.put('/user/email', bearer, upload.none(),updateUserEmailHandler);
 authRouter.put('/user/mobile/:id', bearer, upload.none(),updateUserMobileHandler);
 authRouter.get('/user/all',bearer, checkAuth,upload.none(),getAllUsersHandler);
 
 authRouter.put('/update/profile/:id', bearer,upload.none(), updateProfilers);
 
-authRouter.post('/admin/add', bearer,upload.none(), addAdminHandler);
+authRouter.post('/admin/add',bearer,checkAdmin,upload.none(), addAdminHandler);
 
 authRouter.post('/mod/add',bearer, checkAdmin,upload.none(), addModHandler); //tested
 authRouter.delete('/mod/remove',bearer, checkAdmin,upload.none(), removeModHandler); //tested
