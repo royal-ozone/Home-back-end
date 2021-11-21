@@ -296,11 +296,11 @@ const addAdmin = async userId => {
     }
 };
 
-const addMod = async mobile => {
+const addMod = async email => {
     try {
-        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE email=$1;`;
         
-        let safeValues = [mobile];
+        let safeValues = [email];
         let result = await client.query(SQL, safeValues);
         
         if(!result.rows[0]){
@@ -331,11 +331,11 @@ const addMod = async mobile => {
     }
 };
 
-const removeMod = async (mobile) => {
+const removeMod = async (email) => {
     try {
-        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE email=$1;`;
         
-        let safeValues = [mobile];
+        let safeValues = [email];
         let result = await client.query(SQL, safeValues);
             if(!result.rows[0]){
                return (' you can not remove the mod ');
