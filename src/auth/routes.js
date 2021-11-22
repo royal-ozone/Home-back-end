@@ -25,7 +25,8 @@ const {
     getAllUsersHandler
     ,updateProfilers,
     deactivateAccountHandler,
-    codePasswordHandler 
+    codePasswordHandler ,
+    getAllBannedUsersHandler
     } = require('./controllers/authController')
     
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
@@ -53,10 +54,10 @@ authRouter.post('/user/password/reset/code',upload.none(),codePasswordHandler);
 authRouter.put('/user/password/change',upload.none(), updateUserResetPasswordHandler);
 
 authRouter.put('/user/email', bearer, upload.none(),updateUserEmailHandler);
-authRouter.put('/user/mobile/:id', bearer, upload.none(),updateUserMobileHandler);
+authRouter.put('/user/mobile', bearer, upload.none(),updateUserMobileHandler);
 authRouter.get('/user/all',bearer, checkAuth,upload.none(),getAllUsersHandler);
 
-authRouter.put('/update/profile/:id', bearer,upload.none(), updateProfilers);
+authRouter.put('/update/profile', bearer,upload.none(), updateProfilers);
 
 authRouter.post('/admin/add',bearer,checkAdmin,upload.none(), addAdminHandler);
 
@@ -64,7 +65,8 @@ authRouter.post('/mod/add',bearer, checkAdmin,upload.none(), addModHandler); //t
 authRouter.delete('/mod/remove',bearer, checkAdmin,upload.none(), removeModHandler); //tested
 
 authRouter.post('/user/ban',bearer, checkAuth, upload.none(),banUserHandler); //tested
-authRouter.delete('/user/ban/remove',bearer, checkAuth,upload.none(), removeBanUserHandler); //tested
+authRouter.get('/user/ban',bearer, checkAuth, upload.none(),getAllBannedUsersHandler);
+authRouter.delete('/user/ban',bearer, checkAuth,upload.none(), removeBanUserHandler); //tested
 
 
 module.exports = authRouter;

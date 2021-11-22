@@ -20,6 +20,8 @@ const { signup,
     updateProfileMobile, 
     getTokenByUserId, 
     deactivateAccount,
+    getAllBannedUsers,
+    updateProfileEmail
 } = require('../models/user')
 
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -97,11 +99,10 @@ const signupHandler = async (req, res, next) => {
 
 const updateProfilers = async (req, res, next) => {
     try {
-        let id = req.params.id
+        let id = req.user.id;
         let dataProfile = await getUserById(req.user.id);
-
-        let result = await updateProfilersModel(req.body, id)
-        let resultFromProfile = await updateUserModel(req.body, id)
+        let result = await updateProfilersModel({...dataProfile,...req.body}, id)
+        let resultFromProfile = await updateUserModel({...dataProfile,...req.body}, id)
         let response = {
             profile: result,
             user: resultFromProfile
@@ -252,107 +253,64 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
 const updateUserEmailHandler = async (req, res, next) => {
     try {
 
-        const oldEmail = req.body.old_email;
-        const newEmail = req.body.new_email;
+        const email = req.body.email;
+        let id = req.user.id;
+        // let user = await getUserById(req.user.id);
 
-        let user = await getUserById(req.user.id);
-
-        if (!oldEmail || !newEmail) {
+        if (!email) {
             res.status(403).json({
                 status: 403,
-                message: 'Missing parameters, old email or new email',
+                message: 'Missing parameters, email',
             });
         }
-
-        else if (user) {
-
-            let fixedEmailOld = oldEmail.toLowerCase().trim();
-            let fixedEmailNew = newEmail.toLowerCase().trim();
-
-            if (!validateEmail(fixedEmailNew)) {
-                res.status(403).json({
-                    status: 403,
-                    message: 'Invalid email format, please write a coorect email!',
-                });
-            }
-
-            else if (user.email !== fixedEmailOld) {
-                res.status(403).json({
-                    status: 403,
-                    message: 'Old email entry does not match your own email!',
-                });
-            }
             else {
+                let user = await updateUserEmail(id, email);
+                let profile = await updateProfileEmail(id,email)
 
-                user = await updateUserEmail(req.user.id, fixedEmailNew);
                 const response = {
                     status: 200,
                     message: 'Email updated successfully',
+                    user,
+                    profile
                 };
                 res.status(200).json(response);
             }
-        }
-        else {
-            res.status(403).json({
-                status: 403,
-                message: 'Something went wrong while getting user data!',
-            });
-        }
+        
     } catch (e) {
-        next(e);
+        res.send(e.message)
     }
 };
 
 const updateUserMobileHandler = async (req, res, next) => {
     try {
-        let id = req.params.id
-        const country = req.body.country_code;
-        const oldMobile = req.body.old_mobile;
-        const newMobile = req.body.new_mobile;
+        let id = req.user.id
+        const newMobile = req.body.mobile;
 
-        let user = await getUserById(id);
+        // let user = await getUserById(id);
 
-        if (!oldMobile || !newMobile || !country) {
+        if (!newMobile) {
             res.status(403).json({
                 status: 403,
                 message: 'Missing parameters, please enter all required fields!',
             });
         }
+            else  {
 
-        else if (user) {
-            let fixedMobileOld = oldMobile.trim();
-            let fixedMobileNew = newMobile.trim();
-
-            if (user.mobile !== fixedMobileOld) {
-                res.status(403).json({
-                    status: 403,
-                    message: 'Old mobile entry does not match your mobile number!',
-                });
-            }
-            else {
-
-                let result = await updateUserMobile(id, country, fixedMobileNew);
-                let resultFromProfile = await updateProfileMobile(id, fixedMobileNew);
-                let token = await getTokenByUserId(id)
-
+                let result = await updateUserMobile(id, newMobile);
+                let resultFromProfile = await updateProfileMobile(id, newMobile);
+                // let token = await getTokenByUserId(id)
                 const response = {
                     status: 200,
                     message: 'mobile updated successfully please verify your mobile number!',
                     user: result,
-                    profile: resultFromProfile,
-                    token: token
+                    profile: resultFromProfile
+                    // token: token
                 };
                 res.status(200).send(response);
             }
-        }
-        else {
-            res.status(403).json({
-                status: 403,
-                message: 'Old mobile is incorrect!',
-            });
-        }
+       
     } catch (e) {
-        next(e);
+        res.send(e.message)
     }
 };
 
@@ -555,8 +513,8 @@ const banUserHandler = async (req, res, next) => {
 const removeBanUserHandler = async (req, res, next) => {
     try {
 
-        let { mobile } = req.body;
-        let banned = await unbanUser(mobile);
+        let { id } = req.body;
+        let banned = await unbanUser(id);
         if (!banned) {
             res.status(200).json('Ban has been lifted from the user!')
 
@@ -570,6 +528,15 @@ const removeBanUserHandler = async (req, res, next) => {
         next(e);
     }
 };
+
+const getAllBannedUsersHandler = async (req, res) => {
+    try {
+        let response = await getAllBannedUsers()
+        res.status(200).json(response);
+    } catch (error) {
+        res.send(error.message)
+    }
+}
 
 const getAllUsersHandler = async (req, res, next) => {
     try {
@@ -617,5 +584,6 @@ module.exports = {
     getAllUsersHandler,
     updateProfilers,
     deactivateAccountHandler,
-    codePasswordHandler
+    codePasswordHandler,
+    getAllBannedUsersHandler
 }

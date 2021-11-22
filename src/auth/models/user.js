@@ -194,12 +194,21 @@ async function updateUserEmail(user_id, email) {
         throw new Error(e.message);
     }
 }
-
-async function updateUserMobile(user_id, country_code, mobile) {
+async function updateProfileEmail(user_id, email) {
     try {
-        const SQL = `UPDATE CLIENT SET mobile = $1, country_code=$2 , verified=$3 WHERE id = $4 RETURNING *;`;
+        const SQL = `UPDATE profile SET email = $1 WHERE user_id = $2 RETURNING *;`;
+        const safeValues = [email, user_id];
+        const result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (e) {
+        throw new Error(e.message);
+    }
+}
 
-        const safeValues = [mobile, country_code,false, user_id];
+async function updateUserMobile(user_id, mobile) {
+    try {
+        const SQL = `UPDATE CLIENT SET mobile = $1,verified=$2 WHERE id = $3 RETURNING *;`;
+        const safeValues = [mobile,false, user_id];
         const result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (e) {
@@ -374,22 +383,26 @@ const banUser = async (mobile) => {
     }
 };
 
-const unbanUser = async (mobile) => {
+const unbanUser = async (id) => {
     try {
-        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
-        
-        let safeValues = [mobile];
+        let SQL = `DELETE FROM BANNED_USER WHERE id=$1;`;
+        let safeValues = [id];
         let result = await client.query(SQL, safeValues);
-
-        let userId = result.rows[0].id;
-        SQL = `DELETE FROM BANNED_USER WHERE user_id=$1;`;
-        safeValues = [userId];
-        result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message);
     }
 };
+
+const getAllBannedUsers = async () =>{
+    try {
+        let SQL = 'SELECT * FROM BANNED_USER;'
+        let result = await client.query(SQL);
+        return result.rows
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 const getStoreIdByProfileId = async id =>{
     try {
@@ -480,6 +493,8 @@ module.exports = {
     activateAccount,
     getCompanyByProfileId,
     getCourierByProfileId, 
-    getProfileByEmail
+    getProfileByEmail,
+    getAllBannedUsers,
+    updateProfileEmail
 }
 
