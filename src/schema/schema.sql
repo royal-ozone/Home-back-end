@@ -143,10 +143,11 @@ CREATE TABLE store(
 
 CREATE TABLE parent_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  entitle VARCHAR(75) UNIQUE,
-  artitle VARCHAR(75) UNIQUE,
+  entitle VARCHAR(75) UNIQUE NOT NULL,
+  artitle VARCHAR(75) UNIQUE NOT NULL,
   metaTitle VARCHAR(100),
   content TEXT,
+  display BOOLEAN DEFAULT TRUE,
   created_at timestamp not null default current_timestamp
   
 );

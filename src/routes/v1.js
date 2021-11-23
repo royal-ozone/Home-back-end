@@ -9,7 +9,7 @@ const multer = require('multer');
 let upload = multer()
 
 
-const {addParentCategory,removeParentCategory,updateParentCategory,getParentCategoryById,getAllParentCategory,getParentCategoryByTitle} = require('../api/controllers/parentCategory');
+const {addParentCategory,removeParentCategory,updateParentCategory,getParentCategoryById,getAllParentCategory,getParentCategoryByTitle,updateDisplayParentCategory} = require('../api/controllers/parentCategory');
 const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategoryById,getAllChildCategory,getChildCategoryByTitle} = require('../api/controllers/childCategory');
 const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
 
@@ -88,7 +88,27 @@ const {addDeliveryTaskNotificationHandler, getDeliveryTaskNotificationByIdHandle
 
 
 // Global middleware
-router.use(bearer);
+// router.use(bearer);
+
+// end point for parent category 
+
+router.post('/add/PG',bearer,checkAdmin,upload.none(),addParentCategory);
+router.delete('/remove/PG',bearer,upload.none(),checkAdmin,removeParentCategory);
+router.put('/update/PG',bearer,upload.none(),checkAuth,updateParentCategory);
+router.put('/update/PG/display',bearer,upload.none(),checkAuth,updateDisplayParentCategory);
+router.get('/get/PG/:idPG',upload.none(),getParentCategoryById);
+router.get('/getAll/PG',upload.none(),getAllParentCategory);
+router.get('/search/title/PG/:title',upload.none(),getParentCategoryByTitle);
+
+
+// endpoint for child category
+
+router.post('/add/CG',bearer,upload.none(),checkAuth,addChildCategory);
+router.delete('/remove/CG',upload.none(),bearer,checkAuth,removeChildCategory);
+router.put('/update/CG',upload.none(),bearer,checkAuth,updateChildCategory);
+router.get('/get/CG/:idCG',upload.none(),getChildCategoryById);
+router.get('/getAll/CG',upload.none(),getAllChildCategory);
+router.get('/search/title/CG',upload.none(),getChildCategoryByTitle);
 
 router.post('/store',uploadS3.single('image'), createStoreHandler);
 router.put('/store',checkStoreAuth,upload.none(),updateStoreHandler);
@@ -113,20 +133,10 @@ router.get('/store/follower/:storeId',upload.none(), getStorefollowersHandler)
 router.post('/store/follower',upload.none(),createStorefollowerHandler)
 router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandler)
 
-router.post('/add/PG',bearer,checkAdmin,upload.none(),addParentCategory);
-router.delete('/remove/PG/:idPG',bearer,upload.none(),checkAdmin,removeParentCategory);
-router.put('/update/PG/:idPG',bearer,upload.none(),checkAuth,updateParentCategory);
-router.get('/get/PG/:idPG',bearer,upload.none(),checkAuth,getParentCategoryById);
-router.get('/getAll/PG',bearer,upload.none(),getAllParentCategory);
-router.get('/search/title/PG',bearer,upload.none(),getParentCategoryByTitle);
 
 
-router.post('/add/CG',bearer,upload.none(),checkAuth,addChildCategory);
-router.delete('/remove/CG/:idCG',upload.none(),bearer,checkAuth,removeChildCategory);
-router.put('/update/CG/:idCG',upload.none(),bearer,checkAuth,updateChildCategory);
-router.get('/get/CG/:idCG',upload.none(),bearer,checkAuth,getChildCategoryById);
-router.get('/getAll/CG',upload.none(),bearer,getAllChildCategory);
-router.get('/search/title/CG',bearer,upload.none(),getChildCategoryByTitle);
+
+
 
 
 router.post('/add/GCG',bearer,upload.none(),checkAuth,addGrandChildCategory);
