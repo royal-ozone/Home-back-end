@@ -5,9 +5,9 @@ const { deleteRemoteFile} = require('../middleware/uploader');
 
 const createStore = async data => {
     try {
-        let { profile_id, store_name, city, address, mobile, caption, about, store_picture } = data;
-        let SQL = 'INSERT INTO STORE (profile_id, store_name, city, address, mobile,caption, about,store_picture) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;';
-        let safeValues = [profile_id, store_name, city, address, mobile, caption, about, store_picture]
+        let { profile_id, store_name, city, caption, about, store_picture } = data;
+        let SQL = 'INSERT INTO STORE (profile_id, store_name, city,caption, about,store_picture) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;';
+        let safeValues = [profile_id, store_name, city, caption, about, store_picture]
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {

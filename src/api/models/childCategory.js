@@ -29,7 +29,6 @@ const removeChildCategoryModel = async (id) => {
 const updateChildCategoryModel = async (data) => {
     try {
         const {  entitle,artitle, metatitle, content ,id} = data;
-        console.log("🚀 ~ file: childCategory.js ~ line 32 ~ updateChildCategoryModel ~ data", data)
         let SQL =
           " UPDATE child_category SET entitle = $1,artitle = $2, metatitle = $3, content = $4 WHERE id = $5 RETURNING *;";
         let safeValue = [entitle,artitle, metatitle, content ,id];

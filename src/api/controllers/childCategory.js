@@ -21,10 +21,6 @@ const addChildCategory = async (req, res, next) => {
         );
     } else {
       let oldData = await getChildCategoryByTitleModel(req.body);
-      console.log(
-        "🚀 ~ file: childCategory.js ~ line 14 ~ addChildCategory ~ oldData",
-        oldData
-      );
       if (!oldData) {
         let data = await addChildCategoryModel(req.body);
         let response = {

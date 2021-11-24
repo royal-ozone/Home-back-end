@@ -1,3 +1,4 @@
+const client = require('../../db')
 
  const {
     getDiscountCodeById
@@ -66,15 +67,21 @@ const timer =  (year,month,day,hour,minute,second)=>{
     ahmad3.push(ahmad2);
  }
 
+    const checkUserAuth = async(tableName,id, profile_id)=>{
+        let SQL = `SELECT * FROM ${tableName} WHERE id =$1;`;
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue)
+        if(result.rows[0].profile_id === profile_id){
+            return result.rows[0];
+        } else {
+            return 'not Authorized';
+        }
+    }
     
-    
-
-
-
-
 
 module.exports = {
     calculation,
     timer,
     myTimer,
+    checkUserAuth
 }
