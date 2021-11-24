@@ -28,8 +28,8 @@ INSERT INTO ADMINISTRATOR (id,user_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e8
 INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec','14a60467-c390-4ca7-a1be-5d0ee11d9ad8');
 
 ------------------------- Stores Table ----------------------------------
-INSERT INTO store(id,profile_id,store_name,city,address,mobile,caption,about,store_picture,store_rating) VALUES 
-('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','دوار الداخلية عمارة رقم 13 ','0695821','love live love dk-beauty','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','5');
+INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
+('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','5');
 
 ------------------------------- parent_category -----------------------------------------
 INSERT INTO parent_category(id,entitle,artitle ,metaTitle,content) VALUES 

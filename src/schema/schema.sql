@@ -123,11 +123,9 @@ CREATE TABLE banned_user(
 CREATE TABLE store(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
-  store_name VARCHAR (250) NOT NULL,
+  store_name VARCHAR (250) NOT NULL UNIQUE,
   name_is_changed BOOLEAN DEFAULT FALSE,
   city VARCHAR (250) NOT NULL,
-  address VARCHAR (250) DEFAULT 'Remote',
-  mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
   store_picture TEXT,
@@ -269,6 +267,7 @@ CREATE TABLE store_review(
 CREATE TABLE address(
    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
    profile_id uuid NOT NULL,
+   store_id uuid,
    country VARCHAR (250) NOT NULL DEFAULT 'jordan',
    city VARCHAR(250) NOT NULL,
    first_name VARCHAR (250) NOT NULL,
@@ -277,7 +276,10 @@ CREATE TABLE address(
    street_name VARCHAR(250) NOT NULL,
    building_number VARCHAR (250) NOT NULL,
    apartment_number VARCHAR (250),
-   FOREIGN KEY (profile_id) REFERENCES profile(id)
+   display BOOLEAN DEFAULT TRUE,
+
+   FOREIGN KEY (profile_id) REFERENCES profile(id),
+   FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
 CREATE TABLE new_order(

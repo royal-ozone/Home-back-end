@@ -1,15 +1,12 @@
 'use strict';
 
-const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel} =require('../models/address');
+const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById} =require('../models/address');
 const {getUserById,getProfileByUserId,getAddressByProfileId}=require('../../auth/models/user')
-
+const {checkUserAuth} = require('./helper')
 
 const addAddressHandler =async(req, res, next) => {
     try {
-        
-        let oldData =await getUserById(req.user.id)
-        let profileId = await getProfileByUserId(req.user.id);
-        let data= await addAddressModel(req.body,oldData,profileId)
+        let data= await addAddressModel({profile_id: req.user.profile_id, country: req.user.country,store_id: req.user.store_id,...req.body})
         let response ={
             message:'Successfully add address',
             data : data
@@ -20,35 +17,38 @@ const addAddressHandler =async(req, res, next) => {
     }
 }
 const removeAddressHandler= async (req, res,next) => {
-
     try {
-        
-        let address = await getAddressByProfileId(req.user.profile_id)
-        if(address) {
-
-            let data= await removeAddressModel(req.params.id);
-            let response ={
-                message:'the address is delete',
-                data:data
-            }
-            res.status(200).send(response)
-        }else {
-            res.status(304).send("the address is not exist")
-        }
+            let result = await checkUserAuth('address',req.body.id, req.user.profile_id);
+            if(result !== 'not Authorized'){
+                let data = await removeAddressModel(req.body.id);
+                if(data){
+                    let response ={
+                        message:'the address has been deleted',
+                        data:data
+                    }
+                    res.status(200).send(response)
+                } else {
+                    res.status(403).send('this address is not exist')
+                } 
+            } else res.status(403).send(result)
 
     } catch (error) {
-        res.status(400).send(error.message)
+        res.status(403).send(error.message)
     }
 }
 const updateAddressHandler = async (req, res,next ) => {
     try {
-        let oldData = await getAddressByProfileId(req.user.profile_id)
-        let data = await updateAddressModel(req.params.id,oldData,req.body);
-        let response = {
+        let result = await checkUserAuth('address',req.body.id, req.user.profile_id);
+        if(result !== 'not Authorized'){
+            let oldData = await getAddressById(req.body.id)
+            let data = await updateAddressModel({...oldData,...req.body});
+            let response = {
             message: 'successfully update address',
             data :data
         }
         res.status(200).send(response)
+        } else res.status(403).send(result)
+        
     } catch (error) {
         let response = {
             message: error.message,

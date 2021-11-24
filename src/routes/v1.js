@@ -110,17 +110,26 @@ router.get('/get/CG/:idCG',upload.none(),getChildCategoryById);
 router.get('/getAll/CG',upload.none(),getAllChildCategory);
 router.get('/search/title/CG',upload.none(),getChildCategoryByTitle);
 
-router.post('/store',uploadS3.single('image'), createStoreHandler);
-router.put('/store',checkStoreAuth,upload.none(),updateStoreHandler);
-router.delete('/store',checkStoreAuth,upload.none(), deleteStoreHandler);
-router.get('/store',upload.none(), getStoreHandler);
-router.put('/store/name',checkStoreAuth, upload.none(),updateStoreNameHandler);
-router.put('/store/status',checkAuth, upload.none(),updateStoreStatusHandler);
+// grand Child Category
+
+router.post('/add/GCG',bearer,upload.none(),checkAuth,addGrandChildCategory);
+router.delete('/remove/GCG',bearer,upload.none(),checkAuth,removeGrandChildCategory);
+router.put('/update/GCG',bearer,upload.none(),checkAuth,updateGrandChildCategory);
+router.get('/get/GCG/:idGCG',upload.none(),checkAuth,getGrandChildCategoryById);
+router.get('/getAll/GCG',upload.none(),getAllGrandChildCategory);
+router.get('/search/title/GCG',upload.none(),getGrandChildCategoryByTitle);
+
+router.post('/store',bearer, uploadS3.single('image'), createStoreHandler);
+router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
+router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
+router.get('/store',bearer,upload.none(), getStoreHandler);
+router.put('/store/name',bearer,checkStoreAuth, upload.none(),updateStoreNameHandler);
+router.put('/store/status',bearer,checkAuth, upload.none(),updateStoreStatusHandler);
 router.get('/store/all',upload.none(), getAllStoresHandler)
-router.get('/store/status/:status',checkAuth, upload.none(),getStoreByStatusHandler)
+router.get('/store/status/:status',bearer,checkAuth, upload.none(),getStoreByStatusHandler)
 router.get('/store/name/:name', upload.none(),getStoreByNameHandler)
-router.put('/store/picture',uploadS3.single('image'), updateStorePictureHandler);
-router.delete('/store/picture',upload.none(), deleteStorePictureHandler)
+router.put('/store/picture',bearer,uploadS3.single('image'), updateStorePictureHandler);
+router.delete('/store/picture',bearer,upload.none(), deleteStorePictureHandler)
 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)
 router.get('/store/review/:storeId', upload.none(),getStoreReviewHandler)
@@ -136,21 +145,9 @@ router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandle
 
 
 
-
-
-
-router.post('/add/GCG',bearer,upload.none(),checkAuth,addGrandChildCategory);
-router.delete('/remove/GCG/:idGCG',bearer,upload.none(),checkAuth,removeGrandChildCategory);
-router.put('/update/GCG/:idGCG',bearer,upload.none(),checkAuth,updateGrandChildCategory);
-router.get('/get/GCG/:idGCG',bearer,upload.none(),checkAuth,getGrandChildCategoryById);
-router.get('/getAll/GCG',bearer,upload.none(),getAllGrandChildCategory);
-router.get('/search/title/GCG',bearer,upload.none(),getGrandChildCategoryByTitle);
-
-
-
 router.post('/add/address',bearer,upload.none(),addAddressHandler);
-router.delete('/remove/address/:id',bearer,upload.none(),removeAddressHandler);
-router.put('/update/address/:id',bearer,upload.none(),updateAddressHandler);
+router.put('/remove/address',bearer,upload.none(),removeAddressHandler);
+router.put('/update/address',bearer,upload.none(),updateAddressHandler);
 router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
 router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
 

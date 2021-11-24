@@ -1,11 +1,10 @@
 'use strict' ;
 const client = require('../../db')
-const addAddressModel = async(data,oldData,profileId)=>{
+const addAddressModel = async(data)=>{
     try {
-        let SQL = 'INSERT INTO address(profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING * ;';
-        const {street_name,building_number,apartment_number,city,first_name,last_name,mobile} =data ;
-        const {country} =oldData;
-        let safeValue = [profileId.id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number];
+        let SQL = 'INSERT INTO address(profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING * ;';
+        const {profile_id, country, street_name,building_number,apartment_number,city,first_name,last_name,mobile,store_id} =data ;
+        let safeValue = [profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
     } catch (error) {
@@ -17,8 +16,8 @@ const addAddressModel = async(data,oldData,profileId)=>{
 }
 const removeAddressModel = async (id)=>{
     try {
-        let SQL = 'DELETE from address where id =$1;';
-        let safeValue = [id];
+        let SQL = 'UPDATE address SET display=$1 where id =$2 RETURNING * ;';
+        let safeValue = [false,id];
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
     } catch (error) {
@@ -28,12 +27,12 @@ const removeAddressModel = async (id)=>{
         return response;
     }
 }
-const updateAddressModel = async (id,oldData,data) => {
+const updateAddressModel = async (data) => {
     try {
-        let SQL ='UPDATE address SET country = $1,city =$2,mobile=$3,street_name =$4,building_number=$5,apartment_number=$6 WHERE id =$7 RETURNING * ;';
+        let SQL ='UPDATE address SET country = $1,city =$2,mobile=$3,street_name =$4,building_number=$5,apartment_number=$6,first_name=$8, last_name=$9  WHERE id =$7 RETURNING * ;';
       
-        const {country,city,mobile,street_name,building_number,apartment_number} = data;
-        let safeValue = [country?country:oldData.country ,city?city:oldData.city,mobile?mobile:oldData.mobile,street_name?street_name:oldData.street_name,building_number?building_number:oldData.building_number,apartment_number?apartment_number:oldData.apartment_number,id];
+        const {country,city,mobile,street_name,building_number,apartment_number,id,first_name, last_name} = data;
+        let safeValue = [country,city,mobile,street_name,building_number,apartment_number, id,first_name, last_name];
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
     } catch (error) {
@@ -68,6 +67,17 @@ const getAddressByProfileIdModel = async (id)=>{
         return response;
     }
 }
+
+const getAddressById = async (id)=>{
+    try {
+        let SQL ='SELECT * FROM address WHERE id= $1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 module.exports = {
-    addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel
+    addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById
 }
