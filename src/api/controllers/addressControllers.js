@@ -1,14 +1,23 @@
 'use strict';
 
 const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById} =require('../models/address');
-const {getUserById,getProfileByUserId,getAddressByProfileId}=require('../../auth/models/user')
 const {checkUserAuth} = require('./helper')
 
 const addAddressHandler =async(req, res, next) => {
     try {
+        let result = await getAddressByProfileIdModel(req.user.profile_id);
+        if(result.length === 0){
+            req.body.is_default =true
+        } else if  (result && req.body.is_default) {
+            result.map(val =>{
+                updateAddressModel({...val, is_default: false})
+            })
+        } else {
+            req.body.is_default = false
+        }
         let data= await addAddressModel({profile_id: req.user.profile_id, country: req.user.country,store_id: req.user.store_id,...req.body})
         let response ={
-            message:'Successfully add address',
+            message:'Successfully added your address',
             data : data
         }
         res.status(200).send(response)
