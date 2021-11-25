@@ -277,6 +277,7 @@ CREATE TABLE address(
    building_number VARCHAR (250) NOT NULL,
    apartment_number VARCHAR (250),
    display BOOLEAN DEFAULT TRUE,
+   is_default BOOLEAN,
 
    FOREIGN KEY (profile_id) REFERENCES profile(id),
    FOREIGN KEY (store_id) REFERENCES store(id)
