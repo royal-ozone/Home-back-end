@@ -23,7 +23,7 @@ const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderH
 
 const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus} = require ('../auth/middleware/acl')
 
-const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
+const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
 const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api/controllers/productTagController')
 const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
@@ -146,10 +146,13 @@ router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePi
 
 router.post('/product',bearer,checkStoreAuth, uploadS3.array('image'), addProductHandler)
 router.get('/product',upload.none(), getAllProductHandler)
+router.get('/product/store', bearer, checkStoreAuth, upload.none(), getStoreProductsHandler)
 router.get('/product/:id',upload.none(), getProductHandler)
 router.put('/product',bearer,checkStoreAuth,upload.none(), updateProductHandler)
-router.put('/product/status/:id',upload.none(), updateProductStatusHandler)
+router.put('/product/status',bearer,checkAuth,upload.none(), updateProductStatusHandler)
 router.delete('/product',upload.none(), deleteProductHandler)
+router.put('/product/picture', bearer, uploadS3.array('image'), updateProductPictureHandler )
+router.delete('/product/picture',bearer,checkStoreAuth,upload.none(), deleteProductPictureHandler)
 
 
 // store review 

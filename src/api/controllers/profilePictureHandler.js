@@ -6,7 +6,7 @@ const updateProfilePictureHandler = async (req,res) => {
         let result = await getProfilePictureByProfileId(req.user.profile_id);
         await deleteRemoteFile(result.profile_picture);
         let result2 = await updateProfilePicture({profile_id: req.user.profile_id, profile_picture: req.file.location})  
-        res.status(200).send('profile picture updated successfully');      
+        res.status(200).json({message:'profile picture updated successfully', response: result2});      
     } catch (error) {
         res.send(error.message)
     }

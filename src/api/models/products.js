@@ -4,7 +4,7 @@ const addProduct = async data => {
     try {
         
         let {store_id,entitle,artitle,metatitle, sku, price, brand_name, description, quantity,age,size,parent_category_id,child_category_id,grandchild_category_id} = data;
-        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,description,quantity,age,size,parent_category_id,child_category_id,grandchild_category_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *;`;
+        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,description,quantity, age, size,parent_category_id,child_category_id,grandchild_category_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11 ,$12,$13,$14) RETURNING *;`;
         if(!entitle && artitle){
             entitle = artitle
         } else if(!artitle && entitle){
@@ -40,6 +40,16 @@ const getProduct = async data => {
     }
 };
 
+const getStoreProducts = async id => {
+    try {
+        let SQL = `SELECT * FROM product WHERE store_id =$1;`;
+        let result = await client.query(SQL,[id]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 
 const updateProduct = async (id,data) => {
     try {
@@ -54,10 +64,11 @@ const updateProduct = async (id,data) => {
     }
 };
 
-const updateProductStatus = async (id,data) => {
+const updateProductStatus = async (data) => {
     try {
+        let {id, status } = data;
         let SQL = `UPDATE product SET status=$1 WHERE id=$2 RETURNING *;`
-        let safeValue = [data.status, id]
+        let safeValue = [status, id]
         let result = await client.query(SQL,safeValue)
         return result.rows[0];
     } catch (error) {
@@ -76,5 +87,15 @@ const deleteProduct = async id =>{
     }
 }
 
+const updateProductDisplay = async id =>{
+    try {
+        let SQL = 'UPDATE product SET display=$1 WHERE id=$2 RETURNING *;'
+        let result = await client.query(SQL, [false,id])
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct};
+
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts};

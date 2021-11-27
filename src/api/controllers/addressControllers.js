@@ -62,7 +62,7 @@ const updateAddressHandler = async (req, res,next ) => {
         let response = {
             message: error.message,
         }
-        res.status(400).send(response)
+        res.status(403).send(response)
     }
 }
 const getAllAddressHandler =async (req, res, next)=>{
