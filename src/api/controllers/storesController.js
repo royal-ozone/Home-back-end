@@ -34,6 +34,7 @@ const createStoreHandler = async (req, res) => {
             res.status(200).json({
                 status: 200,
                 message: 'Store request created successfully',
+                data: result
             });
         }
 
@@ -78,6 +79,7 @@ const updateStoreHandler = async (req, res) => {
             res.status(200).json({
                 status: 200,
                 message: 'Store info has been updated successfully',
+                data: result
             });
         }
 
@@ -107,6 +109,7 @@ const updateStoreNameHandler = async (req, res) => {
             res.status(200).json({
                 status: 200,
                 message: 'Store name has been changed successfully',
+                data:result
             });
         }
     } catch (error) {
@@ -122,6 +125,7 @@ const deleteStoreHandler = async (req, res) => {
             res.status(200).json({
                 status: 200,
                 message: 'Store info has been deleted successfully',
+                data:result
             });
         }
 
@@ -154,6 +158,7 @@ const getStoreByStatusHandler = async (req, res) => {
         let status = req.params.status;
         let response = await getStoreByStatus(status);
         res.status(200).json({
+            number:response.length,
             status: 200,
             data: response,
         })
@@ -182,7 +187,8 @@ const updateStoreStatusHandler = async (req, res) => {
         let response = await updateStoreStatus(req.body)
         res.status(200).json({
             status: 200,
-            message: 'Store Status has been updated successfully'
+            message: 'Store Status has been updated successfully',
+            data:response
         })
     } catch (error) {
         res.status(403).send(error.message)
@@ -361,11 +367,15 @@ const deleteStorefollowerHandler = async (req, res) => {
 
 const updateStorePictureHandler = async(req, res) => {
     try {
-        let result = await updateStorePicture(req.user.store_id, req.file.location)
-        res.status(200).json({
-            message: 'store picture has been updated successfully',
-            result: result
-        })
+        let id = req.user.store_id || req.body.store_id;
+        let result = await updateStorePicture(id, req.file.location)
+        if(result){
+            res.status(200).json({
+                message: 'store picture has been updated successfully',
+                result: result
+            })
+        }
+       res.status(403).send('yon do not have any store')
         
     } catch (error) {
         res.status(403).send(error.message)
@@ -374,7 +384,8 @@ const updateStorePictureHandler = async(req, res) => {
 
 const deleteStorePictureHandler = async(req, res) => {
     try {
-        let result = await deleteStorePicture(req.user.profile_id,req.user.store_id)
+        let id = req.user.store_id || req.body.store_id;
+        let result = await deleteStorePicture(id)
         res.status(200).json({
             message: 'store picture has been deleted successfully',
             result: result

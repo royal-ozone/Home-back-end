@@ -21,7 +21,7 @@ const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderH
 
 
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus} = require ('../auth/middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus} = require ('../auth/middleware/acl')
 
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
@@ -119,18 +119,40 @@ router.get('/get/GCG/:idGCG',upload.none(),checkAuth,getGrandChildCategoryById);
 router.get('/getAll/GCG',upload.none(),getAllGrandChildCategory);
 router.get('/search/title/GCG',upload.none(),getGrandChildCategoryByTitle);
 
+// address 
+
+router.post('/add/address',bearer,upload.none(),addAddressHandler);
+router.put('/remove/address',bearer,upload.none(),removeAddressHandler);
+router.put('/update/address',bearer,upload.none(),updateAddressHandler);
+router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
+router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
+
+// store 
+
 router.post('/store',bearer, uploadS3.single('image'), createStoreHandler);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
 router.get('/store',bearer,upload.none(), getStoreHandler);
-router.put('/store/name',bearer,checkStoreAuth, upload.none(),updateStoreNameHandler);
-router.put('/store/status',bearer,checkAuth, upload.none(),updateStoreStatusHandler);
+router.get('/store/name/:name', upload.none(),getStoreByNameHandler)
 router.get('/store/all',upload.none(), getAllStoresHandler)
 router.get('/store/status/:status',bearer,checkAuth, upload.none(),getStoreByStatusHandler)
-router.get('/store/name/:name', upload.none(),getStoreByNameHandler)
-router.put('/store/picture',bearer,uploadS3.single('image'), updateStorePictureHandler);
-router.delete('/store/picture',bearer,upload.none(), deleteStorePictureHandler)
+router.put('/store/name',bearer,checkStoreAuth, upload.none(),updateStoreNameHandler);
+router.put('/store/status',bearer,checkAuth, upload.none(),updateStoreStatusHandler);
+router.put('/store/picture',bearer,checkStoreAuth,uploadS3.single('image'),updateStorePictureHandler);
+router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePictureHandler)
 
+
+// product 
+
+router.post('/product',bearer,checkStoreAuth, uploadS3.array('image'), addProductHandler)
+router.get('/product',upload.none(), getAllProductHandler)
+router.get('/product/:id',upload.none(), getProductHandler)
+router.put('/product',bearer,checkStoreAuth,upload.none(), updateProductHandler)
+router.put('/product/status/:id',upload.none(), updateProductStatusHandler)
+router.delete('/product',upload.none(), deleteProductHandler)
+
+
+// store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)
 router.get('/store/review/:storeId', upload.none(),getStoreReviewHandler)
 router.post('/store/review',upload.none(),createStoreReviewHandler)
@@ -145,11 +167,7 @@ router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandle
 
 
 
-router.post('/add/address',bearer,upload.none(),addAddressHandler);
-router.put('/remove/address',bearer,upload.none(),removeAddressHandler);
-router.put('/update/address',bearer,upload.none(),updateAddressHandler);
-router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
-router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
+
 
 
 router.post('/add/cart',bearer,upload.none(),addCartHandler);
@@ -171,12 +189,7 @@ router.delete('/tag/:id',upload.none(),deleteTagHandler)
 router.put('/tag/:id', upload.none(),updateTagHandler)
 router.get('/tag',upload.none(), getAllTagsHandler)
 
-router.post('/product', uploadS3.array('image'), addProductHandler)
-router.get('/product',upload.none(), getAllProductHandler)
-router.get('/product/:id',upload.none(), getProductHandler)
-router.put('/product/:id',upload.none(), updateProductHandler)
-router.put('/product/status/:id',upload.none(), updateProductStatusHandler)
-router.delete('/product/:id',upload.none(), deleteProductHandler)
+
 
 router.post('/product/tag',upload.none(),addProductTagHandler)
 router.get('/product/tag/:id',upload.none(), getProductTagsHandler)
