@@ -28,9 +28,9 @@ const deleteStore = async id => {
 
 const updateStore = async (id, data) => {
     try {
-        let { city, address, mobile, caption, about } = data;
-        let SQL = 'UPDATE STORE SET city=$1, address=$2, mobile=$3, caption=$4,about=$5 WHERE profile_id=$6 RETURNING *;';
-        let safeValues = [city, address, mobile, caption, about, id];
+        let { city, caption, about } = data;
+        let SQL = 'UPDATE STORE SET city=$1,caption=$2,about=$3 WHERE profile_id=$4 RETURNING *;';
+        let safeValues = [city,caption, about, id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -53,7 +53,7 @@ const updateStoreName = async (id, data) => {
 
 const getStore = async (id) => {
     try {
-        let SQL = 'SELECT * FROM STORE WHERE profile_id=$1;';
+        let SQL = 'SELECT * FROM STORE WHERE profile_id=$1 OR id=$1;';
         let safeValues = [id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
@@ -274,12 +274,13 @@ const updateStorePicture = async (id, data) => {
     }
 };
 
-const deleteStorePicture = async (id, storeId) => {
+const deleteStorePicture = async (id) => {
     try {
         let result = await getStore(id);
+        console.log("🚀 ~ file: stores.js ~ line 280 ~ deleteStorePicture ~ result", result)
         await deleteRemoteFile(result.store_picture)
         let SQL = 'UPDATE STORE SET store_picture=$1 where id=$2 RETURNING *;'
-        let safeValues = [process.env.DEFAULT_STORE_PICTURE,storeId];
+        let safeValues = [process.env.DEFAULT_STORE_PICTURE,id];
         let result2 = await client.query(SQL, safeValues);
         return result2.rows[0];
     } catch (error) {

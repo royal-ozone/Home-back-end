@@ -22,7 +22,7 @@ INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) 
 
 
 ------------------------- Administrator Table ----------------------------------
-INSERT INTO ADMINISTRATOR (id,user_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e83d22','4b9a4f7b-6c1c-4039-9e29-26909a63021c');
+INSERT INTO ADMINISTRATOR (id,user_id,profile_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e83d22','4b9a4f7b-6c1c-4039-9e29-26909a63021c','d7a36645-a598-4584-a158-23615a865ac9');
 
 ------------------------- Moderator Table ----------------------------------
 INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec','14a60467-c390-4ca7-a1be-5d0ee11d9ad8');

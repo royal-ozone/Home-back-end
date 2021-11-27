@@ -15,6 +15,7 @@ const { deleteRemoteFile} = require('../middleware/uploader');
 
 const addProductHandler = async(req, res) => {
     try {
+      
         let result = await addProduct({store_id: req.user.store_id,...req.body})
         let pictures =[];
         if(req.files){
@@ -58,8 +59,9 @@ const getProductHandler = async(req, res) => {
 
 const updateProductHandler = async(req, res) => {
     try {
-        let id = req.params.id;
-        let result = await updateProduct(id, {store_id: req.user.store_id,...req.body});
+        let id = req.body.id;
+        let store_id=req.user.store_id || req.body.store_id ;
+        let result = await updateProduct(id, {store_id:store_id,...req.body});
         res.status(200).json({message:'product has been updated successfully' ,result});
     } catch (error) {
       res.send(error.message)
@@ -68,7 +70,7 @@ const updateProductHandler = async(req, res) => {
 
 const deleteProductHandler = async(req, res) => {
     try {
-        let id = req.params.id;
+        let id = req.body.id;
         await deleteProductReviewByProductId(id);
         await deleteProductTagByProductId(id);
         await deleteProductRatingByProductId(id);

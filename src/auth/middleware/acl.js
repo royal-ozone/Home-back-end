@@ -1,9 +1,9 @@
 const client = require('../../db')
 const { getProfileByUserId, activateAccount } = require('../models/user')
 
-const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany')
-const {getCourierById} = require('../../api/models/courier')
-
+const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany');
+const {getCourierById} = require('../../api/models/courier');
+const {getStore} =require('../../api/models/stores');
 // comment on product
 
 let productComment = async (req, res, next) => {
@@ -101,12 +101,12 @@ let checkAuth = async (req, res, next) => {
     }
 };
 
-let checkStoreOwner = async (userId) => {
+let checkStoreOwner = async (profile_id) => {
     try {
-        let profile = await getProfileByUserId(userId);
+       
 
         let SQL = `SELECT * FROM STORE WHERE profile_id=$1;`;
-        let safeValue = [profile.id];
+        let safeValue = [profile_id];
 
         let result = await client.query(SQL, safeValue);
         return result;
@@ -117,7 +117,7 @@ let checkStoreOwner = async (userId) => {
 
 let checkStoreAuth = async (req, res, next) => {
     try {
-        let storeOwner = await checkStoreOwner(req.user.id)
+        let storeOwner = await checkStoreOwner(req.user.profile_id);
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
@@ -228,4 +228,23 @@ const checkCourierStatus = async (req, res, next) =>{
     }
 }
 
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus };
+const checkStoreStatus = async (req, res, next) =>{
+    try {
+        let result = await getStore(req.user.profile_id)
+        if(result.status === 'approved'){
+            next()
+        } else if(result.status === 'pending'){
+            res.status(403).send('your account status still pending')
+        } else if(result.status === 'rejected') {
+            res.status(403).send('your account status is rejected, please check rejection reason')
+        }  else {
+            res.status(403).send('please check your account status')
+        }
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+
+
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus};

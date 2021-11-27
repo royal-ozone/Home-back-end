@@ -42,12 +42,12 @@ DROP TABLE IF EXISTS suggestion;
 DROP TABLE IF EXISTS promo;
 DROP TABLE IF EXISTS discount_code;
 
-DROP TABLE IF EXISTS profile;
 -- DROP TABLE IF EXISTS user_file;
 
 DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
 DROP TABLE IF EXISTS banned_user;
+DROP TABLE IF EXISTS profile;
 DROP TABLE IF EXISTS client;
 
 
@@ -102,8 +102,9 @@ CREATE TABLE profile(
 CREATE TABLE administrator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
-  
-  FOREIGN KEY (user_id) REFERENCES client(id)
+  profile_id uuid NOT NULL UNIQUE,
+  FOREIGN KEY (user_id) REFERENCES client(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 CREATE TABLE moderator(
@@ -177,7 +178,7 @@ CREATE TABLE product(
   enTitle VARCHAR(250) NOT NULL,
   arTitle VARCHAR(250) NOT NULL,
   metaTitle VARCHAR(100),
-  sku VARCHAR(100),
+  sku VARCHAR(100) UNIQUE,
   parent_category_id uuid NOT NULL,
   child_category_id uuid NOT NULL,
   grandchild_category_id uuid,
@@ -189,12 +190,13 @@ CREATE TABLE product(
   description text NOT NULL,
   quantity INT NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
-  created_at timestamp not null default current_timestamp,
-  
+  age VARCHAR(250) DEFAULT '15-30' NOT NULL,
+  size VARCHAR(250),
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
   FOREIGN KEY (child_category_id) REFERENCES child_category(id),
-  FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id)
+  FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id),
+  created_at timestamp not null default current_timestamp
 );
 
 CREATE TABLE product_review(
