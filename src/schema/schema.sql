@@ -192,6 +192,7 @@ CREATE TABLE product(
   status VARCHAR(250) DEFAULT 'pending',
   age VARCHAR(250) DEFAULT '15-30' NOT NULL,
   size VARCHAR(250),
+  display BOOLEAN DEFAULT TRUE,
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
   FOREIGN KEY (child_category_id) REFERENCES child_category(id),
