@@ -47,16 +47,6 @@ const deleteProductTagByProductId = async product_id => {
     }
 }
 
-const updateProductTag = async (id, data) =>{
-    try {
-        let {product_tag, tag_id} = data;
-        let SQL = 'UPDATE product_tag SET product_id=$1, tag_id=$2 WHERE id=$3 RETURNING *;';
-        let safeValues = [product_tag, tag_id, id]
-        let result = await client.query(SQL, safeValues)
-        return result.rows[0];
-    } catch (error) {
-        throw new Error(error.message)
-    }
-} 
 
-module.exports = {deleteProductTag, updateProductTag,getProductTags,addProductTag,deleteProductTagByProductId}
+
+module.exports = {deleteProductTag,getProductTags,addProductTag,deleteProductTagByProductId}

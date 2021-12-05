@@ -22,19 +22,21 @@ const addCartHandler= async (req, res,next) => {
         let response = {
             message: error.message,
         }
-        res.status(430).send(response)
+        res.status(403).send(response)
     }
 }
-const addCartItemHandler =async (req, res, next)=>{
+const addCartItemHandler =async (req, res)=>{
     try {
-        let product_id =req.query.productId;
-        let result = await getCartByProfileId(req.user.profile_id)
-        let data= await addCartItemModel(result.id,req.body,product_id);
-        let response = {
-            message:'successfully add cart item ',
-            data :data
+        let data= await addCartItemModel(req.user.cart_id,req.body);
+        if(data.id){
+            let response = {
+                message:'successfully added cart item ',
+                ...data
+            }
+            res.status(200).send(response)
+        } else {
+            res.status(403).send(data)
         }
-        res.status(200).send(response)
     } catch (error) {
         let response = {
             message: error.message,
@@ -47,7 +49,6 @@ const removeCartItemHandler =async (req, res, next)=> {
         let cart_item_id = req.query.id;
         
         let checkData =await getCartItemByIdModel(cart_item_id)
-        console.log("🚀 ~ file: cartControllers.js ~ line 44 ~ removeCartItemHandler ~ checkData", checkData)
         if(checkData){
             let data = await removeCartItemModel(cart_item_id)
             let response = {
@@ -67,17 +68,12 @@ const removeCartItemHandler =async (req, res, next)=> {
 }
 const getAllCartItemHandler = async (req, res , next) => {
     try {
-      
-       
-        
-            let data = await getAllCartItemModel()
+            let data = await getAllCartItemModel(req.user.cart_id)
             let response = {
                 message: 'Successfully get all cart item',
                 data:data
             }
-            return res.status(200).send(response) ;
-        
-        
+            res.status(200).send(response) ;
     } catch (error) {
         let response = {
             message: error.message,

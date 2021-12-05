@@ -1,10 +1,9 @@
 'use strict';
 const client = require('../../db')
-const addCartModel =async (idAddress,data)=> {
+const addCartModel =async (profile_id,idAddress = null)=> {
     try {
-        let SQL = 'INSERT INTO cart(profile_id,address_id,first_name,last_name,mobile) VALUES($1,$2,$3,$4,$5) RETURNING *;';
-        const {id,first_name,last_name,mobile} = data;
-        let safeValue = [id,idAddress,first_name,last_name,mobile];
+        let SQL = 'INSERT INTO cart(profile_id,address_id) VALUES($1,$2) RETURNING *;';
+        let safeValue = [profile_id,idAddress];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
         
@@ -15,12 +14,11 @@ const addCartModel =async (idAddress,data)=> {
         return response;
     }
 }
-const addCartItemModel =async (id,data,product_id)=> {
+const addCartItemModel =async (id,data)=> {
     try {
         let SQL ='INSERT INTO cart_item(cart_id,product_id,price,discount,quantity) VALUES ($1,$2,$3,$4,$5) RETURNING *;';
-        const {price,discount,quantity}= data;
+        const {price,discount,quantity,product_id}= data;
         let safeValue = [id,product_id,price,discount,quantity];
-       
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
     } catch (error) {
@@ -72,10 +70,9 @@ const getCartItemByIdModel =async id => {
 }
 const getAllCartItemModel = async id => {
     try {
-        let SQL = 'SELECT * FROM cart_item ;';
-        let result = await client.query(SQL)
+        let SQL = 'SELECT * FROM cart_item WHERE cart_id=$1;';
+        let result = await client.query(SQL,[id])
         return result.rows;
-        
     } catch (error) {
         let response = {
             message: error.message,

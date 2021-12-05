@@ -335,11 +335,8 @@ CREATE TABLE transaction(
 
 CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-     profile_id uuid NOT NULL,
-     address_id uuid NOT NULL,
-     first_name VARCHAR (250) NOT NULL,
-     last_name VARCHAR (250) NOT NULL,
-     mobile VARCHAR (15) NOT NULL, 
+     profile_id uuid NOT NULL UNIQUE,
+     address_id uuid,
      created_at timestamp not null default current_timestamp,
 
      FOREIGN KEY (profile_id) REFERENCES profile(id),

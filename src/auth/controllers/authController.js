@@ -23,7 +23,7 @@ const { signup,
     getAllBannedUsers,
     updateProfileEmail
 } = require('../models/user')
-
+const {addCartModel} = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
 const {addProfilePicture} = require('../../api/models/profilePicture')
 const { createToken, deleteToken } = require('../models/jwt')
@@ -87,7 +87,8 @@ const signupHandler = async (req, res, next) => {
             } else {
                 await addProfilePicture({profile_id: result2.id, profile_picture: process.env.DEFAULT_PROFILE_PICTURE})
             }
-            
+
+            await addCartModel(result2.id)
             let userTokens = await createToken(result.id)
             res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
         }

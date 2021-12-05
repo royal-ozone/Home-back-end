@@ -154,6 +154,17 @@ router.delete('/product',upload.none(), deleteProductHandler)
 router.put('/product/picture', bearer, uploadS3.array('image'), updateProductPictureHandler )
 router.delete('/product/picture',bearer,checkStoreAuth,upload.none(), deleteProductPictureHandler)
 
+//tag
+router.post('/tag',bearer,checkAuth,upload.none(),addTagHandler)
+router.get('/tag/:id',bearer,upload.none(),getTagHandler)
+router.delete('/tag',bearer,checkAuth,upload.none(),deleteTagHandler)
+router.put('/tag',bearer,checkAuth, upload.none(),updateTagHandler)
+router.get('/tag',upload.none(), getAllTagsHandler)
+
+//product tag
+router.post('/product/tag',bearer,checkStoreAuth,upload.none(),addProductTagHandler)
+router.get('/product/tag/:id',upload.none(), getProductTagsHandler)
+router.delete('/product/tag',bearer,checkStoreAuth,upload.none(), deleteProductTagHandler)
 
 // store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)
@@ -186,18 +197,9 @@ router.get('/getAll/order',bearer,upload.none(),getAllOrderHandler);
 
 
 
-router.post('/tag',upload.none(),addTagHandler)
-router.get('/tag/:id',upload.none(),getTagHandler)
-router.delete('/tag/:id',upload.none(),deleteTagHandler)
-router.put('/tag/:id', upload.none(),updateTagHandler)
-router.get('/tag',upload.none(), getAllTagsHandler)
 
 
 
-router.post('/product/tag',upload.none(),addProductTagHandler)
-router.get('/product/tag/:id',upload.none(), getProductTagsHandler)
-router.delete('/product/tag/:id',upload.none(), deleteProductTagHandler)
-router.put('/product/tag/:id',upload.none(), updateProductTagsHandler)
 
 router.post('/product/review',upload.none(),addProductReviewHandler)
 router.get('/product/review/:id',upload.none(), getProductReviewHandler)
@@ -219,7 +221,7 @@ router.get('/offer/notification/store',upload.none(), getOfferNotificationByStor
 
 router.post('/upload',uploadS3.array('file') ,uploadHandler)
 
-router.get('/profile/picture', upload.none(),getProfilePictureByProfileIdHandler)
+router.get('/profile/picture',bearer, upload.none(),getProfilePictureByProfileIdHandler)
 router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
 router.delete('/profile/picture', upload.none(),deleteProfilePictureHandler)
 
