@@ -1,6 +1,6 @@
 'use strict';
 
-const {addCartItemModel,removeCartItemModel,getAllCartItemModel,getAllCartModel,updateCart,updateCartItemQuantity} = require('../models/cart');
+const {addCartItemModel,removeCartItemModelByCartId,getAllCartItemModel,getAllCartModel,updateCart,updateCartItemQuantity,removeCartItemById} = require('../models/cart');
 
 const updateCartHandler = async (req, res) =>{
     try {
@@ -45,10 +45,31 @@ const addCartItemHandler =async (req, res)=>{
         res.status(400).send(response)
     }
 }
-const removeCartItemHandler =async (req, res)=> {
+const removeCartItemByCartIdHandler =async (req, res)=> {
     try {
         
-        let data = await removeCartItemModel(req.body.id)
+        let data = await removeCartItemModelByCartId(req.body.id)
+        if(data){
+            let response = {
+                message: 'Successfully removed cart item',
+                ...data
+            }
+            return res.status(200).send(response) ;
+        } else{
+            return res.status(403).send('something went wrong while removing the item') ;
+        }
+      
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return res.status(403).send(response) ;
+    }
+}
+const removeCartItemByIdHandler =async (req, res)=> {
+    try {
+        
+        let data = await removeCartItemById(req.body.id)
         if(data){
             let response = {
                 message: 'Successfully removed cart item',
@@ -96,4 +117,4 @@ const getAllCartHandler = async (req, res, next) => {
         return res.status(403).send(response) ;
     }
 }
-module.exports = {addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler,updateCartHandler,updateCartItemQuantityHandler};
+module.exports = {addCartItemHandler,removeCartItemByCartIdHandler,removeCartItemByIdHandler,getAllCartItemHandler,getAllCartHandler,updateCartHandler,updateCartItemQuantityHandler};

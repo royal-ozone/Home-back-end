@@ -15,7 +15,15 @@ const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,g
 
 
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler} = require('../api/controllers/addressControllers')
-const {addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler,updateCartHandler,updateCartItemQuantityHandler} = require('../api/controllers/cartControllers');
+const {addCartItemHandler
+  ,removeCartItemByCartIdHandler
+  ,getAllCartItemHandler
+  ,getAllCartHandler
+  ,updateCartHandler
+  ,updateCartItemQuantityHandler
+  ,removeCartItemByIdHandler
+} = require('../api/controllers/cartControllers');
+
 const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler} = require('../api/controllers/orderControllers');
 
 
@@ -169,7 +177,8 @@ router.delete('/product/tag',bearer,checkStoreAuth,upload.none(), deleteProductT
 //cart & cart item
 
 router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
-router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemHandler);
+router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemByCartIdHandler);
+router.delete('/remove/cart_item/id',bearer,upload.none(),removeCartItemByIdHandler);
 router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
 router.get('/getAll/cart',bearer,upload.none(),getAllCartHandler); 
 router.put('/update/cart_item',bearer,upload.none(),updateCartItemQuantityHandler);
