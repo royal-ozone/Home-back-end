@@ -15,7 +15,7 @@ const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,g
 
 
 const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler} = require('../api/controllers/addressControllers')
-const {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler} = require('../api/controllers/cartControllers');
+const {addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler,updateCartHandler,updateCartItemQuantityHandler} = require('../api/controllers/cartControllers');
 const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler} = require('../api/controllers/orderControllers');
 
 
@@ -166,6 +166,15 @@ router.post('/product/tag',bearer,checkStoreAuth,upload.none(),addProductTagHand
 router.get('/product/tag/:id',upload.none(), getProductTagsHandler)
 router.delete('/product/tag',bearer,checkStoreAuth,upload.none(), deleteProductTagHandler)
 
+//cart & cart item
+
+router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
+router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemHandler);
+router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
+router.get('/getAll/cart',bearer,upload.none(),getAllCartHandler); 
+router.put('/update/cart_item',bearer,upload.none(),updateCartItemQuantityHandler);
+router.put('/update/cart',bearer,upload.none(),updateCartHandler)
+
 // store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)
 router.get('/store/review/:storeId', upload.none(),getStoreReviewHandler)
@@ -184,11 +193,6 @@ router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandle
 
 
 
-router.post('/add/cart',bearer,upload.none(),addCartHandler);
-router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
-router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemHandler);
-router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
-router.get('/getAll/cart',bearer,upload.none(),getAllCartHandler); 
 
 router.post('/add/order',bearer,upload.none(),addOrderHandler);
 router.post('/add/order_item',bearer,upload.none(),addOrderItemHandler);

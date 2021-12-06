@@ -1,28 +1,29 @@
 'use strict';
 
-const {getProfileByUserId, getAddressByProfileId} = require('../../auth/models/user')
-const {getAddressByProfileIdModel} = require('../models/address');
-const {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModel,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel} = require('../models/cart');
-const addCartHandler= async (req, res,next) => {
+const {addCartItemModel,removeCartItemModel,getAllCartItemModel,getAllCartModel,updateCart,updateCartItemQuantity} = require('../models/cart');
+
+const updateCartHandler = async (req, res) =>{
     try {
-        let result = await getProfileByUserId(req.user.id);
-        let address = await getAddressByProfileIdModel(result.id);
-        let cartData = await getCartByProfileIdModel(req.user.profile_id);
-        if(!cartData){
-            let data = await addCartModel(address.id,result);
-            let response = {
-                message:'successfully add cart ',
-                data : data
-            }
-            res.status(200).send(response);
+        let result = await updateCart({address_id:req.body.address_id, id: req.user.cart_id})
+        if(result.id){
+            res.status(200).json({message:'cart updated successfully',...result})
+        } else {
+            res.status(403).send('something went wrong while updating cart', result)
         }
-        res.status(403).send('the cart is added already')
-       
     } catch (error) {
-        let response = {
-            message: error.message,
+        res.send(error.message)
+    }
+}
+const updateCartItemQuantityHandler = async (req, res) =>{
+    try {
+        let result = await updateCartItemQuantity(req.body)
+        if(result.id){
+            res.status(200).json({message:'cart updated successfully',...result})
+        } else{
+            res.status(403).send('something went wrong while updating cart', result)
         }
-        res.status(403).send(response)
+    } catch (error) {
+        res.send(error.message)
     }
 }
 const addCartItemHandler =async (req, res)=>{
@@ -44,20 +45,19 @@ const addCartItemHandler =async (req, res)=>{
         res.status(400).send(response)
     }
 }
-const removeCartItemHandler =async (req, res, next)=> {
+const removeCartItemHandler =async (req, res)=> {
     try {
-        let cart_item_id = req.query.id;
         
-        let checkData =await getCartItemByIdModel(cart_item_id)
-        if(checkData){
-            let data = await removeCartItemModel(cart_item_id)
+        let data = await removeCartItemModel(req.body.id)
+        if(data){
             let response = {
-                message: 'Successfully remove cart item',
-                data:data
+                message: 'Successfully removed cart item',
+                ...data
             }
             return res.status(200).send(response) ;
+        } else{
+            return res.status(403).send('something went wrong while removing the item') ;
         }
-        return res.status(403).send('the cart item is not found') ;
       
     } catch (error) {
         let response = {
@@ -66,7 +66,7 @@ const removeCartItemHandler =async (req, res, next)=> {
         return res.status(403).send(response) ;
     }
 }
-const getAllCartItemHandler = async (req, res , next) => {
+const getAllCartItemHandler = async (req, res) => {
     try {
             let data = await getAllCartItemModel(req.user.cart_id)
             let response = {
@@ -96,4 +96,4 @@ const getAllCartHandler = async (req, res, next) => {
         return res.status(403).send(response) ;
     }
 }
-module.exports = {addCartHandler,addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler};
+module.exports = {addCartItemHandler,removeCartItemHandler,getAllCartItemHandler,getAllCartHandler,updateCartHandler,updateCartItemQuantityHandler};
