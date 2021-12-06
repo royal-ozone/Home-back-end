@@ -1,51 +1,62 @@
 DROP TABLE IF EXISTS product_tag;
 DROP TABLE IF EXISTS tag;
 
+DROP TABLE IF EXISTS courier_feedback;
+DROP TABLE IF EXISTS courier_task;
+DROP TABLE IF EXISTS delivery_task_notification;
+DROP TABLE IF EXISTS delivery_task;
+DROP TABLE IF EXISTS courier;
+DROP TABLE IF EXISTS courier_company;
 
-DROP TABLE IF EXISTS product_pictures;
+DROP TABLE IF EXISTS product_picture;
 DROP TABLE IF EXISTS profile_picture;
 
-DROP TABLE IF EXISTS store_picture;
+-- DROP TABLE IF EXISTS store_picture;
 DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
-DROP TABLE IF EXISTS store_reviews;
+DROP TABLE IF EXISTS store_review;
 
-
-DROP TABLE IF EXISTS return;
-DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS order_item;
+DROP TABLE IF EXISTS return_request;
+DROP TABLE IF EXISTS order_notification;
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS new_order;
+
 DROP TABLE IF EXISTS cart_item;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS jwt;
-DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS store_follower;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
-DROP TABLE IF EXISTS order_notification;
 
-DROP TABLE IF EXISTS attachment;
+--  DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
 DROP TABLE IF EXISTS parent_category;
-DROP TABLE IF EXISTS new_order;
 
-DROP TABLE IF EXISTS store_request;
 DROP TABLE IF EXISTS store;
 
-DROP TABLE IF EXISTS profiles;
-DROP TABLE IF EXISTS user_file;
+DROP TABLE IF EXISTS suggestion;
+DROP TABLE IF EXISTS promo;
+DROP TABLE IF EXISTS discount_code;
+
+-- DROP TABLE IF EXISTS user_file;
 
 DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS moderator;
 DROP TABLE IF EXISTS banned_user;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS profile;
+DROP TABLE IF EXISTS client;
+
+
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 
-CREATE TABLE users(
+CREATE TABLE client(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   email VARCHAR(150) NOT NULL UNIQUE,
   user_password VARCHAR(250) NOT NULL,
@@ -58,6 +69,7 @@ CREATE TABLE users(
   google_id VARCHAR(200) UNIQUE,
   facebook_id VARCHAR(200) UNIQUE,
   verified BOOLEAN DEFAULT false,
+  status VARCHAR(15) DEFAULT 'active',
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 
@@ -67,107 +79,85 @@ CREATE TABLE jwt(
   access_token VARCHAR(250) NOT NULL,
   refresh_token VARCHAR(250) NOT NULL,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
-CREATE TABLE user_file(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  file text NOT NULL,
-  created_at date not null default current_timestamp
-);
 
-CREATE TABLE profiles(
+CREATE TABLE profile(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   first_name VARCHAR (250) NOT NULL,
   last_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
+  email VARCHAR (250) NOT NULL,
   country VARCHAR (250) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
-  profile_picture uuid,
+  profile_picture TEXT,
   created_at timestamp not null default current_timestamp,
   
 
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (profile_picture) REFERENCES user_file(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE administrator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
-  
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  profile_id uuid NOT NULL UNIQUE,
+  FOREIGN KEY (user_id) REFERENCES client(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 CREATE TABLE moderator(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE banned_user(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   user_id uuid NOT NULL UNIQUE,
   
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
 CREATE TABLE store(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
-  store_name VARCHAR (250) NOT NULL,
+  store_name VARCHAR (250) NOT NULL UNIQUE,
+  name_is_changed BOOLEAN DEFAULT FALSE,
   city VARCHAR (250) NOT NULL,
-  address VARCHAR (250) DEFAULT 'Remote',
-  mobile VARCHAR (15) NOT NULL UNIQUE,
   caption VARCHAR(250),
   about VARCHAR(250),
-  store_picture uuid,
-  store_rating REAL NOT NULL DEFAULT '0',
+  store_picture TEXT,
+  store_rating REAL NOT NULL DEFAULT 0,
+  status VARCHAR(250) DEFAULT 'pending',
+  rejected_reason TEXT DEFAULT '',
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
-CREATE TABLE store_request(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL UNIQUE,
-  store_name VARCHAR (250) NOT NULL,
-  city VARCHAR (250) NOT NULL,
-  address VARCHAR (250) DEFAULT 'Remote',
-  mobile VARCHAR (15) NOT NULL UNIQUE,
-  caption VARCHAR(250),
-  about VARCHAR(250),
-  store_picture uuid,
-  store_rating REAL NOT NULL DEFAULT '0',
-  created_at timestamp not null default current_timestamp,
-
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
-);
 
 
 CREATE TABLE parent_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  -- child_id uuid NOT NULL,
-  entitle VARCHAR(75),
-  artitle VARCHAR(75),
+  entitle VARCHAR(75) UNIQUE NOT NULL,
+  artitle VARCHAR(75) UNIQUE NOT NULL,
   metaTitle VARCHAR(100),
   content TEXT,
+  display BOOLEAN DEFAULT TRUE,
   created_at timestamp not null default current_timestamp
-  -- FOREIGN KEY (child_id) REFERENCES child_category(id)
+  
 );
 CREATE TABLE child_category(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   parent_id uuid NOT NULL,
-  -- product_id uuid,
   entitle VARCHAR(75),
   artitle VARCHAR(75),
   metaTitle VARCHAR(100),
   content TEXT,
    FOREIGN KEY (parent_id) REFERENCES parent_category(id),
-  -- FOREIGN KEY (product_id) REFERENCES product(id)
   created_at timestamp not null default current_timestamp
 );
 CREATE TABLE grandchild_category(
@@ -188,18 +178,26 @@ CREATE TABLE product(
   enTitle VARCHAR(250) NOT NULL,
   arTitle VARCHAR(250) NOT NULL,
   metaTitle VARCHAR(100),
-  sku VARCHAR(100),
+  sku VARCHAR(100) UNIQUE,
+  parent_category_id uuid NOT NULL,
+  child_category_id uuid NOT NULL,
+  grandchild_category_id uuid,
   discount BOOLEAN DEFAULT FALSE,
-  discount_rate FLOAT DEFAULT '0',
+  discount_rate FLOAT DEFAULT 0,
   price REAL NOT NULL,
   currency VARCHAR(10) default 'jod',
   brand_name VARCHAR(250),
   description text NOT NULL,
-  quantity INT NOT NULL DEFAULT '0',
-  status VARCHAR(250) DEFAULT 'Pending',
-  created_at timestamp not null default current_timestamp,
-  
-  FOREIGN KEY (store_id) REFERENCES store(id)
+  quantity INT NOT NULL DEFAULT 0,
+  status VARCHAR(250) DEFAULT 'pending',
+  age VARCHAR(250) DEFAULT '15-30' NOT NULL,
+  size VARCHAR(250),
+  display BOOLEAN DEFAULT TRUE,
+  FOREIGN KEY (store_id) REFERENCES store(id),
+  FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
+  FOREIGN KEY (child_category_id) REFERENCES child_category(id),
+  FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id),
+  created_at timestamp not null default current_timestamp
 );
 
 CREATE TABLE product_review(
@@ -208,18 +206,18 @@ CREATE TABLE product_review(
   product_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate VARCHAR(1) NOT NULL,
-  votes VARCHAR(250) DEFAULT '0',
+  votes INT DEFAULT 0,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
 CREATE TABLE tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  entitle VARCHAR(75) not null,
-  arTitle VARCHAR(75) not null,
-  metaTitle VARCHAR(100),
+  entitle VARCHAR(75) not null, 
+  arTitle VARCHAR(75) not null,   
+  metaTitle VARCHAR(100), 
   slug VARCHAR(100),
   content TEXT
   
@@ -235,70 +233,73 @@ CREATE TABLE product_tag(
 CREATE TABLE product_rating(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  profile_id uuid NOT NULL,
-  rating REAL NOT NULL DEFAULT '0',
+  rating REAL NOT NULL DEFAULT 0,
+  votes REAL DEFAULT 0,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
   FOREIGN KEY (product_id) REFERENCES product(id) 
 );
 
 
-
-
-
-
-CREATE TABLE product_pictures(
+CREATE TABLE product_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   product_id uuid NOT NULL,
-  product_picture uuid NOT NULL,
-  FOREIGN KEY (product_id) REFERENCES product(id),
-  FOREIGN KEY (product_picture) REFERENCES user_file(id)
+  product_picture TEXT NOT NULL,
+  FOREIGN KEY (product_id) REFERENCES product(id)
 );
+
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
-  profile_picture uuid NOT NULL,
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
-  FOREIGN KEY (profile_picture) REFERENCES user_file(id)
-);
-CREATE TABLE store_picture(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  store_id uuid NOT NULL,
-  store_picture uuid NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES store(id),
-  FOREIGN KEY (store_picture) REFERENCES user_file(id)
+  profile_picture TEXT NOT NULL,
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
-CREATE TABLE store_reviews(
+CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL UNIQUE,
-  store_id uuid NOT NULL UNIQUE,
+  store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
-  rate FLOAT NOT NULL DEFAULT '0',
-  votes VARCHAR(250) DEFAULT '0',
+  rate FLOAT NOT NULL DEFAULT 0,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
 
+CREATE TABLE address(
+   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+   profile_id uuid NOT NULL,
+   store_id uuid,
+   country VARCHAR (250) NOT NULL DEFAULT 'jordan',
+   city VARCHAR(250) NOT NULL,
+   first_name VARCHAR (250) NOT NULL,
+   last_name VARCHAR (250) NOT NULL,
+   mobile VARCHAR (15) NOT NULL,
+   street_name VARCHAR(250) NOT NULL,
+   building_number VARCHAR (250) NOT NULL,
+   apartment_number VARCHAR (250),
+   display BOOLEAN DEFAULT TRUE,
+   is_default BOOLEAN,
+
+   FOREIGN KEY (profile_id) REFERENCES profile(id),
+   FOREIGN KEY (store_id) REFERENCES store(id)
+);
+
 CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
-  first_name VARCHAR (250) NOT NULL,
-  last_name VARCHAR (250) NOT NULL,
-  status VARCHAR (250) NOT NULL,
+  address_id uuid NOT NULL,
+  status VARCHAR (250)  DEFAULT 'pending',
   tax FLOAT,
   shipping FLOAT,
-  discount FLOAT DEFAULT '0',
+  discount FLOAT DEFAULT 0,
   sub_total FLOAT NOT NULL,
   grand_total FLOAT NOT NULL,
-  mobile VARCHAR (15) NOT NULL, 
-  city VARCHAR (250) NOT NULL,
-  country VARCHAR (250) NOT NULL,
   created_at timestamp not null default current_timestamp,
-  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (address_id) REFERENCES address(id)
   );
 
 CREATE TABLE order_item (
@@ -306,9 +307,12 @@ CREATE TABLE order_item (
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
   price FLOAT NOT NULL,
-  discount FLOAT DEFAULT '0',
-  quantity VARCHAR(6) DEFAULT '1',
+  discount FLOAT DEFAULT 0,
+  quantity REAL DEFAULT 1,
+  status VARCHAR (50) DEFAULT 'pending',
+  cancellation_reason TEXT,
   created_at timestamp not null default current_timestamp,
+  
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -323,72 +327,45 @@ CREATE TABLE transaction(
    status VARCHAR (100),
    created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 
 );
 
 
-CREATE TABLE address(
-   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-   profile_id uuid NOT NULL,
-   country VARCHAR (250) NOT NULL DEFAULT 'jordan',
-   city VARCHAR(250) NOT NULL,
-   first_name VARCHAR (250) NOT NULL,
-   last_name VARCHAR (250) NOT NULL,
-   mobile VARCHAR (15) NOT NULL,
-   street_name VARCHAR(250) NOT NULL,
-   building_number VARCHAR (250) NOT NULL,
-   apartment_number VARCHAR (250),
-   FOREIGN KEY (profile_id) REFERENCES profiles(id)
-);
 CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-     profile_id uuid NOT NULL,
-     address_id uuid NOT NULL,
-     first_name VARCHAR (250) NOT NULL,
-     last_name VARCHAR (250) NOT NULL,
-     mobile VARCHAR (15) NOT NULL, 
+     profile_id uuid NOT NULL UNIQUE,
+     address_id uuid,
      created_at timestamp not null default current_timestamp,
 
-     FOREIGN KEY (profile_id) REFERENCES profiles(id),
+     FOREIGN KEY (profile_id) REFERENCES profile(id),
      FOREIGN KEY (address_id) REFERENCES address(id)
 );
 
 CREATE TABLE cart_item(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   cart_id uuid NOT NULL,
-  product_id uuid NOT NULL,
+  product_id uuid NOT NULL UNIQUE,
   price FLOAT NOT NULL,
-  discount FLOAT DEFAULT '0',
-  quantity VARCHAR(6) DEFAULT '1',
+  discount FLOAT DEFAULT 0,
+  quantity REAL DEFAULT 1,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (cart_id) REFERENCES cart(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
-
-
-
-
-CREATE TABLE follow(
+CREATE TABLE store_follower(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
   follower uuid NOT NULL,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (follower) REFERENCES profiles(id),
+  FOREIGN KEY (follower) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
  
-
-CREATE TABLE attachment(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  file_id uuid NOT NULL,
-  created_at timestamp not null default current_timestamp,
-   FOREIGN KEY (file_id) REFERENCES user_file(id)
-);
 
 CREATE TABLE comment(
     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -400,7 +377,7 @@ CREATE TABLE comment(
 
     FOREIGN KEY (product_id) REFERENCES product(id),
     FOREIGN KEY (store_id) REFERENCES store(id),
-    FOREIGN KEY (profile_id) REFERENCES profiles(id)
+    FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
 
 CREATE TABLE offer_notification(
@@ -412,7 +389,7 @@ CREATE TABLE offer_notification(
   seen boolean DEFAULT false,
   created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (receiver_id) REFERENCES profiles(id),
+  FOREIGN KEY (receiver_id) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -429,19 +406,139 @@ CREATE TABLE order_notification(
 );
 
 
-CREATE TABLE return(
+CREATE TABLE return_request(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   store_id uuid NOT NULL,
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
+  status VARCHAR(15) DEFAULT 'pending',
   message text NOT NULL,
 
   FOREIGN KEY (store_id) REFERENCES store(id),
-  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)
 );
+
+
+CREATE TABLE discount_code(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  discount_code VARCHAR(250) UNIQUE NOT NULL,
+  year VARCHAR(250) NOT NULL,
+  month VARCHAR (250) NOT NULL,
+  day VARCHAR (250) NOT NULL,
+  hour VARCHAR (250) NOT NULL,
+  minute VARCHAR (250) NOT NULL,
+  second VARCHAR (250) NOT NULL,
+  counter VARCHAR(250) default 0,
+  max_counter VARCHAR (250) NOT NULL default 50,
+  discount FLOAT DEFAULT 0,
+  active Boolean DEFAULT FALSE,
+  number_of_time VARCHAR(2) NOT NULL,
+  created_at timestamp not null default current_timestamp
+);
+CREATE TABLE promo(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  discount_id uuid NOT NULL,
+  discount_name VARCHAR(250) NOT NULL,
+  counter VARCHAR(15) NOT NULL default 0,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (discount_id) REFERENCES discount_code(id),
+  created_at timestamp not null default current_timestamp
+);
+
+
+CREATE TABLE suggestion(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  suggestion text NOT NULL,
+  status VARCHAR(15) DEFAULT 'pending',
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  created_at timestamp not null default current_timestamp
+);
+
+CREATE TABLE courier_company(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_name VARCHAR(75) NOT NULL,
+  name_is_changed BOOLEAN DEFAULT FALSE,
+  status VARCHAR (50) DEFAULT 'pending',
+  rejected_reason TEXT,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id)
+);
+
+CREATE TABLE courier(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid UNIQUE NOT NULL,
+  company_id uuid,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id)
+);
+
+CREATE TABLE delivery_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  order_id uuid NOT NULL UNIQUE,
+  address_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'not assigned',
+  company_id uuid,
+  courier_id uuid, 
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+CREATE TABLE delivery_task_notification(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  task_id uuid NOT NULL,
+  company_id uuid,
+  courier_id uuid,
+  message text NOT NULL,
+  seen BOOLEAN DEFAULT FALSE,
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (company_id) REFERENCES courier_company(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+CREATE TABLE courier_task(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
+  task_id uuid NOT NULL,
+  status VARCHAR (50) DEFAULT 'pending',
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (task_id) REFERENCES delivery_task(id),
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+
+CREATE TABLE courier_feedback(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  courier_id uuid NOT NULL,
+  rate INT DEFAULT 0,
+  review VARCHAR(250),
+
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (courier_id) REFERENCES courier(id)
+)
+
+
+
+
+
+
+
+
 
 
 -- idea : add count interaction to post tabel

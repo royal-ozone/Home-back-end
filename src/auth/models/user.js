@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt')
 const signup = async data => {
     try {
         const { email, password, mobile, country, city, first_name, last_name, country_code } = data;
-        let SQL = `INSERT INTO users(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,mobile,country,city,first_name,last_name,country_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;`;
         let userPassword = await bcrypt.hash(password, 10)
 
         let email2 = email.toLowerCase().trim();
@@ -23,7 +23,7 @@ const signup = async data => {
 const signupGoogle = async data => {
     try {
         const { email, user_password, country_code, mobile, country, city, first_name, last_name, google_id, verified } = data;
-        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
         let userPassword = await bcrypt.hash(user_password, 10)
 
         let correctEmail = email.toLowerCase().trim();
@@ -38,7 +38,7 @@ const signupGoogle = async data => {
 const signupFacebook =  async data =>{
     try {
         const {email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified} = data;
-        let SQL = `INSERT INTO users(email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
+        let SQL = `INSERT INTO CLIENT(email,user_password,country_code,mobile,country,city,first_name,last_name,facebook_id,verified) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;`;
         let userPassword = await bcrypt.hash(user_password, 10)
         
         let correctEmail = email.toLowerCase().trim();
@@ -54,9 +54,9 @@ const signupFacebook =  async data =>{
 const createProfile = async data => {
     try {
         let mobileAllData = '+' + data.country_code + data.mobile.split('').splice(1, data.mobile.length).join('');
-        let SQL = 'INSERT INTO profiles(user_id,first_name,last_name,city,country,mobile)VALUES($1,$2,$3,$4,$5,$6) RETURNING *;';
-        let { id, first_name, last_name, city, country } = data;
-        let safeValue = [id, first_name, last_name, city, country, mobileAllData];
+        let SQL = 'INSERT INTO PROFILE(user_id,first_name,last_name,city,country,mobile, email)VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *;';
+        let { id, first_name, last_name, city, country, email } = data;
+        let safeValue = [id, first_name, last_name, city, country, mobileAllData,email];
 
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -65,10 +65,46 @@ const createProfile = async data => {
         throw new Error(error.message);
     }
 }
+const updateProfilersModel = async (data,id) =>{
+   try {
+       let SQL = 'UPDATE PROFILE SET first_name = $1,last_name = $2,city = $3,country = $4, email=$6 WHERE user_id =$5 RETURNING *;'
+       const {first_name,last_name,city,country,mobile, email} = data;
+       let safeValue = [first_name,last_name,city,country,id, email];
+       let result = await client.query(SQL,safeValue);
+       return result.rows[0];
+   } catch (error) {
+       throw new Error(error.message);
+   } 
+}
+
+const updateUserModel = async (data,id)=>{
+
+    try {
+        let SQL = 'UPDATE client SET first_name = $1,last_name = $2,city = $3,country = $4 WHERE id =$5 RETURNING * ;';
+        const {first_name,last_name,city,country,mobile} = data;
+       let safeValue = [first_name,last_name,city,country,id];
+       let result = await client.query(SQL,safeValue);
+       return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 const getUserByEmail = async email => {
     try {
-        let SQL = `SELECT * FROM users WHERE email=$1;`;
+        let SQL = `SELECT * FROM client WHERE email=$1;`;
+        let safeValue = [email];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0];
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const getProfileByEmail = async email => {
+    try {
+        let SQL = `SELECT * FROM profile WHERE email=$1;`;
         let safeValue = [email];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -80,7 +116,7 @@ const getUserByEmail = async email => {
 
 const getUserById = async id => {
     try {
-        let SQL = `SELECT * FROM users WHERE id=$1;`;
+        let SQL = `SELECT * FROM client WHERE id=$1;`;
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -91,7 +127,7 @@ const getUserById = async id => {
 
 const getUserByGoogleId = async google_id => {
     try {
-        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let SQL = `SELECT * FROM client WHERE google_id=$1;`;
         let safeValue = [google_id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -103,7 +139,7 @@ const getUserByGoogleId = async google_id => {
 
 const getUserByFacebookId = async facebook_id =>{
     try {
-        let SQL = `SELECT * FROM users WHERE google_id=$1;`;
+        let SQL = `SELECT * FROM client WHERE google_id=$1;`;
         let safeValue = [facebook_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
@@ -114,7 +150,7 @@ const getUserByFacebookId = async facebook_id =>{
 
 const getUserByMobile = async mobile =>{
     try {
-        let SQL = `SELECT * FROM users WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM client WHERE mobile=$1;`;
         let safeValue = [mobile];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -125,7 +161,7 @@ const getUserByMobile = async mobile =>{
 
 const updateUserVerification = async id => {
     try {
-        let SQL = `UPDATE users SET verified = true WHERE id =$1 RETURNING *;`;
+        let SQL = `UPDATE client SET verified = true WHERE id =$1 RETURNING *;`;
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0].id;
@@ -137,7 +173,7 @@ const updateUserVerification = async id => {
 async function updateUserPassword(user_id, password) {
     try {
         const user_password = await bcrypt.hash(password, 10);
-        const SQL = `UPDATE USERS SET user_password = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET user_password = $1 WHERE id = $2 RETURNING *;`;
 
         const safeValues = [user_password, user_id];
         const result = await client.query(SQL, safeValues);
@@ -149,7 +185,7 @@ async function updateUserPassword(user_id, password) {
 
 async function updateUserEmail(user_id, email) {
     try {
-        const SQL = `UPDATE USERS SET email = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET email = $1 WHERE id = $2 RETURNING *;`;
 
         const safeValues = [email, user_id];
         const result = await client.query(SQL, safeValues);
@@ -158,12 +194,10 @@ async function updateUserEmail(user_id, email) {
         throw new Error(e.message);
     }
 }
-
-async function updateUserMobile(user_id, country_code, mobile) {
+async function updateProfileEmail(user_id, email) {
     try {
-        const SQL = `UPDATE USERS SET mobile = $1, country_code=$2 WHERE id = $3 RETURNING *;`;
-
-        const safeValues = [mobile, country_code, user_id];
+        const SQL = `UPDATE profile SET email = $1 WHERE user_id = $2 RETURNING *;`;
+        const safeValues = [email, user_id];
         const result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (e) {
@@ -171,9 +205,42 @@ async function updateUserMobile(user_id, country_code, mobile) {
     }
 }
 
+async function updateUserMobile(user_id, mobile) {
+    try {
+        const SQL = `UPDATE CLIENT SET mobile = $1,verified=$2 WHERE id = $3 RETURNING *;`;
+        const safeValues = [mobile,false, user_id];
+        const result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (e) {
+        throw new Error(e.message);
+    }
+}
+
+const updateProfileMobile = async (user_id,mobile)=> {
+    try {
+        let SQL = `UPDATE PROFILE SET mobile = $1 WHERE user_id = $2 RETURNING *;`;
+        let safeValue = [mobile,user_id];
+        let result = await client.query(SQL,safeValue);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+
+}
+const getTokenByUserId = async (id) => {
+    try {
+        let SQL = 'SELECT access_token FROM jwt WHERE user_id =$1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
 const getAllUsers = async token => {
     try {
-        let SQL = 'SELECT * FROM USERS;';
+        let SQL = 'SELECT * FROM CLIENT;';
         let result = await client.query(SQL);
         return {users:result.rows};
     } catch (error) {
@@ -194,7 +261,7 @@ const getUserIdFromToken = async token => {
 
 const getMobileById = async id => {
     try {
-        let SQL = 'SELECT * FROM users WHERE id=$1;';
+        let SQL = 'SELECT * FROM CLIENT WHERE id=$1;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
@@ -205,11 +272,22 @@ const getMobileById = async id => {
 
 const getProfileByUserId = async id => {
     try {
-        let SQL = 'SELECT * FROM profiles WHERE user_id = $1;';
+        let SQL = 'SELECT * FROM PROFILE WHERE user_id = $1;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
 
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getAddressByProfileId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM address WHERE profile_id = $1;';
+        let safeValue = [id];
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message);
     }
@@ -227,11 +305,11 @@ const addAdmin = async userId => {
     }
 };
 
-const addMod = async mobile => {
+const addMod = async email => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE email=$1;`;
         
-        let safeValues = [mobile];
+        let safeValues = [email];
         let result = await client.query(SQL, safeValues);
         
         if(!result.rows[0]){
@@ -262,11 +340,11 @@ const addMod = async mobile => {
     }
 };
 
-const removeMod = async (mobile) => {
+const removeMod = async (email) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE email=$1;`;
         
-        let safeValues = [mobile];
+        let safeValues = [email];
         let result = await client.query(SQL, safeValues);
             if(!result.rows[0]){
                return (' you can not remove the mod ');
@@ -283,7 +361,7 @@ const removeMod = async (mobile) => {
 
 const banUser = async (mobile) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
+        let SQL = `SELECT * FROM CLIENT WHERE mobile=$1;`;
         
         let safeValues = [mobile];
         let result = await client.query(SQL, safeValues);
@@ -305,22 +383,82 @@ const banUser = async (mobile) => {
     }
 };
 
-const unbanUser = async (mobile) => {
+const unbanUser = async (id) => {
     try {
-        let SQL = `SELECT * FROM USERS WHERE mobile=$1;`;
-        
-        let safeValues = [mobile];
+        let SQL = `DELETE FROM BANNED_USER WHERE id=$1;`;
+        let safeValues = [id];
         let result = await client.query(SQL, safeValues);
-
-        let userId = result.rows[0].id;
-        SQL = `DELETE FROM BANNED_USER WHERE user_id=$1;`;
-        safeValues = [userId];
-        result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message);
     }
 };
+
+const getAllBannedUsers = async () =>{
+    try {
+        let SQL = 'SELECT * FROM BANNED_USER;'
+        let result = await client.query(SQL);
+        return result.rows
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getStoreIdByProfileId = async id =>{
+    try {
+        let SQL = 'SELECT * FROM STORE WHERE profile_id=$1;'
+        let safeValues = [id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const deactivateAccount = async id => {
+
+    try {
+        let SQL = 'UPDATE CLIENT SET status=$1 WHERE id=$2;'
+        let safeValues = ['deactivated',id];
+        let result = await client.query(SQL, safeValues);
+        return 'deactivated';
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const activateAccount = async id => {
+    try {
+        let SQL = 'UPDATE CLIENT SET status=$1 WHERE id=$2;'
+        let safeValues = ['active',id];
+        let result = await client.query(SQL, safeValues);
+        return 'activated';
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const getCompanyByProfileId = async id => {
+    try {
+        let SQL = 'SELECT * FROM courier_company WHERE profile_id= $1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+const getCourierByProfileId = async id => {
+    try {
+        let SQL = 'SELECT * FROM courier WHERE profile_id=$1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+
 
 module.exports = {
     signup,
@@ -344,6 +482,19 @@ module.exports = {
     addMod,
     removeMod,
     banUser,
-    unbanUser
+    unbanUser,
+    updateProfilersModel,
+    updateUserModel,
+    updateProfileMobile,
+    getTokenByUserId,
+    getAddressByProfileId,
+    getStoreIdByProfileId,
+    deactivateAccount,
+    activateAccount,
+    getCompanyByProfileId,
+    getCourierByProfileId, 
+    getProfileByEmail,
+    getAllBannedUsers,
+    updateProfileEmail
 }
 
