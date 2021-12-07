@@ -116,8 +116,8 @@ INSERT INTO transaction(id,profile_id,order_id,code,type,mode,status)VALUES
 
 
 ---------------------------------- cart -----------------------------
-INSERT INTO cart(id,profile_id,address_id,first_name,last_name,mobile)VALUES 
-('07426572-9679-435c-a973-70e24a508ce7','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','emran','aloul','0798009950');
+INSERT INTO cart(id,profile_id,address_id)VALUES 
+('07426572-9679-435c-a973-70e24a508ce7','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
 
 
 ------------------------------------cart_item -----------------------------

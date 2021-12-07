@@ -215,9 +215,9 @@ CREATE TABLE product_review(
 
 CREATE TABLE tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  entitle VARCHAR(75) not null,
-  arTitle VARCHAR(75) not null,
-  metaTitle VARCHAR(100),
+  entitle VARCHAR(75) not null, 
+  arTitle VARCHAR(75) not null,   
+  metaTitle VARCHAR(100), 
   slug VARCHAR(100),
   content TEXT
   
@@ -246,13 +246,13 @@ CREATE TABLE product_picture(
   product_picture TEXT NOT NULL,
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
+
 CREATE TABLE profile_picture(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   profile_picture TEXT NOT NULL,
   FOREIGN KEY (profile_id) REFERENCES profile(id)
 );
-
 
 CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -335,11 +335,8 @@ CREATE TABLE transaction(
 
 CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-     profile_id uuid NOT NULL,
-     address_id uuid NOT NULL,
-     first_name VARCHAR (250) NOT NULL,
-     last_name VARCHAR (250) NOT NULL,
-     mobile VARCHAR (15) NOT NULL, 
+     profile_id uuid NOT NULL UNIQUE,
+     address_id uuid,
      created_at timestamp not null default current_timestamp,
 
      FOREIGN KEY (profile_id) REFERENCES profile(id),
@@ -349,7 +346,7 @@ CREATE TABLE cart(
 CREATE TABLE cart_item(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   cart_id uuid NOT NULL,
-  product_id uuid NOT NULL,
+  product_id uuid NOT NULL UNIQUE,
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,

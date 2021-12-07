@@ -3,9 +3,9 @@ const client = require('../../db')
 
 const addTag = async data => {
 try {
-    let {enTitle,arTitle, metaTitle, slug, content} = data;
+    let {entitle,artitle, metatitle, slug, content} = data;
     let SQL = 'INSERT INTO tag (enTitle,arTitle, metaTitle, slug, content) VALUES ($1,$2,$3,$4,$5) RETURNING *;';
-    let safeValues = [enTitle,arTitle, metaTitle, slug, content];
+    let safeValues = [entitle,artitle, metatitle, slug, content];
     let result = await client.query(SQL, safeValues);
     return result.rows[0];
 } catch (error) {
@@ -34,11 +34,11 @@ const getTag = async id =>{
     }
 }
 
-const updateTag = async (id, data) => {
+const updateTag = async ( data) => {
     try {
-        let {enTitle,arTitle, metaTitle, slug, content} = data;
-        let SQL = 'UPDATE tag SET enTitle=$1,arTitle=$6 metaTitle=$2, slug=$3, content=$4 WHERE id=$5 RETURNING *;';
-        let safeValues = [enTitle, metaTitle, slug, content,id,arTitle]
+        let {entitle,artitle, metatitle, slug,id, content} = data;
+        let SQL = 'UPDATE tag SET enTitle=$1,arTitle=$6, metaTitle=$2, slug=$3, content=$4 WHERE id=$5 RETURNING *;';
+        let safeValues = [entitle, metatitle, slug, content,id,artitle]
         let result = await client.query(SQL, safeValues)
         return result.rows[0];
     } catch (error) {

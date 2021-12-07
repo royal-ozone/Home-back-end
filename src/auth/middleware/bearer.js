@@ -2,6 +2,7 @@
 const { getTokenRecord } = require('../models/jwt');
 const { authenticateWithToken } = require('../models/helpers');
 const { getProfileByUserId, getStoreIdByProfileId, getCompanyByProfileId,getCourierByProfileId } = require('../models/user')
+const {getCartByProfileId} = require('../../api/models/cart')
 
 module.exports = async (req, res, next) => {
     try {
@@ -24,16 +25,18 @@ module.exports = async (req, res, next) => {
             let store = await getStoreIdByProfileId(userProfile.id);
             let company = await getCompanyByProfileId(userProfile.id);
             let courier = await getCourierByProfileId(userProfile.id);
+            let cart = await getCartByProfileId(userProfile.id)
 
             // request.user:
 
             req.user = validUser;
             req.user.profile_id = userProfile.id;
+            req.user.cart_id = cart? cart.id : null;
             req.user.store_id = store ? store.id : null;
             req.user.courier_company_id = company? company.id : null;
             req.user.courier_id = courier ? courier.id : null;
             
-            // console.log("🚀 ~ file: bearer.js ~ line 7 ~ module.exports= ~ req", req.user)
+            
             next();
         }
 
