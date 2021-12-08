@@ -9,7 +9,7 @@ let createToken = async user_id =>{
     try {
         const accessToken = getToken(user_id);
         const refreshToken = getToken(user_id, 'refresh');
-        let SQL = `INSERT INTO JWT (access_token, refresh_token, user_id) VALUES ($1,$2,$3) RETURNING *;`;
+        let SQL = `INSERT INTO jwt (access_token, refresh_token, user_id) VALUES ($1,$2,$3) RETURNING *;`;
         let safeValues = [accessToken, refreshToken, user_id];
         let tokenQuery = await client.query(SQL, safeValues);
         return tokenQuery.rows[0]
@@ -22,9 +22,9 @@ let createToken = async user_id =>{
 let getTokenRecord = async (token,tokenType = 'access') =>{
 
     try {
-        let SQL = 'SELECT * FROM JWT WHERE access_token = $1;';
+        let SQL = 'SELECT * from jwt WHERE access_token = $1;';
         if(tokenType ==='refresh') {
-            SQL = 'SELECT * FROM JWT WHERE access_token=$1;';
+            SQL = 'SELECT * FROM jwt WHERE access_token=$1;';
         }
         let safeValue = [token];
         let result = await client.query(SQL,safeValue);

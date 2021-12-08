@@ -1,46 +1,44 @@
 const {deleteProductTag, updateProductTag,getProductTags,addProductTag} = require('../models/productTag');
 
-const addProductTagHandler = async (req, res) => {
+const addProductTagHandler = async (req, res, next) => {
     try {
         let result = await addProductTag(req.body)
-        if (result) {
-            res.status(201).json({message:'product tag has been added',...result})
-        } else {
-            res.status(403).send('something went wrong while adding product tag')
-        }
+        res.status(201).json(result)
     } catch (error) {
-        res.send(error.message)
+        throw new Error(error.message)
     }
 }
 
-const getProductTagsHandler = async (req, res) => {
+const getProductTagsHandler = async (req, res, next) => {
     try {
         let id = req.params.id;
         let result = await getProductTags(id);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(403).send('something went wrong while getting product tag')
-        }
+        res.status(200).json(result);
     } catch (error) {
-        res.send(error.message)
+        throw new Error(error.message)
     }
 }
 
-const deleteProductTagHandler = async (req, res) => {
+const deleteProductTagHandler = async (req, res, next) => {
     try {
-        let id = req.body.id;
+        let id = req.params.id;
         let result = await deleteProductTag(id);
-        if (result) {
-            res.status(200).json({message:'product tag has been deleted',...result});
-        } else {
-            res.status(403).send('something went wrong while deleting product tag')
-        }
+        res.status(200).json(result);
     } catch (error) {
-        res.send(error.message)
+        throw new Error(error.message)
     }
 }
 
+const updateProductTagsHandler = async (req, res, next) => {
+    try {
+        let id = req.params.id;
+        let result = await updateProductTags(id, req.body);
+        res.status(200).json(result);
+    } catch (error) {
+        throw new Error(error.message)
+    }
+
+}
 
 
-module.exports = {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler}
+module.exports = {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler}

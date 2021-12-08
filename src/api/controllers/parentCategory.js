@@ -7,13 +7,12 @@ const {
   getParentCategoryByIdModel,
   getAllParentCategoryModel,
   getParentCategoryByTitleModel,
-  updateDisplayParentCategoryModel,
 } = require("../models/parentCategory");
 
 const addParentCategory = async (req, res, next) => {
   try {
     let data = await addParentCategoryModel(req.body);
-    if (!data.entitle && !data.artitle) {
+    if (!data.entitle&&!data.artitle) {
       res
         .status(401)
         .send("you can not add a parent category without title for it ");
@@ -22,7 +21,7 @@ const addParentCategory = async (req, res, next) => {
         message: "successfully added parent category",
         data: data,
       };
-      //   delete data.id;
+    //   delete data.id;
 
       res.status(200).json(response);
     }
@@ -36,18 +35,23 @@ const addParentCategory = async (req, res, next) => {
 };
 
 const removeParentCategory = async (req, res, next) => {
-  let id = req.body.idPG;
+  let id = req.params.idPG;
   try {
-    let data = await removeParentCategoryModel(id);
-    console.log("🚀 ~ file: parentCategory.js ~ line 41 ~ removeParentCategory ~ data", data)
-    if(data){
+    let oldData = await getParentCategoryByIdModel(id);
+    if (oldData) {
+      let data = await removeParentCategoryModel(id);
       let response = {
         message: "successfully remove parent category",
         data: data,
       };
       res.status(200).json(response);
+    } else {
+      let response = {
+        message: "the parent category is not exist in database",
+      };
+
+      res.status(403).json(response);
     }
-    res.status(403).json('the parent category deleted before!');
 
     //    delete data.id
   } catch (error) {
@@ -60,40 +64,38 @@ const removeParentCategory = async (req, res, next) => {
 };
 
 const updateParentCategory = async (req, res, next) => {
+  let id = req.params.idPG;
+
   try {
-      let oldData = await getParentCategoryByIdModel(req.body.id);
-      let data = await updateParentCategoryModel({...oldData,...req.body});
-      if(data){
-        let response = {
-          message: "successfully update parent category",
-          data: data,
-        };
-        res.status(200).json(response);
-      } 
+    let oldData = await getParentCategoryByIdModel(id);
+    if (oldData) {
+      let data = await updateParentCategoryModel(req.body, id);
+      console.log(
+        "🚀 ~ file: ahmad.js ~ line 63 ~ updateParentCategory ~ req.body",
+        req.body
+      );
+
+      let response = {
+        message: "successfully update parent category",
+        data: data,
+      };
+      res.status(200).json(response);
+    } else {
+      let response = {
+        message: "the parent category is not exist in database",
+      };
+
+      res.status(403).json(response);
+    }
+    //    delete data.id
   } catch (error) {
     let response = {
       message: error.message,
     };
+    //  throw new Error(error.message);
     res.status(401).json(response);
   }
 };
-const updateDisplayParentCategory =async (req, res, next) => {
-  try {
-    let result = await updateDisplayParentCategoryModel(req.body);
-    let response = {
-      message: "successfully update display parent category",
-      data: result,
-    };
-    res.status(200).json(response);
-  } catch (error) {
-    
-      let response = {
-        message: error.message,
-      };
-      res.status(401).json(response);
-    
-  }
-}
 
 const getParentCategoryById = async (req, res, next) => {
   let id = req.params.idPG;
@@ -107,7 +109,10 @@ const getParentCategoryById = async (req, res, next) => {
 
 const getParentCategoryByTitle = async (req, res, next) => {
   try {
-    let result = await getParentCategoryByTitleModel(req.params.title);
+    const { title } = req.body;
+    
+    let result = await getParentCategoryByTitleModel(title);
+   
     res.status(200).json(result);
   } catch (error) {
     res.status(403).json(error.message);
@@ -130,5 +135,4 @@ module.exports = {
   getParentCategoryById,
   getAllParentCategory,
   getParentCategoryByTitle,
-  updateDisplayParentCategory
 };
