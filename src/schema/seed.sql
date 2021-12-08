@@ -7,7 +7,7 @@ INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first
 INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES
  ('507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','009627966851','jordan','irbid','wesam','al-masri',true);
 INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
-('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','079655780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
+('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
 
       
 -------------------------- profile Table --------------------------------

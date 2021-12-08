@@ -24,7 +24,7 @@ const {addCartItemHandler
   ,removeCartItemByIdHandler
 } = require('../api/controllers/cartControllers');
 
-const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler} = require('../api/controllers/orderControllers');
+const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,updateOrderItemCancelHandler} = require('../api/controllers/orderControllers');
 
 
 
@@ -180,9 +180,29 @@ router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
 router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemByCartIdHandler);
 router.delete('/remove/cart_item/id',bearer,upload.none(),removeCartItemByIdHandler);
 router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
-router.get('/getAll/cart',bearer,upload.none(),getAllCartHandler); 
+router.get('/getAll/cart',bearer,checkAuth,upload.none(),getAllCartHandler); 
 router.put('/update/cart_item',bearer,upload.none(),updateCartItemQuantityHandler);
-router.put('/update/cart',bearer,upload.none(),updateCartHandler)
+router.put('/update/cart',bearer,upload.none(),updateCartHandler);
+
+// discount code 
+
+router.post('/add/discount',bearer,upload.none(),checkAdmin,createDiscountCodeHandler);
+router.put('/update/active/:id',bearer,upload.none(),checkAdmin,updateActiveDiscountCodeHandler);
+router.put('/update/:id',bearer,upload.none(),checkAdmin,updateDisconnectHandler);
+router.delete('/remove/:id',bearer,upload.none(),checkAdmin,removeDiscountHandler);
+router.get('/getAll',bearer,upload.none(),checkAdmin,getAllDiscountHandlers);
+router.post('/checkCode',bearer,upload.none(),checkCodeHandler);
+router.get('/getAll/promo',bearer,upload.none(),checkAdmin,getAllPromoHandler);
+router.get('/get/:id',bearer,upload.none(),getPromoHandler);
+
+// order 
+
+router.post('/add/order/222',bearer,upload.none(),addOrderHandler);
+router.post('/add/order_item',bearer,upload.none(),addOrderItemHandler);
+router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
+router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler);
+router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler);
+router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemCancelHandler);
 
 // store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)
@@ -203,10 +223,6 @@ router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandle
 
 
 
-router.post('/add/order',bearer,upload.none(),addOrderHandler);
-router.post('/add/order_item',bearer,upload.none(),addOrderItemHandler);
-router.put('/update/status/:id',bearer,upload.none(),updateOrderStatusHandler);
-router.get('/getAll/order',bearer,upload.none(),getAllOrderHandler);
 
 
 
@@ -242,14 +258,7 @@ router.post('/return', upload.none(), createReturnRequestHandler)
 router.get('/return',upload.none(), getAllReturnRequestsHandler)
 router.put('/return',upload.none(),updateReturnRequestStatusHandler)
 
-router.post('/add/discount',bearer,upload.none(),checkAdmin,createDiscountCodeHandler);
-router.put('/update/active/:id',bearer,upload.none(),checkAdmin,updateActiveDiscountCodeHandler);
-router.put('/update/:id',bearer,upload.none(),checkAdmin,updateDisconnectHandler);
-router.delete('/remove/:id',bearer,upload.none(),checkAdmin,removeDiscountHandler);
-router.get('/getAll',bearer,upload.none(),checkAdmin,getAllDiscountHandlers);
-router.post('/checkCode',bearer,upload.none(),checkCodeHandler);
-router.get('/getAll/promo',bearer,upload.none(),checkAdmin,getAllPromoHandler);
-router.get('/get/:id',bearer,upload.none(),getPromoHandler);
+
 
 router.post('/add/suggestion',bearer,upload.none(),addSuggestionHandler);
 router.delete('/remove/suggestion/:id',bearer,upload.none(),removeSuggestionHandler);
