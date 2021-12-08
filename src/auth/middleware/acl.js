@@ -1,9 +1,6 @@
 const client = require('../../db')
-const { getProfileByUserId, activateAccount } = require('../models/user')
+const { getProfileByUserId } = require('../models/user')
 
-const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany');
-const {getCourierById} = require('../../api/models/courier');
-const {getStore} =require('../../api/models/stores');
 // comment on product
 
 let productComment = async (req, res, next) => {
@@ -21,13 +18,13 @@ let productComment = async (req, res, next) => {
             });
         }
     } catch (error) {
-        res.send(error.message)
+        throw new Error(error.message)
     }
 }
 
 let profileView = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM PROFILE WHERE id=$1;`;
+        let SQL = `SELECT * FROM profiles WHERE id=$1;`;
         let safeValue = [req.params.id];
         let result = await client.query(SQL, safeValue);
         if (req.user.profile_id === result.rows[0].id) {
@@ -39,7 +36,7 @@ let profileView = async (req, res, next) => {
             });
         }
     } catch (error) {
-        res.send(error.message)
+        throw new Error(error.message)
     }
 };
 
@@ -47,6 +44,7 @@ let profileView = async (req, res, next) => {
 
 let checkAdmin = async (req, res, next) => {
     try {
+
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
@@ -58,6 +56,7 @@ let checkAdmin = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
+
     } catch (error) {
         throw new Error(error.message)
     }
@@ -83,6 +82,8 @@ let checkMod = async (req, res, next) => {
 
 let checkAuth = async (req, res, next) => {
     try {
+
+
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
@@ -101,15 +102,15 @@ let checkAuth = async (req, res, next) => {
     }
 };
 
-let checkStoreOwner = async (profile_id) => {
+let checkStoreOwner = async (userId) => {
     try {
-       
+        let profileId = await getProfileByUserId(userId);
 
         let SQL = `SELECT * FROM STORE WHERE profile_id=$1;`;
-        let safeValue = [profile_id];
+        let safeValue = [profileId];
 
         let result = await client.query(SQL, safeValue);
-        return result;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
@@ -117,14 +118,14 @@ let checkStoreOwner = async (profile_id) => {
 
 let checkStoreAuth = async (req, res, next) => {
     try {
-        let storeOwner = await checkStoreOwner(req.user.profile_id);
+        let storeOwner = checkStoreOwner(req.user.id)
         let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
         let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
         let safeValue = [req.user.id];
         let result = await client.query(SQL, safeValue);
         let result2 = await client.query(SQL2, safeValue);
 
-        if (result.rows[0] || result2.rows[0] || storeOwner.rows[0]) {
+        if (result.rows[0] || result2.rows[0] || storeOwner) {
             next();
         } else {
             res.status(403).json({
@@ -132,6 +133,7 @@ let checkStoreAuth = async (req, res, next) => {
                 message: 'User unauthorized, access denied!',
             });
         }
+
     } catch (error) {
         throw new Error(error.message)
     }
@@ -153,98 +155,5 @@ let checkBan = async (req, res, next) => {
     }
 };
 
-const checkActive = async (req, res, next) =>{
-    try {
-        if(req.user.status === 'active'){
-            next()
-        } else if (req.user.status === 'deactivated'){
-            res.status(403).send('Your account is deactivated, sign in again to activate it!');
-            await activateAccount(req.user.id)
-            next();
-        }
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan };
 
-const checkCourierCompany = async (req, res, next) =>{
-    try {
-        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
-        let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        let result2 = await client.query(SQL2, safeValue);
-        if(req.user.courier_company_id || result.rows[0] ||result2.rows[0] ){
-            next();
-        } else{
-            res.status(403).send('your are not a courier company')
-        }
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-const checkCourier = async (req, res, next) =>{
-    try {
-        if(req.user.courier_id){
-            next()
-        } else {
-            res.status(403).send('your are not a courier')
-        }
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-const checkCourierCompanyStatus = async (req, res, next) =>{
-    try {
-        let result = await getCourierCompanyByCompanyId(req.user.courier_company_id)
-        if(result.status === 'approved'){
-            next()
-        } else if(result.status === 'pending'){
-            res.status(403).send('your account status still pending')
-        } else if(result.status === 'rejected') {
-            res.status(403).send('your account status is rejected, please check rejection reason')
-        }  else {
-            res.status(403).send('please check your account status')
-        }
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-const checkCourierStatus = async (req, res, next) =>{
-    try {
-        let result = await getCourierById(req.user.courier_id);
-        if(result.status === 'approved'){
-            next()
-        } if(result.status === 'pending'){
-            res.status(403).send('your account status still pending,please approve the courier company request' )
-        } else {
-            res.status(403).send('please check your account status')
-        }
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-const checkStoreStatus = async (req, res, next) =>{
-    try {
-        let result = await getStore(req.user.profile_id)
-        if(result.status === 'approved'){
-            next()
-        } else if(result.status === 'pending'){
-            res.status(403).send('your account status still pending')
-        } else if(result.status === 'rejected') {
-            res.status(403).send('your account status is rejected, please check rejection reason')
-        }  else {
-            res.status(403).send('please check your account status')
-        }
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-
-
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus};
