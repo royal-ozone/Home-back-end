@@ -24,7 +24,8 @@ const {addCartItemHandler
   ,removeCartItemByIdHandler
 } = require('../api/controllers/cartControllers');
 
-const {addOrderHandler,addOrderItemHandler,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,updateOrderItemCancelHandler} = require('../api/controllers/orderControllers');
+const {addOrderHandler,getOrderByStoreIdHandler,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,  updateOrderItemStatusHandler
+} = require('../api/controllers/orderControllers');
 
 
 
@@ -197,12 +198,12 @@ router.get('/get/:id',bearer,upload.none(),getPromoHandler);
 
 // order 
 
-router.post('/add/order/222',bearer,upload.none(),addOrderHandler);
-router.post('/add/order_item',bearer,upload.none(),addOrderItemHandler);
+router.post('/addOrder',bearer,upload.none(),addOrderHandler);
 router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
 router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler);
 router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler);
-router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemCancelHandler);
+router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
+router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 
 // store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)

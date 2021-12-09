@@ -11,7 +11,7 @@ const addCartModel =async (profile_id,idAddress = null)=> {
         let response ={
             message: error.message,
         }
-        return response;
+       throw new Error(response)
     }
 }
 const updateCart = async data =>{
@@ -34,10 +34,8 @@ const addCartItemModel =async (id,data)=> {
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
     } catch (error) {
-        let response ={
-            message: error.message,
-        }
-        return response;
+
+       throw new Error(error.message)
     }
 }
 const getCartByProfileId =async (id)=>{
@@ -48,10 +46,7 @@ try {
     return result.rows[0];
     
 } catch (error) {
-    let response ={
-        message: error.message,
-    }
-    return response;
+   throw new Error(error.message)
 }
 }
 const removeCartItemModelByCartId = async(id) =>{
@@ -83,10 +78,7 @@ const getCartItemByIdModel =async id => {
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error(error.message)
     }
 }
 const getAllCartItemModel = async id => {
@@ -95,10 +87,7 @@ const getAllCartItemModel = async id => {
         let result = await client.query(SQL,[id])
         return result.rows;
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error(error.message)
     }
 }
 const getCartByProfileIdModel = async id => {
@@ -108,10 +97,7 @@ const getCartByProfileIdModel = async id => {
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error(error.message)
     }
 }
 const getAllCartModel = async id => {
@@ -121,10 +107,7 @@ const getAllCartModel = async id => {
         return result.rows;
         
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error(error.message)
     }
 }
 const getCartItemByProductId = async id => {
@@ -135,10 +118,7 @@ const getCartItemByProductId = async id => {
         return result.rows[0];
         
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error(error.message)
     }
 }
 const getALLCartItemByCartId = async id =>{
@@ -149,10 +129,7 @@ const getALLCartItemByCartId = async id =>{
         return result.rows;
         
     } catch (error) {
-        let response = {
-            message: error.message,
-        }
-        return response;
+       throw new Error( error.message)
     }
 }
 const updateCartItemQuantity = async data =>{

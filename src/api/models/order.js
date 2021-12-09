@@ -1,23 +1,20 @@
 "use strict";
 const client = require("../../db");
 const { calculation } = require("../controllers/helper");
-const addOrderModel = async (cartData,profile_id) => {
+
+const addOrderModel = async (data) => {
   try {
-    // const {tax, shipping, discount, sub_total } = data;
-    
+    let {profile_id, address_id, tax,shipping,discount,sub_total,grand_total} =data 
     let SQL =
-      "INSERT INTO new_order(profile_id,address_id) VALUES ($1,$2) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
     let safeValue = [
       profile_id,
-      cartData.address_id,
+      address_id,tax,shipping,discount,sub_total,grand_total
     ];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
-    let response = {
-      message: error.message,
-    };
-    return response;
+    throw new Error(error.message)
   }
 };
 const getOrderByIdModel = async (id) => {
@@ -27,15 +24,12 @@ const getOrderByIdModel = async (id) => {
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
-    let response = {
-      message: error.message,
-    };
-    return response;
+   throw new Error(error.message);
   }
 };
-const addOrderItemModel = async (cartItemData, order_id) => {
+const addOrderItemModel = async (data) => {
   try {
-    const { product_id, price, quantity, discount ,price_after} = cartItemData;
+    const {order_id, product_id, price, quantity, discount ,price_after} = data;
 
     let SQL =
       "INSERT INTO order_item(order_id,product_id,price,quantity,discount,price_after) VALUES ($1,$2,$3,$4,$5,$6) RETURNING * ;";
@@ -46,7 +40,7 @@ const addOrderItemModel = async (cartItemData, order_id) => {
     let response = {
       message: error.message,
     };
-    return response;
+   throw new Error(response);
   }
 };
 const updateOrderStatusModel = async (id,data) => {
@@ -56,10 +50,7 @@ const updateOrderStatusModel = async (id,data) => {
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
-    let response = {
-      message: error.message,
-    };
-    return response;
+   throw new Error(error.message);
   }
 };
 const getAllOrderModel = async () => {
@@ -71,7 +62,7 @@ const getAllOrderModel = async () => {
     let response = {
       message: error.message,
     };
-    return response;
+   throw new Error(response);
   }
 };
 const updateOrderModelById =async (data,sub_total)=>{
@@ -95,12 +86,32 @@ const getAllOrderProfileIdModel =async (id)=> {
     throw new Error(error.message)
   }
 }
-const updateOrderItemCancelModel = async (data) => {
+const updateOrderItemStatusModel = async (data) => {
   try {
     let {id,status} = data;
     let SQL = 'UPDATE order_item SET status=$1 WHERE id=$2  RETURNING *;';
     let result = await client.query(SQL,[status,id]);
     return result.rows[0];
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+const getOrderItemsByOrderId = async id => {
+  try {
+    let SQL = 'SELECT * FROM order_item WHERE order_id=$1;';
+    let result = await client.query(SQL, [id]);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+const getOrderItemByProductId = async id => {
+  try {
+    let SQL = 'SELECT * FROM order_item WHERE product_id=$1;';
+    let result = await client.query(SQL, [id]);
+    return result.rows;
   } catch (error) {
     throw new Error(error.message)
   }
@@ -113,5 +124,7 @@ module.exports = {
   getAllOrderModel,
   updateOrderModelById,
   getAllOrderProfileIdModel,
-  updateOrderItemCancelModel
+  updateOrderItemStatusModel,
+  getOrderItemsByOrderId,
+  getOrderItemByProductId
 };
