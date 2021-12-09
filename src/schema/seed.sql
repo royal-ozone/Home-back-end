@@ -31,7 +31,11 @@ INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec
 INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
 ('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','5');
 
+INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
+('93e4029f-2aae-4d75-83df-ee4a06d2e589','1821db68-97c9-4380-9a55-ad8bc7f16eda','DK-beauty-daleen','amman','love live love dk-beauty-daleen','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','4');
+
 ------------------------------- parent_category -----------------------------------------
+
 INSERT INTO parent_category(id,entitle,artitle ,metaTitle,content) VALUES 
 ('2f4894ff-12a9-441d-b606-d235bd2449be','clothing','ملايس','clothing', 'clothing');
 
@@ -98,14 +102,14 @@ INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,stree
 INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
 ('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
 INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
-('95f3a0e3-aa40-47eb-8315-a58c42ed8697','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
+('95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
 
 
 -------------------------------- order_item ----------------------------------------
-INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
-('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3' );
-INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
-('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
+INSERT INTO order_item (id,order_id,product_id,store_id,price,discount,quantity)Values
+('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3' );
+INSERT INTO order_item (id,order_id,product_id,store_id,price,discount,quantity)Values
+('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3');
 
 
 -------------------------------- transaction ----------------------------
@@ -118,11 +122,13 @@ INSERT INTO transaction(id,profile_id,order_id,code,type,mode,status)VALUES
 ---------------------------------- cart -----------------------------
 INSERT INTO cart(id,profile_id,address_id)VALUES 
 ('07426572-9679-435c-a973-70e24a508ce7','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
+INSERT INTO cart(id,profile_id,address_id)VALUES 
+('07426572-9679-435c-a973-70e24a508ce5','3be97674-8ce4-49a8-a378-605965c4b98c','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
 
 
 ------------------------------------cart_item -----------------------------
-INSERT INTO cart_item(id,cart_id,product_id,price,discount,quantity)VALUES
-('70dfb852-0925-44e9-b09b-4d7b07935cf9','07426572-9679-435c-a973-70e24a508ce7','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','2');
+INSERT INTO cart_item(id,cart_id,product_id,store_id,price,discount,quantity)VALUES
+('70dfb852-0925-44e9-b09b-4d7b07935cf9','07426572-9679-435c-a973-70e24a508ce7','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','2');
 
 
 

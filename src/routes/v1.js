@@ -24,7 +24,7 @@ const {addCartItemHandler
   ,removeCartItemByIdHandler
 } = require('../api/controllers/cartControllers');
 
-const {addOrderHandler,getOrderByStoreIdHandler,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,  updateOrderItemStatusHandler
+const {addOrderHandler,getOrderByStoreIdHandler,getOrderByStoreIdHandlerTwo,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,  updateOrderItemStatusHandler
 } = require('../api/controllers/orderControllers');
 
 
@@ -203,7 +203,8 @@ router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStat
 router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler);
 router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler);
 router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
-router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
+//router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
+router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
 
 // store review 
 router.get('/store/review',upload.none(), getAllStoreReviewHandler)

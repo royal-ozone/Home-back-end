@@ -34,7 +34,6 @@ const addCartItemHandler =async (req, res)=>{
                 message:'successfully added cart item ',
                 ...data
             }
-            console.log("🚀 ~ file: cartControllers.js ~ line 37 ~ addCartItemHandler ~ response", response)
             res.status(200).json(response)
         } else {
             res.status(403).json(data)

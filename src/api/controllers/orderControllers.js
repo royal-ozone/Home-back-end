@@ -21,7 +21,9 @@ const {
   getOrderItemsByOrderId,
   getOrderItemByProductId
 } = require("../models/order");
-
+const {
+  getAddressById
+} = require("../models/address");
 const addOrderHandler = async (req, res, next) => {
   try {
     let profile_id =req.user.profile_id;
@@ -137,11 +139,34 @@ const getOrderByStoreIdHandler = async (req, res) =>{
     res.status(403).send(error.message)
   }
 }
+
+const getOrderByStoreIdHandlerTwo = async (req, res) => {
+  try {    
+    let allOrder = await getAllOrderModel();
+    let orders = allOrder.map( async (order) => {
+      let orderItems = await getOrderItemsByOrderId(order.id);
+      let profile = await getAddressById(order.address_id);
+      let items =  orderItems.filter((item) => item.store_id === req.user.store_id)
+       if(items.length >0){
+         order['full name'] =profile.first_name + ' ' + profile.last_name;
+         order['items']= items;
+        return order
+      }
+      
+    });
+    let final = await Promise.all(orders);
+    let filtered = final.filter(items => items);
+    res.status(200).json({orders:await Promise.all(filtered)})    
+  } catch (error) {
+    res.status(400).json({error:error.message});
+  }
+}
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,
   getAllOrderHandler,
   getAllOrderProfileIdHandler,
   updateOrderItemStatusHandler,
-  getOrderByStoreIdHandler
+  getOrderByStoreIdHandler,
+  getOrderByStoreIdHandlerTwo
 };
