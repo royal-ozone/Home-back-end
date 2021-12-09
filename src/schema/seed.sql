@@ -103,7 +103,7 @@ INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,g
 
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
-('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
+('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3' );
 INSERT INTO order_item (id,order_id,product_id,price,discount,quantity)Values
 ('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','0047da41-5e33-460a-88da-5cfa2b9d8724','12.99','0','3');
 
