@@ -123,17 +123,16 @@ const getOrderByStoreIdHandler = async (req, res) =>{
       return product.id
     })
     let orders = await getAllOrderModel()
-    console.log("🚀 ~ file: orderControllers.js ~ line 126 ~ getOrderByStoreIdHandler ~ orders", orders)
-
-    let orderItems = products.map(async product => {
-      let obj = {}
-      let orderItem = await getOrderItemByProductId(product.id);
-      orderItem.map(item => {
-        obj[item.order_id]= item
-      })
-    return obj
+    let orderArray = orders.map( async(order) => {
+      let orderItems = await getOrderItemsByOrderId(order.id);
+      let itemsArray = orderItems.filter((item) => productsArray.includes(item.product_id))
+      order['items'] = itemsArray
+      return order
     })
-    res.status(200).json({orders: await Promise.all(orderItems) })
+    let final = await Promise.all(orderArray)
+    let filtered = final.filter(order => order.items.length > 0)
+
+    res.status(200).json({orders: filtered })
   } catch (error) {
     res.status(403).send(error.message)
   }
