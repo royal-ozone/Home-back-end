@@ -306,6 +306,7 @@ CREATE TABLE order_item (
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   order_id uuid NOT NULL,
   product_id uuid NOT NULL,
+  store_id uuid NOT NULL,
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,
@@ -313,7 +314,7 @@ CREATE TABLE order_item (
   status VARCHAR (50) DEFAULT 'pending',
   cancellation_reason TEXT,
   created_at timestamp not null default current_timestamp,
-  
+  FOREIGN KEY (store_id) REFERENCES store(id), 
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -348,6 +349,7 @@ CREATE TABLE cart_item(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   cart_id uuid NOT NULL,
   product_id uuid NOT NULL UNIQUE,
+  store_id uuid NOT NULL,
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,

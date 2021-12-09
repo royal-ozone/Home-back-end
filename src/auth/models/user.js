@@ -457,7 +457,15 @@ const getCourierByProfileId = async id => {
         throw new Error(error.message);
     }
 }
-
+const getProfileById = async (id) => {
+    try {
+        let SQL = 'SELECT * FROM  profile WHERE id= $1;';
+        let result = await client.query(SQL, [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 
 module.exports = {
@@ -495,6 +503,7 @@ module.exports = {
     getCourierByProfileId, 
     getProfileByEmail,
     getAllBannedUsers,
-    updateProfileEmail
+    updateProfileEmail,
+    getProfileById
 }
 
