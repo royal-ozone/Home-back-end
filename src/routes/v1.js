@@ -188,14 +188,14 @@ router.put('/update/cart',bearer,upload.none(),updateCartHandler);
 // discount code 
 
 router.post('/add/discount',bearer,upload.none(),checkAdmin,createDiscountCodeHandler);
-router.put('/update/active/:id',bearer,upload.none(),checkAdmin,updateActiveDiscountCodeHandler);
-router.put('/update/:id',bearer,upload.none(),checkAdmin,updateDisconnectHandler);
-router.delete('/remove/:id',bearer,upload.none(),checkAdmin,removeDiscountHandler);
+router.put('/update/active',bearer,upload.none(),checkAdmin,updateActiveDiscountCodeHandler); // AND not active === delete
+router.put('/update/discount',bearer,upload.none(),checkAdmin,updateDisconnectHandler);
+// router.delete('/remove/discount',bearer,upload.none(),checkAdmin,removeDiscountHandler);
 router.get('/getAll',bearer,upload.none(),checkAdmin,getAllDiscountHandlers);
-router.post('/checkCode',bearer,upload.none(),checkCodeHandler);
 router.get('/getAll/promo',bearer,upload.none(),checkAdmin,getAllPromoHandler);
 router.get('/get/:id',bearer,upload.none(),getPromoHandler);
 
+router.post('/checkCode',bearer,upload.none(),checkCodeHandler); // for people
 // order 
 
 router.post('/addOrder',bearer,upload.none(),addOrderHandler);

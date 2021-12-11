@@ -8,6 +8,7 @@ const {
   getCartItemByProductId,
   removeCartItemModelByCartId,
   getALLCartItemByCartId,
+  updateCart,
 } = require("../models/cart");
 const {
   addOrderModel,
@@ -24,6 +25,12 @@ const {
 const {
   getAddressById
 } = require("../models/address");
+const {
+  updateCounterDiscountCode,
+  updateCounterPromoModel,
+  getPromoByDiscountId,
+  checkCodeModel
+}= require("../models/discountCode");
 const addOrderHandler = async (req, res, next) => {
   try {
     let profile_id =req.user.profile_id;
@@ -38,14 +45,25 @@ const addOrderHandler = async (req, res, next) => {
           return result;
         });   
         if (productArray) {
-          let obj ={
-            message: 'Order has been placed successfully',
-            order: data,
-            order_items: await Promise.all(productArray),
+            let updateCounterPromo ;
+            let updateData ;
+          if(cartData.discount_id){
+            let result = await checkCodeModel({id:cartData.discount_id});
+            let promoByDiscountId = await getPromoByDiscountId(cartData.discount_id,profile_id);
+             updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
+             updateData = await updateCounterDiscountCode(result);
           }
-          await removeCartItemModelByCartId(req.user.cart_id);
-          
-          return res.status(200).json(obj);
+            let obj ={
+              message: 'Order has been placed successfully',
+              order: data,
+              order_items: await Promise.all(productArray),
+              updateCounterPromo:updateCounterPromo,
+              updateData: updateData
+            }
+            await removeCartItemModelByCartId(req.user.cart_id);
+            await updateCart({id:req.user.cart_id});
+            
+            return res.status(200).json(obj);
         } 
       }
       res.status(403).send(data)
@@ -161,6 +179,7 @@ const getOrderByStoreIdHandlerTwo = async (req, res) => {
     res.status(400).json({error:error.message});
   }
 }
+
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,

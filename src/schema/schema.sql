@@ -286,6 +286,33 @@ CREATE TABLE address(
    FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
+CREATE TABLE discount_code(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  discount_code VARCHAR(250) UNIQUE NOT NULL,
+  year VARCHAR(250) NOT NULL,
+  month VARCHAR (250) NOT NULL,
+  day VARCHAR (250) NOT NULL,
+  hour VARCHAR (250) NOT NULL,
+  minute VARCHAR (250) NOT NULL,
+  second VARCHAR (250) NOT NULL,
+  counter VARCHAR(250) default 0,
+  max_counter VARCHAR (250) NOT NULL default 50,
+  discount FLOAT DEFAULT 0,
+  active Boolean DEFAULT FALSE,
+  number_of_time VARCHAR(2) NOT NULL,
+  created_at timestamp not null default current_timestamp
+);
+CREATE TABLE promo(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  discount_id uuid NOT NULL,
+  discount_name VARCHAR(250) NOT NULL,
+  counter VARCHAR(15) NOT NULL default 0,
+  FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (discount_id) REFERENCES discount_code(id),
+  created_at timestamp not null default current_timestamp
+);
+
 CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
@@ -293,11 +320,11 @@ CREATE TABLE new_order(
   status VARCHAR (250)  DEFAULT 'pending',
   tax FLOAT  DEFAULT 0.00,
   shipping FLOAT  DEFAULT 0,
-  discount FLOAT  DEFAULT 0.00,
+  discount_id uuid ,
   sub_total FLOAT  DEFAULT 0,
   grand_total FLOAT  DEFAULT 0,
   created_at timestamp not null default current_timestamp,
-
+  FOREIGN KEY (discount_id) REFERENCES discount_code(id),
   FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (address_id) REFERENCES address(id)
   );
@@ -339,8 +366,9 @@ CREATE TABLE cart(
      id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
      profile_id uuid NOT NULL UNIQUE,
      address_id uuid,
+     discount_id uuid ,
      created_at timestamp not null default current_timestamp,
-
+     FOREIGN KEY (discount_id) REFERENCES discount_code(id),
      FOREIGN KEY (profile_id) REFERENCES profile(id),
      FOREIGN KEY (address_id) REFERENCES address(id)
 );
@@ -426,32 +454,7 @@ CREATE TABLE return_request(
 );
 
 
-CREATE TABLE discount_code(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  discount_code VARCHAR(250) UNIQUE NOT NULL,
-  year VARCHAR(250) NOT NULL,
-  month VARCHAR (250) NOT NULL,
-  day VARCHAR (250) NOT NULL,
-  hour VARCHAR (250) NOT NULL,
-  minute VARCHAR (250) NOT NULL,
-  second VARCHAR (250) NOT NULL,
-  counter VARCHAR(250) default 0,
-  max_counter VARCHAR (250) NOT NULL default 50,
-  discount FLOAT DEFAULT 0,
-  active Boolean DEFAULT FALSE,
-  number_of_time VARCHAR(2) NOT NULL,
-  created_at timestamp not null default current_timestamp
-);
-CREATE TABLE promo(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL,
-  discount_id uuid NOT NULL,
-  discount_name VARCHAR(250) NOT NULL,
-  counter VARCHAR(15) NOT NULL default 0,
-  FOREIGN KEY (profile_id) REFERENCES profile(id),
-  FOREIGN KEY (discount_id) REFERENCES discount_code(id),
-  created_at timestamp not null default current_timestamp
-);
+
 
 
 CREATE TABLE suggestion(

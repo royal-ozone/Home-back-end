@@ -16,9 +16,9 @@ const addCartModel =async (profile_id,idAddress = null)=> {
 }
 const updateCart = async data =>{
     try {
-        let {id, address_id} = data;
-        let SQL = 'UPDATE cart SET address_id=$2 WHERE id=$1 RETURNING *;';
-        let safeValues = [id, address_id];
+        let {id, address_id,discount_id} = data;
+        let SQL = 'UPDATE cart SET address_id=$2,discount_id=$3 WHERE id=$1 RETURNING *;';
+        let safeValues = [id, address_id,discount_id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -143,6 +143,17 @@ const updateCartItemQuantity = async data =>{
         throw new Error(error.message)
     }
 }
+const updateDiscountCart = async (data) => {
+    try {
+    let {cart_id,discount_id} = data;
+    let SQL = 'UPDATE cart SET discount_id =$2 WHERE id=$1 RETURNING *;';
+    let safeValues = [cart_id,discount_id];
+    let result = await client.query(SQL,safeValues);
+    return result.rows[0];
+        
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
-
-module.exports = {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModelByCartId,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel,getCartItemByProductId,getALLCartItemByCartId,updateCart,updateCartItemQuantity,removeCartItemById};
+module.exports = {addCartModel,addCartItemModel,getCartByProfileId,removeCartItemModelByCartId,getCartItemByIdModel,getAllCartItemModel,getAllCartModel,getCartByProfileIdModel,getCartItemByProductId,getALLCartItemByCartId,updateCart,updateCartItemQuantity,removeCartItemById,updateDiscountCart};

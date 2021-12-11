@@ -99,10 +99,10 @@ INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,stree
 ('9e0e31ac-757b-4f25-afe1-61ed9ccb40d2','fca8e07b-ac7d-4ce8-8437-53c54ca85857','uae','dubai','emran','aloul','0798009950','abdallah alnazhan','13','8');
 
 --------------------------------- new_order ----------------------------------------
-INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
-('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
-INSERT INTO new_order(id,profile_id,address_id,tax,shipping,discount,sub_total,grand_total)VALUES
-('95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','0','20','22');
+INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','1','20','22');
+INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','20','22');
 
 
 -------------------------------- order_item ----------------------------------------

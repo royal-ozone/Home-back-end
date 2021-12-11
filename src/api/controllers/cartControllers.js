@@ -4,7 +4,7 @@ const {addCartItemModel,removeCartItemModelByCartId,getAllCartItemModel,getAllCa
 
 const updateCartHandler = async (req, res) =>{
     try {
-        let result = await updateCart({address_id:req.body.address_id, id: req.user.cart_id})
+        let result = await updateCart({address_id:req.body.address_id, id: req.user.cart_id,discount_id:req.body.discount_id})
         if(result.id){
             res.status(200).json({message:'cart updated successfully',...result})
         } else {
