@@ -11,12 +11,15 @@ const {
   addPromoModel,
   updateCounterPromoModel,
   getAllPromoModel,
-  getPromoByProfileIdModel
+  getPromoByProfileIdModel,
+  getPromoByDiscountId
 } = require("../models/discountCode");
-
+const {
+  updateDiscountCart
+} = require("../models/cart")
 const { myTimer, timer } = require("./helper");
 
-const createDiscountCodeHandler = async (req, res, next) => {
+const createDiscountCodeHandler = async (req, res) => {
   try {
     // let data= await getDiscountCodeById(id)
 
@@ -36,7 +39,7 @@ const createDiscountCodeHandler = async (req, res, next) => {
 };
 const updateActiveDiscountCodeHandler = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let id = req.body.id;
     let oldData = getDiscountCodeById(id);
     if (oldData) {
       let result = await updateActiveDiscountCodeByIdModel(req.body, id);
@@ -55,10 +58,10 @@ const updateActiveDiscountCodeHandler = async (req, res, next) => {
 };
 const updateDisconnectHandler = async (req, res, next) => {
   try {
-    let id = req.params.id;
-    let oldData = getDiscountCodeById(id);
+    let id = req.body.id;
+    let oldData = await getDiscountCodeById(id);
     if (oldData) {
-      let result = await updateDisconnectModel(req.body, id);
+      let result = await updateDisconnectModel({...oldData,...req.body});
       let response = {
         message: `Successfully update discount code who called (${result.discount_code})`,
         updateData: result,
@@ -74,7 +77,7 @@ const updateDisconnectHandler = async (req, res, next) => {
 };
 const removeDiscountHandler = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let id = req.body.id;
     let oldData = getDiscountCodeById(id);
     if (oldData) {
       let result = await removeDisconnectModel(id);
@@ -108,41 +111,58 @@ const getAllDiscountHandlers = async (req, res, next) => {
 };
 const checkCodeHandler = async (req, res, next) => {
   try {
+    let profileId = req.user.profile_id;
     let result = await checkCodeModel(req.body);
-    //  let updateData= await updateCounterDiscountCode(result);
-    // let result2 = await checkCodeModel(result);
-
     if (result) {
-      if (
-        result.active == true &&
-        Number(result.counter) < Number(result.max_counter)
-      ) {
-        let profileId = req.user.profile_id;
-        let promoResult = await addPromoModel(profileId, result);
-        let updateCounterPromo = await updateCounterPromoModel(promoResult);
-        if (updateCounterPromo) {
-          if (
-            Number(updateCounterPromo.counter) <= Number(result.number_of_time)
-          ) {
-            let updateData = await updateCounterDiscountCode(result);
-            let result2 = await checkCodeModel(updateData);
-            let response = {
-              message: "Successfully use discount code ",
-              data: result2,
-              promoData:updateCounterPromo,
-            };
-            return res.status(200).send(response);
+      if ( result.active == true && Number(result.counter) < Number(result.max_counter)) {
+
+        let promoByDiscountId = await getPromoByDiscountId(result.id,profileId);
+       
+         
+          if(promoByDiscountId){
+            if (
+              Number(promoByDiscountId.counter) < Number(result.number_of_time)
+              ) {
+              // let updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
+              // let updateData = await updateCounterDiscountCode(result);
+              let cart = await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
+              let response = {
+                message: " the discount code is activate ",
+                data: result,
+                promoData:promoByDiscountId,
+                cart:cart
+              };
+              return res.status(200).send(response);
+            }
+          }
+        
+       else{
+          let promoResult = await addPromoModel(profileId, result);
+          if (promoResult) {
+            if (
+              Number(promoResult.counter) < Number(result.number_of_time)
+              ) {
+              // let updateCounterPromo = await updateCounterPromoModel({id:promoResult.id,counter:promoResult.counter});
+              // let updateData = await updateCounterDiscountCode(result);
+            let cart=  await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
+              let response = {
+                message: "Successfully use discount code ",
+                data: result,
+                promoData:promoResult,
+                cart :cart
+              };
+              return res.status(200).send(response);
+            }
           }
         }
+        
+       
       }
       res.status(200).send("Unfortunately expired discount code");
     }
   } catch (error) {
     next(error);
-    //   let response = {
-    //     message: error.message,
-    // };
-    //  res.status(403).send(response);
+    
   }
 };
 const getAllPromoHandler =async (req, res, next) => {

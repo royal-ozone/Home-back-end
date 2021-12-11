@@ -4,12 +4,12 @@ const { calculation } = require("../controllers/helper");
 
 const addOrderModel = async (data) => {
   try {
-    let {profile_id, address_id, tax,shipping,discount,sub_total,grand_total} =data 
+    let {profile_id, address_id, tax,shipping,discount_id,sub_total,grand_total} =data 
     let SQL =
-      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
     let safeValue = [
       profile_id,
-      address_id,tax,shipping,discount,sub_total,grand_total
+      address_id,tax,shipping,discount_id,sub_total,grand_total
     ];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
@@ -65,18 +65,7 @@ const getAllOrderModel = async () => {
    throw new Error(response);
   }
 };
-const updateOrderModelById =async (data,sub_total)=>{
-  try {
-    const {order_id,tax,shipping,discount}= data;
-   let grand_total =  calculation(tax, discount, shipping, sub_total);
-    let SQL = 'UPDATE new_order SET sub_total=$1 ,tax=$2,shipping=$3,discount=$4,grand_total=$5 WHERE id=$6 RETURNING *;';
-    let safeValue = [sub_total,tax,shipping,discount,grand_total,order_id];
-    let result = await client.query(SQL, safeValue);
-    return result.rows[0];
-  } catch (error) {
-    throw new Error(error.message)
-  }
-}
+
 const getAllOrderProfileIdModel =async (id)=> {
   try {
     let SQL ='SELECT * FROM new_order WHERE profile_id=$1;';
@@ -122,7 +111,6 @@ module.exports = {
   getOrderByIdModel,
   updateOrderStatusModel,
   getAllOrderModel,
-  updateOrderModelById,
   getAllOrderProfileIdModel,
   updateOrderItemStatusModel,
   getOrderItemsByOrderId,
