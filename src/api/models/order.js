@@ -29,11 +29,11 @@ const getOrderByIdModel = async (id) => {
 };
 const addOrderItemModel = async (data) => {
   try {
-    const {order_id, product_id, store_id,price, quantity, discount ,price_after} = data;
+    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id} = data;
 
     let SQL =
-      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
-    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after];
+      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
+    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {

@@ -106,10 +106,10 @@ INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_tota
 
 
 -------------------------------- order_item ----------------------------------------
-INSERT INTO order_item (id,order_id,product_id,store_id,price,discount,quantity)Values
-('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3' );
-INSERT INTO order_item (id,order_id,product_id,store_id,price,discount,quantity)Values
-('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3');
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values
+('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3' );
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values
+('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3');
 
 
 -------------------------------- transaction ----------------------------

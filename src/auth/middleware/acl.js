@@ -4,14 +4,15 @@ const { getProfileByUserId, activateAccount } = require('../models/user')
 const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany');
 const {getCourierById} = require('../../api/models/courier');
 const {getStore} =require('../../api/models/stores');
+
 // comment on product
 
 let productComment = async (req, res, next) => {
     try {
         let SQL = `SELECT * FROM order_item WHERE product_id=$1 AND profile_id=$2;`;
-        let safeValues = [req.params.id, req.user.profile_id]
+        let safeValues = [req.body.product_id, req.user.profile_id]
         let result = await client.query(SQL, safeValues)
-        if (result) {
+        if (result.rows[0]) {
             next()
         }
         else {
