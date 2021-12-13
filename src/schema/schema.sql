@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS jwt;
 DROP TABLE IF EXISTS store_follower;
+DROP TABLE IF EXISTS store_follower_number;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS offer_notification;
 
@@ -256,7 +257,7 @@ CREATE TABLE profile_picture(
 
 CREATE TABLE store_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL UNIQUE,
+  profile_id uuid NOT NULL,
   store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate FLOAT NOT NULL DEFAULT 0,
@@ -289,17 +290,18 @@ CREATE TABLE address(
 CREATE TABLE discount_code(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   discount_code VARCHAR(250) UNIQUE NOT NULL,
-  year VARCHAR(250) NOT NULL,
-  month VARCHAR (250) NOT NULL,
-  day VARCHAR (250) NOT NULL,
-  hour VARCHAR (250) NOT NULL,
-  minute VARCHAR (250) NOT NULL,
-  second VARCHAR (250) NOT NULL,
-  counter VARCHAR(250) default 0,
-  max_counter VARCHAR (250) NOT NULL default 50,
+  year INT NOT NULL,
+  month INT NOT NULL,
+  day  INT NOT NULL,
+  hour INT NOT NULL,
+  minute INT NOT NULL,
+  second INT  NOT NULL,
+  counter INT default 0,
+  max_counter INT NOT NULL default 50,
   discount FLOAT DEFAULT 0,
+  max_discount INT NOT NULL,
   active Boolean DEFAULT FALSE,
-  number_of_time VARCHAR(2) NOT NULL,
+  number_of_time INT NOT NULL,
   created_at timestamp not null default current_timestamp
 );
 CREATE TABLE promo(
@@ -398,6 +400,13 @@ CREATE TABLE store_follower(
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
  
+ CREATE TABLE store_follower_number(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL UNIQUE,
+  number_of_follower INT NOT NULL DEFAULT 0,
+  created_at timestamp not null default current_timestamp,
+  FOREIGN KEY (store_id) REFERENCES store(id)
+);
 
 CREATE TABLE comment(
     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,

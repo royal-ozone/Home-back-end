@@ -120,26 +120,26 @@ const updateChangingName = async id => {
 
 // store reviews ---------------------------------------------------------------------------------------------------
 
-const checkIfReviewd = async (profileId, storeId) => {
+const checkIfReviewed = async (profileId, storeId) => {
     try {
         let SQL = `SELECT * FROM STORE_REVIEW WHERE profile_id=$1 AND store_id=$2;`;
         let safeValues = [profileId, storeId];
         let result = await client.query(SQL, safeValues)
-        return result;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const createStoreReview = async (profileId, data) => {
+const createStoreReview = async (profile_id,data) => {
     try {
-        let { store_id, review, rate } = data;
-        let check = await checkIfReviewd(profileId, store_id);
-        if (check.rows[0]) {
+        let {store_id, review, rate } = data;
+        let check = await checkIfReviewed(profile_id, store_id);
+        if (check) {
             return 0;
         }
         let SQL = `INSERT INTO STORE_REVIEW (profile_id,store_id,review,rate) VALUES ($1,$2,$3,$4) RETURNING *;`;
-        let safeValues = [profileId, store_id, review, rate];
+        let safeValues = [profile_id, store_id, review, rate];
         let result = await client.query(SQL, safeValues)
         return result.rows[0];
     } catch (error) {
@@ -161,37 +161,36 @@ const getStoreReviews = async (storeId) => {
     try {
         let SQL = `SELECT * FROM STORE_REVIEW WHERE store_id=$1;`;
         let safeValues = [storeId];
-        let result = await client.query(SQL, safeValues)
+        let result = await client.query(SQL, safeValues);
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const updateStoreReview = async (profileId, storeId, data) => {
+const updateStoreReview = async (profile_id, store_id, data) => {
     try {
         let { review, rate } = data;
-        let check = await checkIfReviewd(profileId, storeId);
-        if (!check.rows[0]) {
-            return 0;
-        }
-        let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2 WHERE store_id=$3 AND profile_id=$4;'
-        let safeValues = [review, rate, storeId, profileId];
+        console.log("🚀 ~ file: stores.js ~ line 174 ~ updateStoreReview ~ data", data)
+        
+        let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2 WHERE store_id=$3 AND profile_id=$4 RETURNING *;';
+        let safeValues = [review, rate, store_id, profile_id];
         let result = await client.query(SQL, safeValues)
-        return result;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const deleteStoreReview = async (profileId, storeId) => {
+const deleteStoreReview = async (data) => {
     try {
-        let check = await checkIfReviewd(profileId, storeId);
-        if (!check.rows[0]) {
+        let{profile_id, store_id}= data
+        let check = await checkIfReviewed(profile_id, store_id);
+        if (!check) {
             return 0;
         }
         let SQL = 'DELETE FROM STORE_REVIEW WHERE store_id=$1 AND profile_id=$2;'
-        let safeValues = [storeId, profileId];
+        let safeValues = [store_id, profile_id];
         let result = await client.query(SQL, safeValues)
         return result;
     } catch (error) {
@@ -204,8 +203,9 @@ const checkIfFollowed = async (profileId, storeId) => {
     try {
         let SQL = `SELECT * FROM STORE_FOLLOWER WHERE follower=$1 AND store_id=$2;`;
         let safeValues = [profileId, storeId];
+        console.log("🚀 ~ file: stores.js ~ line 206 ~ checkIfFollowed ~ safeValues", safeValues)
         let result = await client.query(SQL, safeValues)
-        return result;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
@@ -237,9 +237,13 @@ const getStoreFollowers = async (storeId) => {
 const createStoreFollower = async (profileId, storeId) => {
     try {
         let check = await checkIfFollowed(profileId, storeId);
-        if (check.rows[0]) {
-            let deleteFollower = await deleteStoreFollower(profileId, storeId);
-            return 0;
+        if (check) {
+            let response = {
+                number:0,
+                data:check
+            }
+            // let deleteFollower = await deleteStoreFollower(profileId, storeId);
+            return response;
         }
         else {
             let SQL = `INSERT INTO STORE_FOLLOWER(follower,store_id) VALUES ($1,$2) RETURNING *;`;
@@ -254,10 +258,12 @@ const createStoreFollower = async (profileId, storeId) => {
 
 const deleteStoreFollower = async (profileId, storeId) => {
     try {
-        let SQL = 'DELETE FROM STORE_FOLLOWER WHERE store_id=$1 AND follower=$2;'
+        let check = await checkIfFollowed(profileId, storeId);
+        console.log("🚀 ~ file: stores.js ~ line 261 ~ deleteStoreFollower ~ check", check)
+        let SQL = 'DELETE FROM store_follower WHERE store_id=$1 AND follower=$2 RETURNING * ;';
         let safeValues = [storeId, profileId];
         let result = await client.query(SQL, safeValues)
-        return result;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
@@ -277,7 +283,6 @@ const updateStorePicture = async (id, data) => {
 const deleteStorePicture = async (id) => {
     try {
         let result = await getStore(id);
-        console.log("🚀 ~ file: stores.js ~ line 280 ~ deleteStorePicture ~ result", result)
         await deleteRemoteFile(result.store_picture)
         let SQL = 'UPDATE STORE SET store_picture=$1 where id=$2 RETURNING *;'
         let safeValues = [process.env.DEFAULT_STORE_PICTURE,id];
@@ -287,8 +292,59 @@ const deleteStorePicture = async (id) => {
         throw new Error(error.message)
     }
 }
+const createNumberOfStoreFollower= async(store_id)=>{
+    try {        
+        let SQL = 'INSERT INTO store_follower_number(store_id) VALUES ($1) RETURNING *;';
+        let safeValues = [store_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const getNumberOfFollower= async(id)=>{
+try {
+    let SQL = 'SELECT * FROM store_follower_number WHERE store_id =$1 ;';
+    let result = await client.query(SQL,[id]);
+    return result.rows[0];
+} catch (error) {
+ throw new Error(error.message)   
+}
+}
+const getALLNumbersOFFollowers= async()=>{
+    try {
+        let SQL ='SELECT * FROM store_follower_number;';
+        let result = await client.query(SQL);
+        return result.rows
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+const updateNumberOfFollowersMinus = async (store_id)=>{
+    try {
+        let data = await getNumberOfFollower(store_id);
+        data.number_of_follower--;
+        let SQL = "UPDATE store_follower_number SET number_of_follower=$1 WHERE store_id=$2  RETURNING *;";
+        let safeValues = [data.number_of_follower,store_id]
+        let result = await client.query(SQL,safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
-
+const updateNumberOfFollowersPlus = async (store_id)=>{
+    try {
+        let data = await getNumberOfFollower(store_id);
+       data.number_of_follower++;
+        let SQL = "UPDATE store_follower_number SET number_of_follower=$1 WHERE store_id=$2  RETURNING *;";
+        let safeValues = [data.number_of_follower,store_id]
+        let result = await client.query(SQL,safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 module.exports = {
     createStore,
@@ -311,5 +367,12 @@ module.exports = {
     getStoreFollowers,
     deleteStoreFollower,
     updateStorePicture,
-    deleteStorePicture
+    deleteStorePicture,
+    checkIfFollowed,
+    checkIfReviewed,
+    updateNumberOfFollowersPlus,
+    updateNumberOfFollowersMinus,
+    createNumberOfStoreFollower,
+    getNumberOfFollower,
+    getALLNumbersOFFollowers
 };
