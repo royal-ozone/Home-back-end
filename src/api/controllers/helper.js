@@ -58,7 +58,6 @@ const timer =  (year,month,day,hour,minute,second)=>{
      console.log(ahmad2);
      console.log(ahmad)
      if(year&&month&&hour&&day){
-         console.log('2222222222222222222')
         
          timer(ahmad2.year,ahmad2.month,ahmad2.hour,ahmad2.day,ahmad2.minute,ahmad2.second);
 
@@ -68,7 +67,6 @@ const timer =  (year,month,day,hour,minute,second)=>{
  }
 
     const checkUserAuth = async(tableName,id,profile_id)=>{
-    console.log("🚀 ~ file: helper.js ~ line 71 ~ checkUserAuth ~ profile_id", profile_id)
         let SQL = `SELECT * FROM ${tableName} WHERE id =$1 ;`;
         let SQL2 ='SELECT * FROM administrator WHERE profile_id=$1 ;';
         let safeValue = [id];

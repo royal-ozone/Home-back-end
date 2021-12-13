@@ -2,7 +2,6 @@ const client = require('../../db')
 
 
 const addProductReview = async data => {
-
     try {
         let {profile_id, product_id,review,rate,votes} = data;
         let SQL = 'INSERT INTO product_review (profile_id,product_id,review,rate,votes) VALUES ($1,$2,$3,$4,$5) RETURNING *;';
@@ -17,7 +16,7 @@ const addProductReview = async data => {
 
 const getProductReview = async id => {
     try {
-        let SQL = 'SELECT * FROM product_review WHERE product_id=$1;';
+        let SQL = 'SELECT * FROM product_review WHERE id=$1 OR product_id=$1;';
         let result = await client.query(SQL,[id])
         return result.rows;
     } catch (error) {
@@ -25,10 +24,11 @@ const getProductReview = async id => {
     }
 }
 
-const deleteProductReview = async id => {
+const deleteProductReview = async data => {
     try {
-        let SQL = 'DELETE FROM product_review WHERE id=$1;';
-        let result = await client.query(SQL,[id])
+        let {product_id, id} = data;
+        let SQL = 'DELETE FROM product_review WHERE id=$2 OR Product_id=$1 RETURNING *;';
+        let result = await client.query(SQL,[product_id, id])
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
@@ -37,7 +37,7 @@ const deleteProductReview = async id => {
 
 const deleteProductReviewByProductId = async product_id => {
     try {
-        let SQL = 'DELETE FROM product_review WHERE product_id=$1;';
+        let SQL = 'DELETE FROM product_review WHERE product_id=$1 RETURNING *;';
         let result = await client.query(SQL,[product_id])
         return result.rows;
     } catch (error) {
@@ -45,11 +45,11 @@ const deleteProductReviewByProductId = async product_id => {
     }
 }
 
-const updateProductReview = async (id, data) => {
+const updateProductReview = async (data) =>{
     try {
-        let {review,rate,votes} = data;
-        let SQL = `UPDATE product_review SET review=$1,rate=$2, votes=$3 WHERE id=$4 RETURNING *;`;
-        let safeValues = [review,rate,votes, id];
+        let {review,rate,id} = data;
+        let SQL = `UPDATE product_review SET review=$1,rate=$2 WHERE id=$3 RETURNING *;`;
+        let safeValues = [review,rate,id];
         let result = await client.query(SQL,safeValues);
         return result.rows[0];
         

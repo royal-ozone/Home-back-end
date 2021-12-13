@@ -30,7 +30,7 @@ const {addOrderHandler,getOrderByStoreIdHandler,getOrderByStoreIdHandlerTwo,upda
 
 
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus} = require ('../auth/middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus,productComment} = require ('../auth/middleware/acl')
 
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
@@ -220,28 +220,23 @@ router.get('/store/follower',bearer,upload.none(), getAllStorefollowersHandler);
 router.get('/store/follower/:store_id',bearer,upload.none(), getStorefollowersHandler);
 router.get('/store/number/follower',bearer,upload.none(), getALLNumbersOFFollowersHandler);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-router.post('/product/review',upload.none(),addProductReviewHandler)
+// product review 
+router.post('/product/review',bearer,upload.none(),productComment,addProductReviewHandler)
 router.get('/product/review/:id',upload.none(), getProductReviewHandler)
-router.delete('/product/review/:id',upload.none(), deleteProductReviewHandler)
-router.put('/product/review/:id',upload.none(), updateProductReviewHandler)
+router.delete('/product/review',bearer,upload.none(), deleteProductReviewHandler)
+router.put('/product/review',upload.none(), updateProductReviewHandler)
 
-router.post('/product/rating',upload.none(),addProductRatingHandler)
+// product rating
 router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
-router.delete('/product/rating/:id', upload.none(),deleteProductRatingHandler)
-router.put('/product/rating/:id', upload.none(),updateProductRatingHandler)
+
+
+
+
+
+
+
+
+
 
 router.post('/order/notification', upload.none(),addOrderNotificationHandler)
 router.get('/order/notification/:id', upload.none(),getOrderNotificationHandler)

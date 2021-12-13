@@ -41,7 +41,7 @@ const addOrderHandler = async (req, res, next) => {
       if(data.id){
     
         let productArray = await cartItems.map(async (cartItem) => {
-          let result = await addOrderItemModel({...cartItem,order_id: data.id});
+          let result = await addOrderItemModel({...cartItem,order_id: data.id, profile_id:req.user.profile_id});
           return result;
         });   
         if (productArray) {
