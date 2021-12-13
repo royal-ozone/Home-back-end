@@ -2,9 +2,9 @@
 const client = require('../../db')
 const createDiscountCodeModel =async (data)=>{
 try {
-    let {discount_code,year,month,day,hour,minute,second,max_counter,discount,number_of_time} = data;
-    let SQL ='INSERT INTO discount_code(discount_code,year,month,day,hour,minute,second,max_counter,discount,number_of_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *;';
-    let safeValue = [discount_code,year,month,day,hour,minute,second,max_counter,discount,number_of_time];
+    let {discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time} = data;
+    let SQL ='INSERT INTO discount_code(discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *;';
+    let safeValue = [discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time];
     let result = await client.query(SQL,safeValue);
     return result.rows[0];
 } catch (error) {
@@ -34,10 +34,10 @@ const updateActiveDiscountCodeByIdModel =async (bool,id) => {
 }
 const updateDisconnectModel = async (data) =>{
     try {
-        let SQL ='UPDATE discount_code SET discount_code=$1,year=$2,month=$3,day=$4,hour=$5,minute=$6,second=$7,max_counter=$8,discount=$9,active=$10,number_of_time=$11 WHERE id=$12 RETURNING *;';
+        let SQL ='UPDATE discount_code SET discount_code=$1,year=$2,month=$3,day=$4,hour=$5,minute=$6,second=$7,max_counter=$8,discount=$9,max_discount=$13,active=$10,number_of_time=$11 WHERE id=$12 RETURNING *;';
         
-        const {discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id} = data;
-        let safeValues = [discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id];
+        const {discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id,max_discount} = data;
+        let safeValues = [discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id,max_discount];
         let result = await client.query(SQL,safeValues);
         return result.rows[0];
     } catch (error) {

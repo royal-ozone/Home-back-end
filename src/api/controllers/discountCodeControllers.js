@@ -160,8 +160,10 @@ const checkCodeHandler = async (req, res, next) => {
       }
       res.status(200).send("Unfortunately expired discount code");
     }
+    res.status(403).send("Unfortunately the discount code is wrong!")
   } catch (error) {
-    next(error);
+    res.status(403).send(error.message)
+    // next(error);
     
   }
 };
