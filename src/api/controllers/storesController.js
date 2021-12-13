@@ -22,7 +22,15 @@ const {
     getStoreFollowers,
     deleteStoreFollower,
     updateStorePicture,
-    deleteStorePicture} = require('../models/stores');
+    deleteStorePicture,
+    checkIfFollowed,
+    checkIfReviewed,
+    updateNumberOfFollowersMinus,
+    updateNumberOfFollowersPlus,
+    createNumberOfStoreFollower,
+    getNumberOfFollower,
+    getALLNumbersOFFollowers
+} = require('../models/stores');
 
  
 
@@ -54,7 +62,6 @@ const getStoreHandler = async (req, res) => {
         let result = await getStore(req.user.profile_id);
         if (result) {
             res.status(200).json({
-                status: 200,
                 data: result,
             });
         }
@@ -199,11 +206,9 @@ const updateStoreStatusHandler = async (req, res) => {
 
 const getAllStoreReviewHandler = async (req, res) => {
     try {
-
         let allStoreReviews = await getAllStoreReviews();
         res.status(200).json({
             number: allStoreReviews.length,
-            status: 200,
             reviews: allStoreReviews
         })
     } catch (error) {
@@ -213,14 +218,12 @@ const getAllStoreReviewHandler = async (req, res) => {
 
 const getStoreReviewHandler = async (req, res) => {
     try {
-
-        let storeReviews = await getStoreReviews(req.params.storeId);
+        let storeReviews = await getStoreReviews(req.params.store_id);
         if (storeReviews) {
             res.status(200).json({
                 number: storeReviews.length,
-                status: 200,
-                reviews: storeReviews
-            })
+                reviews: storeReviews,
+            });
         }
     } catch (error) {
         res.status(403).send(error.message)
@@ -229,27 +232,19 @@ const getStoreReviewHandler = async (req, res) => {
 
 const createStoreReviewHandler = async (req, res) => {
     try {
-        let { store_id, review, rate } = req.body;
         let storeReview = await createStoreReview(req.user.profile_id, req.body)
-
         if (storeReview === 0) {
-            res.status(403).json({
-                status: 403,
-                message: 'You have already reviewd this store!'
-            })
+            res.status(403).json({ message: 'You have already reviewed this store!'});
         }
         if (storeReview) {
             events.emit('storeReview', storeReview)
             res.status(200).json({
-                status: 200,
-                message: 'Store review has been posted successfully!'
-            })
+                message: 'Store review has been posted successfully!',
+                storeReview: storeReview
+              });
         }
         else {
-            res.status(403).json({
-                status: 403,
-                message: 'Something went wrong while creating your store review!'
-            })
+            res.status(403).json({message: 'Something went wrong while creating your store review!'});
         }
     } catch (error) {
         res.status(403).send(error.message)
@@ -258,18 +253,17 @@ const createStoreReviewHandler = async (req, res) => {
 
 const updateStoreReviewHandler = async (req, res) => {
     try {
-        let { review, rate } = req.body;
-        let updateReview = await updateStoreReview(req.user.profile_id, req.params.storeId, req.body)
-        if (updateReview === 0) {
-            res.status(403).json({
-                status: 403,
-                message: 'You store review for this store does not exist!'
-            })
+        let profile_id= req.user.profile_id;
+        let store_id= req.body.store_id;
+        let oldData = await checkIfReviewed(profile_id,store_id);
+        if(oldData){
+            let updateReview = await updateStoreReview(profile_id,store_id,{...oldData,...req.body});
+            res.status(200).json({
+                message: 'Your review for this store has been updated successfully',
+                updatedStoreReview:updateReview
+           });
         }
-        res.status(200).json({
-            status: 200,
-            message: 'Your review for this store has been updated successfully'
-        })
+        res.status(403).json({ message: 'You store review for this store does not exist!'});    
     } catch (error) {
         res.status(403).send(error.message)
     }
@@ -277,15 +271,11 @@ const updateStoreReviewHandler = async (req, res) => {
 
 const deleteStoreReviewHandler = async (req, res) => {
     try {
-        let deleteReview = await deleteStoreReview(req.user.profile_id, req.params.storeId)
+        let deleteReview = await deleteStoreReview({profile_id:req.user.profile_id,store_id:req.body.store_id})
         if (deleteReview === 0) {
-            res.status(403).json({
-                status: 403,
-                message: `You don't have a review for this store to delete!`
-            })
+            res.status(403).json({message: `You don't have a review for this store to delete!` });
         }
         res.status(200).json({
-            status: 200,
             message: 'Your review for this store has been deleted successfully'
         })
     } catch (error) {
@@ -294,14 +284,20 @@ const deleteStoreReviewHandler = async (req, res) => {
 }
 
 // Store follower ---------------------------------------------------------------------------------------------------
-
+const getALLNumbersOFFollowersHandler = async (req, res )=>{
+    try {
+        let allData = await getALLNumbersOFFollowers();
+        res.status(200).json({number_of_stores:allData.length,stores:allData});
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 const getAllStorefollowersHandler = async (req, res) => {
     try {
 
         let allStoreFollowers = await getAllStoreFollowers();
         res.status(200).json({
             number: allStoreFollowers.length,
-            status: 200,
             followers: allStoreFollowers
         })
     } catch (error) {
@@ -311,14 +307,12 @@ const getAllStorefollowersHandler = async (req, res) => {
 
 const getStorefollowersHandler = async (req, res) => {
     try {
-
-        let storeFollowers = await getStoreFollowers(req.params.storeId);
+        let storeFollowers = await getStoreFollowers(req.params.store_id);
         if (storeFollowers) {
             res.status(200).json({
                 number: storeFollowers.length,
-                status: 200,
                 followers: storeFollowers
-            })
+            });
         }
     } catch (error) {
         res.status(403).send(error.message)
@@ -330,23 +324,34 @@ const createStorefollowerHandler = async (req, res) => {
         let {store_id} = req.body;
         let storeFollower = await createStoreFollower(req.user.profile_id,store_id)
 
-        if (storeFollower === 0) {
-            res.status(200).json({
-                status: 200,
-                message: 'You have unfollowed this store!'
-            })
+        if (storeFollower.number === 0) {
+            delete storeFollower.number; 
+            res.status(200).json({ 
+                message: 'You have followed this store before!',
+                storeFollower: storeFollower
+        });
         }
         else if (storeFollower !== 0) {
+            let numberOfFollower;
+            let inputData;
+            let check = await getNumberOfFollower(store_id);
+            if(check){
+                 numberOfFollower = await updateNumberOfFollowersPlus(store_id);
+            }else{
+                 inputData= await createNumberOfStoreFollower(store_id);
+                 numberOfFollower = await updateNumberOfFollowersPlus(store_id);
+
+            }
+
             res.status(200).json({
-                status: 200,
-                message: 'Store has been followed successfully!'
-            })
+                 message: 'Store has been followed successfully!',
+                storeFollower:storeFollower,
+                inputData:inputData,
+                numberOfFollower:numberOfFollower
+                });
         }
         else {
-            res.status(403).json({
-                status: 403,
-                message: 'Something went wrong while following a store!'
-            })
+            res.status(403).json({message: 'Something went wrong while following a store!'});
         }
     } catch (error) {
         res.status(403).send(error.message)
@@ -355,11 +360,19 @@ const createStorefollowerHandler = async (req, res) => {
 
 const deleteStorefollowerHandler = async (req, res) => {
     try {
-        await deleteStoreFollower(req.user.profile_id, req.params.storeId)
-        res.status(200).json({
-            status: 200,
-            message: 'Your have unfollowed this store!'
-        })
+   
+       let unFollow= await deleteStoreFollower(req.user.profile_id, req.body.store_id)
+       console.log("🚀 ~ file: storesController.js ~ line 345 ~ deleteStorefollowerHandler ~ unFollow", unFollow)
+       if(unFollow) {
+        let  numberOfFollower = await updateNumberOfFollowersMinus(req.body.store_id);
+         res.status(200).json({
+            message: 'Your have unfollowed this store!',
+            data:unFollow,
+            numberOfFollower:numberOfFollower
+        });
+       } 
+      res.status(403).send('you not follow this store');
+       
     } catch (error) {
         res.status(403).send(error.message)
     }
@@ -417,6 +430,7 @@ module.exports = {
     createStorefollowerHandler,
     deleteStorefollowerHandler,
     updateStorePictureHandler,
-    deleteStorePictureHandler
+    deleteStorePictureHandler,
+    getALLNumbersOFFollowersHandler
 
 }

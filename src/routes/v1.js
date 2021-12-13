@@ -43,7 +43,7 @@ const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificat
 const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
 
 const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler, updateStorePictureHandler,
-  deleteStorePictureHandler} = require('../api/controllers/storesController')
+  deleteStorePictureHandler,getALLNumbersOFFollowersHandler} = require('../api/controllers/storesController')
 const {uploadS3} = require('../api/middleware/uploader');
 const {uploadHandler} = require('../api/controllers/uploadController')
 const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
@@ -207,19 +207,20 @@ router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updat
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
 
 // store review 
-router.get('/store/review',upload.none(), getAllStoreReviewHandler)
-router.get('/store/review/:storeId', upload.none(),getStoreReviewHandler)
-router.post('/store/review',upload.none(),createStoreReviewHandler)
-router.put('/store/review/:storeId',upload.none(), updateStoreReviewHandler)
-router.delete('/store/review/:storeId',upload.none(), deleteStoreReviewHandler)
+router.post('/store/review',bearer,upload.none(),createStoreReviewHandler);
+router.delete('/store/review',bearer,upload.none(), deleteStoreReviewHandler);
+router.put('/store/review',bearer,upload.none(), updateStoreReviewHandler);
+router.get('/store/review',bearer,upload.none(), getAllStoreReviewHandler);
+router.get('/store/review/:store_id',bearer,upload.none(),getStoreReviewHandler);
 
-router.get('/store/follower',upload.none(), getAllStorefollowersHandler)
-router.get('/store/follower/:storeId',upload.none(), getStorefollowersHandler)
-router.post('/store/follower',upload.none(),createStorefollowerHandler)
-router.delete('/store/follower/:storeId',upload.none(),deleteStorefollowerHandler)
+// store follower 
+router.post('/store/follower',bearer,upload.none(),createStorefollowerHandler);
+router.delete('/store/follower',bearer,upload.none(),deleteStorefollowerHandler);
+router.get('/store/follower',bearer,upload.none(), getAllStorefollowersHandler);
+router.get('/store/follower/:store_id',bearer,upload.none(), getStorefollowersHandler);
+router.get('/store/number/follower',bearer,upload.none(), getALLNumbersOFFollowersHandler);
 
-//product review
-
+// product review 
 router.post('/product/review',bearer,upload.none(),productComment,addProductReviewHandler)
 router.get('/product/review/:id',upload.none(), getProductReviewHandler)
 router.delete('/product/review',bearer,upload.none(), deleteProductReviewHandler)
