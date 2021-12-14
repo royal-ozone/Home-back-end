@@ -30,7 +30,7 @@ const {addOrderHandler,getOrderByStoreIdHandler,getOrderByStoreIdHandlerTwo,upda
 
 
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus,productComment} = require ('../auth/middleware/acl')
+const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus,productComment,checkOrderStatusForReturn} = require ('../auth/middleware/acl')
 
 const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler} = require('../api/controllers/productControllers')
 const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
@@ -51,7 +51,8 @@ const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictu
 const {
   createReturnRequestHandler,
   getAllReturnRequestsHandler,
-  updateReturnRequestStatusHandler
+  updateReturnRequestStatusHandler,
+  getReturnOrderByIdHandler
 } = require('../api/controllers/returnRequestController')
 
 const {
@@ -249,12 +250,14 @@ router.get('/offer/notification/store',upload.none(), getOfferNotificationByStor
 router.post('/upload',uploadS3.array('file') ,uploadHandler)
 
 router.get('/profile/picture',bearer, upload.none(),getProfilePictureByProfileIdHandler)
-router.put('/profile/picture', uploadS3.single('image'), updateProfilePictureHandler)
-router.delete('/profile/picture', upload.none(),deleteProfilePictureHandler)
+router.put('/profile/picture', bearer, uploadS3.single('image'), updateProfilePictureHandler)
+router.delete('/profile/picture',bearer, upload.none(),deleteProfilePictureHandler)
 
-router.post('/return', upload.none(), createReturnRequestHandler)
-router.get('/return',upload.none(), getAllReturnRequestsHandler)
-router.put('/return',upload.none(),updateReturnRequestStatusHandler)
+router.post('/return',bearer, upload.none(),checkOrderStatusForReturn, createReturnRequestHandler)
+router.get('/return',bearer,upload.none(), getAllReturnRequestsHandler)
+router.get('/returnByProfileId', bearer, upload.none(),getReturnOrderByIdHandler)
+router.get('/returnById/:id', bearer, upload.none(),getReturnOrderByIdHandler)
+router.put('/return',bearer,upload.none(),checkStoreAuth,updateReturnRequestStatusHandler)
 
 
 

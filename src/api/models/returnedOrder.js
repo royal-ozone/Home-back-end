@@ -36,8 +36,33 @@ const updateReturnRequestStatus = async (data) => {
 
 }
 
+const getReturnOrderById = async data =>{
+    try {
+        let {id, profile_id} = data;
+        let SQL = 'SELECT * FROM return_request WHERE id=$1 OR profile_id=$2;'
+        let safeValues = [id, profile_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const getReturnRequestByProductAndOrder = async data => {
+    try {
+        let {product_id, order_id} = data;
+        let SQL = 'SELECT * FROM return_request WHERE order_id=$2 AND product_id=$1;'
+        let safeValues = [product_id, order_id]
+        let result = await client.query(SQL,safeValues)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 module.exports = {
     createReturnRequest,
     getAllReturnRequests,
-    updateReturnRequestStatus
+    updateReturnRequestStatus,
+    getReturnOrderById,getReturnRequestByProductAndOrder
 }
