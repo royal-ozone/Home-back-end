@@ -75,7 +75,7 @@ const addOrderHandler = async (req, res, next) => {
 };
 const updateOrderStatusHandler = async (req, res, next) => {
   try {
-    let id = req.body.id;
+    let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(id,req.body);
     if(data.status === 'ready to be shipped') {
       await addDeliveryTask({order_id: data.id,address_id:data.address_id});
