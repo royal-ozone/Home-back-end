@@ -15,10 +15,9 @@ const addOrderNotification = async data => {
 
 const getOrderNotification = async id => {
     try {
-        let SQL = 'SELECT * FROM order_notification WHERE id=$1;';
-        let safeValue = [id]
-        let result = await client.query(SQL, safeValue);
-        return result.rows[0];
+        let SQL = 'SELECT * FROM order_notification ';
+        let result = await client.query(SQL);
+        return result.rows;
     } catch (error) {
         throw new Error(error.message)
     }
@@ -34,5 +33,14 @@ const getOrderNotificationByStoreId = async id => {
         throw new Error(error.message)
     }
 }
-
-module.exports = {addOrderNotification,getOrderNotification,getOrderNotificationByStoreId}
+const getOrderNotificationByOrderId = async id => {
+    try {
+        let SQL = 'SELECT * FROM order_notification WHERE order_id=$1;';
+        let safeValue = [id]
+        let result = await client.query(SQL, safeValue);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+module.exports = {addOrderNotification,getOrderNotification,getOrderNotificationByStoreId,getOrderNotificationByOrderId}

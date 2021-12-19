@@ -2,7 +2,9 @@
 
 
 const {addDeliveryTask} = require('../models/deliveryTask');
-const {getStoreProducts} = require('../models/products')
+const {getStoreProducts} = require('../models/products');
+const {addOrderNotificationHandler} =require('./orderNotificationController');
+const {getOrderNotificationByOrderId} = require('../models/orderNotifications');
 const {
   getCartByProfileIdModel,
   getCartItemByProductId,
@@ -77,14 +79,35 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(id,req.body);
+    
+    if(data.status === 'accept') {
+      let check = await getOrderNotificationByOrderId(data.id);
+       if(!check){
+        let storeArray =[];
+        let allDataOrderItem = await getOrderItemsByOrderId(data.id);
+        
+        allDataOrderItem.map(async (orderItem) => {
+          storeArray.push(orderItem.store_id);
+        });
+        let filtered = storeArray.filter((item, i, ar) => ar.indexOf(item) === i);
+        //[...new Set(storeArray)];
+        
+          filtered.forEach( async (id) =>{
+            await addOrderNotificationHandler({receiver_id:id, order_id :data.id, message: 'you have order please prepare order '});
+          }) 
+              
+      }
+      
+    }
     if(data.status === 'ready to be shipped') {
       await addDeliveryTask({order_id: data.id,address_id:data.address_id});
     }
+    
     let response = {
       message: `Successfully update status order to ${data.status}`,
       dataOrder: data,
     };
-    res.status(200).send(response);
+    res.status(200).json(response);
   } catch (error) {
     let response = {
       message: error.message,

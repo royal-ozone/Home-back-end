@@ -221,6 +221,18 @@ router.get('/store/follower',bearer,upload.none(), getAllStorefollowersHandler);
 router.get('/store/follower/:store_id',bearer,upload.none(), getStorefollowersHandler);
 router.get('/store/number/follower',bearer,upload.none(), getALLNumbersOFFollowersHandler);
 
+
+// product review and rating
+// router.post('/product/review',upload.none(),addProductReviewHandler)
+// router.get('/product/review/:id',upload.none(), getProductReviewHandler)
+// router.delete('/product/review/:id',upload.none(), deleteProductReviewHandler)
+// router.put('/product/review/:id',upload.none(), updateProductReviewHandler)
+
+// router.post('/product/rating',upload.none(),addProductRatingHandler)
+// router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
+// router.delete('/product/rating/:id', upload.none(),deleteProductRatingHandler)
+// router.put('/product/rating/:id', upload.none(),updateProductRatingHandler)
+
 // product review 
 router.post('/product/review',bearer,upload.none(),productComment,addProductReviewHandler)
 router.get('/product/review/:id',upload.none(), getProductReviewHandler)
@@ -232,6 +244,11 @@ router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
 
 
 
+// order notification 
+
+// router.post('/order/notification', upload.none(),addOrderNotificationHandler) we added in update order status
+router.get('/getAll/order/notification',bearer,checkAuth, upload.none(),getOrderNotificationHandler)
+router.get('/order/notifications/:store_id',bearer,checkStoreAuth, upload.none(),getOrderNotificationByStoreIdHandler)
 
 
 
@@ -239,9 +256,7 @@ router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
 
 
 
-router.post('/order/notification', upload.none(),addOrderNotificationHandler)
-router.get('/order/notification/:id', upload.none(),getOrderNotificationHandler)
-router.get('/order/notifications', upload.none(),getOrderNotificationByStoreIdHandler)
+
 
 router.post('/offer/notification',upload.none(), addOfferNotificationHandler)
 router.get('/offer/notification', upload.none(),getAllOfferNotificationsHandler)

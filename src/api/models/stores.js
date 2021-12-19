@@ -203,7 +203,6 @@ const checkIfFollowed = async (profileId, storeId) => {
     try {
         let SQL = `SELECT * FROM STORE_FOLLOWER WHERE follower=$1 AND store_id=$2;`;
         let safeValues = [profileId, storeId];
-        console.log("🚀 ~ file: stores.js ~ line 206 ~ checkIfFollowed ~ safeValues", safeValues)
         let result = await client.query(SQL, safeValues)
         return result.rows[0];
     } catch (error) {
