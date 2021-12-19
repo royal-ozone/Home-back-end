@@ -2,9 +2,10 @@ const client = require('../../db')
 
 
 const addProductRating = async data => {
+console.log("🚀 ~ file: productRating.js ~ line 5 ~ data", data)
     try {
         let {product_id,votes,rating} = data;
-        let SQL = 'INSERT INTO product_rating product_id, votes, rating, VALUES($1,$2,$3) RETURNING *;';
+        let SQL = 'INSERT INTO product_rating (product_id, votes, rating) VALUES($1,$2,$3) RETURNING *;';
         let safeValues = [product_id,votes,rating];
         let result = await client.query(SQL,safeValues);
         return result.rows[0];
@@ -17,7 +18,7 @@ const getProductRating = async id => {
     try {
         let SQL = 'SELECT * FROM product_rating WHERE product_id=$1;';
         let result = await client.query(SQL, [id]);
-        return result.rows;
+        return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
@@ -43,11 +44,11 @@ const deleteProductRatingByProductId = async product_id => {
     }
 }
 
-const updateProductRating = async (id,data) => {
+const updateProductRating = async (data) => {
     try {
-        let {rating, votes} = data;
+        let {rating,product_id, votes} = data;
         let SQL = 'UPDATE product_rating SET rating=$1, votes=$3 WHERE product_id=$2 RETURNING *;';
-        let safeValues = [rating, id, votes];
+        let safeValues = [rating, product_id, votes];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {

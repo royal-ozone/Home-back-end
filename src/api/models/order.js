@@ -29,11 +29,11 @@ const getOrderByIdModel = async (id) => {
 };
 const addOrderItemModel = async (data) => {
   try {
-    const {order_id, product_id, store_id,price, quantity, discount ,price_after} = data;
+    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id} = data;
 
     let SQL =
-      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
-    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after];
+      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
+    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
@@ -77,9 +77,9 @@ const getAllOrderProfileIdModel =async (id)=> {
 }
 const updateOrderItemStatusModel = async (data) => {
   try {
-    let {id,status} = data;
-    let SQL = 'UPDATE order_item SET status=$1 WHERE id=$2  RETURNING *;';
-    let result = await client.query(SQL,[status,id]);
+    let {id,order_id,product_id,status} = data;
+    let SQL = 'UPDATE order_item SET status=$1 WHERE id=$2 OR (order_id=$3 AND product_id=$4)  RETURNING *;';
+    let result = await client.query(SQL,[status,id,order_id,product_id]);
     return result.rows[0];
   } catch (error) {
     throw new Error(error.message)

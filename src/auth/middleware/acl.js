@@ -4,14 +4,16 @@ const { getProfileByUserId, activateAccount } = require('../models/user')
 const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany');
 const {getCourierById} = require('../../api/models/courier');
 const {getStore} =require('../../api/models/stores');
+const {getOrderByIdModel} = require('../../api/models/order')
+const {getReturnRequestByProductAndOrder} = require('../../api/models/returnedOrder')
 // comment on product
 
 let productComment = async (req, res, next) => {
     try {
         let SQL = `SELECT * FROM order_item WHERE product_id=$1 AND profile_id=$2;`;
-        let safeValues = [req.params.id, req.user.profile_id]
+        let safeValues = [req.body.product_id, req.user.profile_id]
         let result = await client.query(SQL, safeValues)
-        if (result) {
+        if (result.rows[0]) {
             next()
         }
         else {
@@ -245,6 +247,23 @@ const checkStoreStatus = async (req, res, next) =>{
     }
 }
 
+const checkOrderStatusForReturn = async (req, res, next) =>{
+    try {
+        let result = await getOrderByIdModel(req.body.order_id)
+        let result2 = await getReturnRequestByProductAndOrder(req.body)
+        if(result.status !== 'delivered') {
+            res.status(403).send('your order status is not delivered yet');
+        } else if(result2.id){
+            res.status(403).send('your product is already returned');
+        }
+        else {
+            next();
+        }
+    } catch (error) {
+        res.send(error.message); 
+    }
+}
 
 
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus};
+
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus,checkOrderStatusForReturn};

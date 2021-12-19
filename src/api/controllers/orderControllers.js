@@ -43,7 +43,7 @@ const addOrderHandler = async (req, res, next) => {
       if(data.id){
     
         let productArray = await cartItems.map(async (cartItem) => {
-          let result = await addOrderItemModel({...cartItem,order_id: data.id});
+          let result = await addOrderItemModel({...cartItem,order_id: data.id, profile_id:req.user.profile_id});
           return result;
         });   
         if (productArray) {
@@ -77,7 +77,7 @@ const addOrderHandler = async (req, res, next) => {
 };
 const updateOrderStatusHandler = async (req, res, next) => {
   try {
-    let id = req.body.id;
+    let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(id,req.body);
     
     if(data.status === 'accept') {

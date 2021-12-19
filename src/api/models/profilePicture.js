@@ -36,7 +36,7 @@ const deleteProfilePicture = async id => {
 const updateProfilePicture = async data => {
     try {
         const {profile_id, profile_picture} = data
-        let SQL = 'UPDATE profile_picture SET profile_picture=$2 WHERE profile_id=$1;';
+        let SQL = 'UPDATE profile_picture SET profile_picture=$2 WHERE profile_id=$1 RETURNING *;';
         let result = await client.query(SQL, [profile_id, profile_picture])
         return result.rows[0];
     } catch (error) {
