@@ -8,43 +8,40 @@ const addSuggestionModel = async(profile_id,data)=>{
     let result = await client.query(SQL,safeValue);
     return result.rows[0];
  } catch (error) {
-     return error.message
+     throw new Error(error.message)
  }
 }
 const removeSuggestionModel = async(id)=>{
-    
    try {
-    let SQL = 'DELETE FROM suggestion WHERE profile_id =$1 RETURNING *;';
+    let SQL = 'DELETE FROM suggestion WHERE id=$1 RETURNING *;';
     let safeValue = [id];
     let result = await client.query(SQL,safeValue);
     return result.rows[0]
    } catch (error) {
-       return error.message;
+       throw new Error(error.message)
    }
 }
-const updateSuggestionModel = async (id, data,oldData)=>{
- const {suggestion } =oldData;
- const {newSuggestion} = data;
+const updateSuggestionModel = async ( data)=>{
+
   try {
+      let {id,suggestion} = data;
     let SQL = 'UPDATE suggestion SET suggestion=$1 WHERE id =$2 RETURNING *;';
-    let safeValue = [newSuggestion?newSuggestion:suggestion,id];
+    let safeValue = [suggestion,id];
     let result = await client.query(SQL,safeValue);
     return result.rows[0]
   } catch (error) {
-      return error.message;
+      throw new Error(error.message)
   }
 }
-const updateStatusSuggestionModel = async (id, data,oldData)=>{
-
+const updateStatusSuggestionModel = async (data)=>{
   try {
-      const {status}=oldData;
-      const {newStatus}=data;
+      let {id,status} = data;
       let SQL = 'UPDATE suggestion SET status=$1 WHERE id=$2 RETURNING *;';
-      let safeValue = [newStatus?newStatus:status,id];
+      let safeValue = [status,id];
       let result = await client.query(SQL,safeValue);
-    return result.rows[0];
+        return result.rows[0];
   } catch (error) {
-      return error.message;
+      throw new Error(error.message)
   }
 }
 const getAllSuggestionModel = async ()=>{
@@ -53,18 +50,17 @@ try {
 let result = await client.query(SQL);
 return result.rows;
 } catch (error) {
-    return error.message;
+    throw new Error(error.message)
 }
 }
 const getMySuggestionModel = async (id)=>{
 try {
     let SQL = 'SELECT * FROM suggestion WHERE profile_id=$1;';
     let safeValue = [id];
-    console.log("🚀 ~ file: suggestion.js ~ line 60 ~ getMySuggestionModel ~ safeValue", safeValue)
     let result = await client.query(SQL,safeValue);
-    return result.rows[0]
+    return result.rows
 } catch (error) {
-    return error.message;
+    throw new Error(error.message)
 }
 }
 const getMySuggestionByIdModel = async (id) => {
@@ -74,7 +70,18 @@ const getMySuggestionByIdModel = async (id) => {
         let result = await client.query(SQL,safeValue);
         return result.rows[0]
     } catch (error) {
-        return error.message;
+        throw new Error(error.message)
+    }
+}
+
+const getSuggestionsByStatus = async (status) =>{
+    try{
+        let SQL = 'SELECT * FROM suggestion WHERE status=$1;';
+        let safeValue = [status];
+        let result = await client.query(SQL,safeValue);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
     }
 }
 module.exports ={
@@ -84,5 +91,6 @@ module.exports ={
     updateStatusSuggestionModel,
     getAllSuggestionModel,
     getMySuggestionModel,
-    getMySuggestionByIdModel
+    getMySuggestionByIdModel,
+    getSuggestionsByStatus
 }

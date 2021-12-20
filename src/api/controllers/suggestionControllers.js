@@ -6,87 +6,138 @@ const {
   getAllSuggestionModel,
   getMySuggestionModel,
   getMySuggestionByIdModel,
+  getSuggestionsByStatus
 } = require("../models/suggestion");
 const addSuggestionHandler = async (req, res, next) => {
   try {
     let profile_id = req.user.profile_id;
     let result = await addSuggestionModel(profile_id, req.body);
-    let response = {
-      message:
-        "your suggestion is arrived we will contact with you at with earliest ",
-      suggestionData: result,
-    };
-    res.status(200).send(response);
+    if(result.id){
+      let response = {
+        message:
+          "your suggestion has been sent, it will be considered and contact you if needed",
+        suggestionData: result,
+      };
+      res.status(200).send(response);
+    } else {
+      res.status(403).send('something went wrong while sending suggestion')
+    }
   } catch (error) {
-    next(error);
+    res.status(403).send(error.message);
   }
 };
 const removeSuggestionHandler = async (req, res, next) => {
   try {
-    let id = req.params.id;
+    let id = req.body.id;
     let result = await removeSuggestionModel(id);
-    let response = {
-      message: "your suggestion is deleted ",
-    };
-    res.status(200).send(response);
+    if(result.id){
+      let response = {
+        message: "your suggestion has been deleted ",
+      };
+      res.status(200).send(response);
+    } else {
+      res.status(403).json({
+        message: "something went wrong while deleting your suggestion",
+        error: result
+      });
+    }
   } catch (error) {
-    next(error);
+     res.status(403).send(error.message); 
   }
 };
 const getMySuggestionHandler = async (req, res, next) => {
   try {
     let id = req.user.profile_id;
     let result = await getMySuggestionModel(id);
-    let response = {
-      message: " all my suggestion ",
-      data: result,
-    };
-    res.status(200).send(response);
+    if(result.length){
+      res.status(200).json(result);
+    } else {
+      res.status(403).json({
+        message: 'something went wrong while retrieving suggestions',
+        error: result
+      })
+    }
   } catch (error) {
-    next(error);
+     res.status(403).send(error.message); 
   }
 };
 const updateSuggestionHandler = async (req, res, next) => {
   try {
-    let id = req.params.id;
-    let oldData = await getMySuggestionByIdModel(id);
-    let result = await updateSuggestionModel(id, req.body, oldData);
-    let response = {
-      message: "your suggestion is updated ",
-      updateSuggestion: result,
-    };
-    res.status(200).send(response);
+    let result = await updateSuggestionModel(req.body);
+    if(result.id){
+      let response = {
+        message: "your suggestion is updated ",
+        updateSuggestion: result,
+      };
+      res.status(200).send(response);
+    }
+    else{
+      res.status(403).json({
+        message: 'something wen wrong while  updating your suggestion',
+        error: result
+      })
+    }
   } catch (error) {
-    next(error);
+     res.status(403).send(error.message); 
   }
 };
-const updateStatusSuggestionHandler = async (req, res, next) => {
+const updateStatusSuggestionHandler = async (req, res) => {
   try {
-    let id = req.params.id;
-    let oldData = await getMySuggestionByIdModel(id);
-    let result = await updateStatusSuggestionModel(id, req.body, oldData);
-    let response = {
-        message: ` change the status to ${result.status}`,
-      updateStatus: result,
-    };
-    res.status(200).send(response);
+    let result = await updateStatusSuggestionModel(req.body);
+    if(result.id){
+      let response = {
+          message: ` change the status to ${result.status}`,
+        updateStatus: result,
+      };
+      res.status(200).send(response);
+    } else {
+      res.status(403).json({
+        message: 'Something went wrong while updating suggestion status',
+        error: result
+      })
+    }
   } catch (error) {
-    // next(error);
-    res.status(400).send(error.message);
+     res.status(403).send(error.message); 
   }
 };
-const getAllSuggestionHandler = async (req, res, next) => {
+const getAllSuggestionHandler = async (req, res) => {
   try {
     let result = await getAllSuggestionModel();
-    let response = {
-      message: "the all suggestion ",
-      allSuggestion: result,
-    };
-    res.status(200).send(response);
+    if(result.length){
+      res.status(200).json(result);
+    } else {
+      res.status(403).send('something went wrong while retrieving suggestions')
+    }
   } catch (error) {
-    next(error);
+     res.status(403).send(error.message); 
   }
 };
+
+const getSuggestionsByStatusHandler = async (req,res) => {
+  try {
+    let result = await getSuggestionsByStatus(req.params.status)
+    if (result.length > 0) {
+      res.status(200).json(result);
+    } else {
+      res.status(403).send('something went wrong while retrieving suggestions or there are no suggestions with this status')
+    }
+  } catch (error) {
+    res.status(403).json(error.message)
+  }
+};
+
+const getMySuggestionByIdHandler = async (req, res) => {
+  try {
+    let result = await getMySuggestionByIdModel(req.params.id);
+    if(result.id){
+      res.status(200).json(result)
+    } else{
+      res.status(403).send('something went wrong while retrieving your suggestion')
+    }
+  } catch (error) {
+    res.status(403).send(error.message)
+  }
+}
 
 module.exports = {
   addSuggestionHandler,
@@ -95,4 +146,6 @@ module.exports = {
   updateStatusSuggestionHandler,
   getAllSuggestionHandler,
   getMySuggestionHandler,
+  getSuggestionsByStatusHandler,
+  getMySuggestionByIdHandler
 };
