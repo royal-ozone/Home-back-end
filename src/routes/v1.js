@@ -74,6 +74,8 @@ const {
   updateStatusSuggestionHandler,
   getAllSuggestionHandler,
   getMySuggestionHandler,
+  getSuggestionsByStatusHandler,
+  getMySuggestionByIdHandler
 } = require ('../api/controllers/suggestionControllers')
 
 const {
@@ -276,12 +278,14 @@ router.put('/return',bearer,upload.none(),checkStoreAuth,updateReturnRequestStat
 
 
 
+router.get('/getSuggestions/:status', bearer, checkAuth, getSuggestionsByStatusHandler);
 router.post('/add/suggestion',bearer,upload.none(),addSuggestionHandler);
-router.delete('/remove/suggestion/:id',bearer,upload.none(),removeSuggestionHandler);
-router.put('/update/suggestion/:id',bearer,upload.none(),updateSuggestionHandler);
+router.delete('/removeSuggestion',bearer,upload.none(),removeSuggestionHandler);
+router.put('/update/suggestion',bearer,upload.none(),updateSuggestionHandler);
 router.get('/getAll/suggestion',bearer,upload.none(),checkAdmin,getAllSuggestionHandler);
-router.get('/get/mySuggestion/:id',bearer,upload.none(),getMySuggestionHandler);
-router.put('/update/suggestion/status/:id',bearer,upload.none(),checkAdmin,updateStatusSuggestionHandler);
+router.get('/getMySuggestions',bearer,upload.none(),getMySuggestionHandler);
+router.put('/update/suggestion/status',bearer,upload.none(),checkAdmin,updateStatusSuggestionHandler);
+router.get('/getSuggestionById/:id', bearer, getMySuggestionByIdHandler)
 
 router.post('/courierCompany',upload.none(), createCourierCompanyHandler);
 router.get('/courierCompanies', upload.none(),getAllCourierCompaniesHandler)
