@@ -56,10 +56,10 @@ INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id
 ('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice','5');
 
 ----------------------------- product_review ------------------------------------
-INSERT INTO product_review(id,profile_id,product_id,review,rate,votes)
-VALUES('7f3094e1-e872-492f-8e40-c485a1e21d9b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','very nice pruduct','3','200');
-INSERT INTO product_review(id,profile_id,product_id,review,rate,votes)
-VALUES('d4df9477-0b36-4376-8927-b5f974abfa98','3be97674-8ce4-49a8-a378-605965c4b98c','0047da41-5e33-460a-88da-5cfa2b9d8724','very bad product','0','199');
+INSERT INTO product_review(id,profile_id,product_id,review,rate)
+VALUES('7f3094e1-e872-492f-8e40-c485a1e21d9b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','very nice pruduct','3');
+INSERT INTO product_review(id,profile_id,product_id,review,rate)
+VALUES('d4df9477-0b36-4376-8927-b5f974abfa98','3be97674-8ce4-49a8-a378-605965c4b98c','0047da41-5e33-460a-88da-5cfa2b9d8724','very bad product','0');
 
 --------------------------  Tag Table -------------------------------------
 INSERT INTO tag(id,entitle,arTitle,metaTitle,slug,content) VALUES 
@@ -148,8 +148,8 @@ INSERT INTO comment(id,comment,product_id,profile_id,store_id)VALUES
 
 
 ------------------------------offer_notification -------------------
-INSERT INTO offer_notification(id,receiver_id,message,store_id,product_id)VALUES
-('576f249f-a18c-4901-8cde-c9f8eadddb3c','fca8e07b-ac7d-4ce8-8437-53c54ca85857','swwwwwww','72280f37-2ca7-4808-90d2-3ecec783b163','0047da41-5e33-460a-88da-5cfa2b9d8724');
+-- INSERT INTO offer_notification(id,receiver_id,message,store_id,product_id)VALUES
+-- ('576f249f-a18c-4901-8cde-c9f8eadddb3c','fca8e07b-ac7d-4ce8-8437-53c54ca85857','swwwwwww','72280f37-2ca7-4808-90d2-3ecec783b163','0047da41-5e33-460a-88da-5cfa2b9d8724');
 
 
 ---------------------------- order_notification --------------------------------

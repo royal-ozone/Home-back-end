@@ -9,12 +9,39 @@ const multer = require('multer');
 let upload = multer()
 
 
-const {addParentCategory,removeParentCategory,updateParentCategory,getParentCategoryById,getAllParentCategory,getParentCategoryByTitle,updateDisplayParentCategory} = require('../api/controllers/parentCategory');
-const {addChildCategory,removeChildCategory,updateChildCategory,getChildCategoryById,getAllChildCategory,getChildCategoryByTitle} = require('../api/controllers/childCategory');
-const {addGrandChildCategory,removeGrandChildCategory,updateGrandChildCategory,getGrandChildCategoryById,getAllGrandChildCategory,getGrandChildCategoryByTitle}= require('../api/controllers/grandChildCategory');
+const {addParentCategory,
+  removeParentCategory,
+  updateParentCategory,
+  getParentCategoryById,
+  getAllParentCategory,
+  getParentCategoryByTitle,
+  updateDisplayParentCategory
+} = require('../api/controllers/parentCategory');
+
+const {addChildCategory,
+  removeChildCategory,
+  updateChildCategory,
+  getChildCategoryById,
+  getAllChildCategory,
+  getChildCategoryByTitle
+} = require('../api/controllers/childCategory');
+
+const {addGrandChildCategory,
+  removeGrandChildCategory,
+  updateGrandChildCategory,
+  getGrandChildCategoryById,
+  getAllGrandChildCategory,
+  getGrandChildCategoryByTitle
+}= require('../api/controllers/grandChildCategory');
 
 
-const {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler} = require('../api/controllers/addressControllers')
+const {addAddressHandler,
+  removeAddressHandler,
+  updateAddressHandler,
+  getAllAddressHandler,
+  getAddressByProfileIdModelHandler
+} = require('../api/controllers/addressControllers');
+
 const {addCartItemHandler
   ,removeCartItemByCartIdHandler
   ,getAllCartItemHandler
@@ -24,29 +51,108 @@ const {addCartItemHandler
   ,removeCartItemByIdHandler
 } = require('../api/controllers/cartControllers');
 
-const {addOrderHandler,getOrderByStoreIdHandler,getOrderByStoreIdHandlerTwo,updateOrderStatusHandler,getAllOrderHandler,getAllOrderProfileIdHandler,  updateOrderItemStatusHandler
+const {addOrderHandler,
+  getOrderByStoreIdHandler,
+  getOrderByStoreIdHandlerTwo,
+  updateOrderStatusHandler,
+  getAllOrderHandler,
+  getAllOrderProfileIdHandler,
+  updateOrderItemStatusHandler
 } = require('../api/controllers/orderControllers');
 
+const {checkAdmin,
+  checkMod,
+   checkAuth,
+   checkStoreAuth,
+   checkBan,
+    checkActive,
+    checkCourierCompany, 
+    checkCourier,
+     checkCourierCompanyStatus,
+      checkCourierStatus,
+      checkStoreStatus,
+      productComment,
+      checkOrderStatusForReturn
+    } = require ('../auth/middleware/acl');
+
+const {addProductHandler,
+   updateProductStatusHandler,
+   deleteProductHandler,
+   updateProductHandler,
+   getProductHandler,
+   getAllProductHandler,
+   updateProductPictureHandler,
+   deleteProductPictureHandler,
+   getStoreProductsHandler
+  } = require('../api/controllers/productControllers');
+
+const {addTagHandler,
+  updateTagHandler, 
+  deleteTagHandler,
+   getAllTagsHandler,
+   getTagHandler
+  } = require('../api/controllers/tagController');
+
+const {addProductTagHandler,
+  getProductTagsHandler,
+  deleteProductTagHandler,
+  updateProductTagsHandler
+} = require('../api/controllers/productTagController');
+
+const {addProductReviewHandler,
+  getProductReviewHandler,
+  deleteProductReviewHandler,
+  updateProductReviewHandler
+} = require('../api/controllers/productReviewController');
+
+const {addProductRatingHandler,
+   getProductRatingHandler,
+    deleteProductRatingHandler,
+     updateProductRatingHandler
+    } = require('../api/controllers/productRating');
 
 
+const {addOrderNotificationHandler,
+  getOrderNotificationHandler,
+  getOrderNotificationByStoreIdHandler
+} = require('../api/controllers/orderNotificationController');
 
-const {checkAdmin,checkMod,checkAuth,checkStoreAuth,checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus,checkStoreStatus,productComment,checkOrderStatusForReturn} = require ('../auth/middleware/acl')
+const {addOfferNotificationHandler,
+  getOfferNotificationByStoreIdHandler,
+  getAllOfferNotificationsHandler
+} = require('../api/controllers/offerNotificationController')
 
-const {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler} = require('../api/controllers/productControllers')
-const {addTagHandler,updateTagHandler, deleteTagHandler, getAllTagsHandler,getTagHandler} = require('../api/controllers/tagController')
-const {addProductTagHandler,getProductTagsHandler,deleteProductTagHandler,updateProductTagsHandler} = require('../api/controllers/productTagController')
-const {addProductReviewHandler,getProductReviewHandler,deleteProductReviewHandler,updateProductReviewHandler} = require('../api/controllers/productReviewController')
-const {addProductRatingHandler, getProductRatingHandler, deleteProductRatingHandler, updateProductRatingHandler} = require('../api/controllers/productRating')
+const  {createStoreHandler,
+  getStoreHandler,
+  deleteStoreHandler,
+  updateStoreHandler,
+  updateStoreNameHandler,
+  getAllStoresHandler,
+  getStoreByStatusHandler,
+  updateStoreStatusHandler,
+  getStoreByNameHandler,
+  getAllStoreReviewHandler,
+  getStoreReviewHandler,
+  createStoreReviewHandler,
+  updateStoreReviewHandler,
+  deleteStoreReviewHandler,
+  getAllStorefollowersHandler,
+  getStorefollowersHandler,
+  createStorefollowerHandler,
+  deleteStorefollowerHandler,
+   updateStorePictureHandler,
+  deleteStorePictureHandler,
+  getALLNumbersOFFollowersHandler
+} = require('../api/controllers/storesController');
 
-
-const {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler} = require('../api/controllers/orderNotificationController')
-const {addOfferNotificationHandler,getOfferNotificationByStoreIdHandler,getAllOfferNotificationsHandler} = require('../api/controllers/offerNotificationController')
-
-const  {createStoreHandler,getStoreHandler,deleteStoreHandler,updateStoreHandler,updateStoreNameHandler,getAllStoresHandler,getStoreByStatusHandler,updateStoreStatusHandler,getStoreByNameHandler,getAllStoreReviewHandler,getStoreReviewHandler,createStoreReviewHandler,updateStoreReviewHandler,deleteStoreReviewHandler,getAllStorefollowersHandler,getStorefollowersHandler,createStorefollowerHandler,deleteStorefollowerHandler, updateStorePictureHandler,
-  deleteStorePictureHandler,getALLNumbersOFFollowersHandler} = require('../api/controllers/storesController')
 const {uploadS3} = require('../api/middleware/uploader');
-const {uploadHandler} = require('../api/controllers/uploadController')
-const {updateProfilePictureHandler, deleteProfilePictureHandler, getProfilePictureByProfileIdHandler} = require('../api/controllers/profilePictureHandler')
+
+const {uploadHandler} = require('../api/controllers/uploadController');
+
+const {updateProfilePictureHandler,
+   deleteProfilePictureHandler,
+    getProfilePictureByProfileIdHandler
+  } = require('../api/controllers/profilePictureHandler')
 
 const {
   createReturnRequestHandler,
@@ -85,17 +191,49 @@ const {
   getCourierFeedback,
   getAllCouriersFeedback,
 } = require ('../api/controllers/courierFeedbackControllers')
-const {createCourierCompanyHandler,updateCourierCompanyStatusHandler,updateCourierCompanyNameHandler,getAllCourierCompaniesHandler, getCourierCompanyByCompanyIdHandler} = require('../api/controllers/courierCompanyController');
+const {createCourierCompanyHandler,
+  updateCourierCompanyStatusHandler,
+  updateCourierCompanyNameHandler,
+  getAllCourierCompaniesHandler,
+   getCourierCompanyByCompanyIdHandler
+  } = require('../api/controllers/courierCompanyController');
 
-const {createCourierHandler,updateCourierStatusHandler,deleteCourierHandler,getAllCouriersHandler,getCourierByIdHandler,getCouriersByCompanyIdHandler} = require('../api/controllers/courierController')
+const {createCourierHandler,
+  updateCourierStatusHandler,
+  deleteCourierHandler,
+  getAllCouriersHandler,
+  getCourierByIdHandler,
+  getCouriersByCompanyIdHandler
+} = require('../api/controllers/courierController')
 
-const {addCourierTaskHandler,getAllCourierTasksHandler,getCourierTaskByIdHandler,updateCourierTaskStatusHandler,updateCourierTaskCourierIdHandler} = require('../api/controllers/courierTaskController');
+const {addCourierTaskHandler,
+  getAllCourierTasksHandler,
+  getCourierTaskByIdHandler,
+  updateCourierTaskStatusHandler,
+  updateCourierTaskCourierIdHandler
+} = require('../api/controllers/courierTaskController');
 
-const {addDeliveryTaskHandler,getAllDeliveryTasksHandler,updateDeliveryTaskCompanyIdHandler,updateDeliveryTaskCourierIdHandler,getDeliveryTaskByIdHandler} = require('../api/controllers/deliveryTaskController');
+const {addDeliveryTaskHandler,
+  getAllDeliveryTasksHandler,
+  updateDeliveryTaskCompanyIdHandler,
+  updateDeliveryTaskCourierIdHandler,
+  getDeliveryTaskByIdHandler
+} = require('../api/controllers/deliveryTaskController');
 
-const {addDeliveryTaskNotificationHandler, getDeliveryTaskNotificationByIdHandler, updateDeliveryTaskHandler} = require('../api/controllers/deliveryTaskNotificationController')
+const {addDeliveryTaskNotificationHandler, 
+   getDeliveryTaskNotificationByIdHandler,
+   updateDeliveryTaskHandler
+} = require('../api/controllers/deliveryTaskNotificationController')
 
-
+const {addOfferHandler,
+  displayOfferHandler,
+  updateOfferHandler,
+  updateStatusOfferHandler,
+  getOfferByStoreIdHandler,
+  getAllOfferHandler,
+  getALLOfferStatusHandler,
+  getALLOfferDisplayHandler
+}= require('../api/controllers/offerControllers');
 
 
 
@@ -224,16 +362,7 @@ router.get('/store/follower/:store_id',bearer,upload.none(), getStorefollowersHa
 router.get('/store/number/follower',bearer,upload.none(), getALLNumbersOFFollowersHandler);
 
 
-// product review and rating
-// router.post('/product/review',upload.none(),addProductReviewHandler)
-// router.get('/product/review/:id',upload.none(), getProductReviewHandler)
-// router.delete('/product/review/:id',upload.none(), deleteProductReviewHandler)
-// router.put('/product/review/:id',upload.none(), updateProductReviewHandler)
 
-// router.post('/product/rating',upload.none(),addProductRatingHandler)
-// router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
-// router.delete('/product/rating/:id', upload.none(),deleteProductRatingHandler)
-// router.put('/product/rating/:id', upload.none(),updateProductRatingHandler)
 
 // product review 
 router.post('/product/review',bearer,upload.none(),productComment,addProductReviewHandler)
@@ -252,17 +381,22 @@ router.get('/product/rating/:id',upload.none(), getProductRatingHandler)
 router.get('/getAll/order/notification',bearer,checkAuth, upload.none(),getOrderNotificationHandler)
 router.get('/order/notifications/:store_id',bearer,checkStoreAuth, upload.none(),getOrderNotificationByStoreIdHandler)
 
+//  offer 
 
+router.post('/offer',bearer,upload.none(),checkAuth,addOfferHandler);
+router.put('/offer/display',bearer,upload.none(),checkAuth,displayOfferHandler);
+router.put('/offer',bearer,upload.none(),checkAuth,updateOfferHandler);
+router.put('/offer/status',bearer,upload.none(),checkAuth,updateStatusOfferHandler);
+router.get('/offer/:store_id',bearer,upload.none(),checkStoreAuth,getOfferByStoreIdHandler);
+router.get('/getAllOffer',upload.none(),getAllOfferHandler);
+router.get('/offer/status/get',bearer,upload.none(),checkAuth,getALLOfferStatusHandler);
+router.get('/offer/display/get',bearer,upload.none(),checkAuth,getALLOfferDisplayHandler);
 
+// offer Notification
 
-
-
-
-
-
-router.post('/offer/notification',upload.none(), addOfferNotificationHandler)
-router.get('/offer/notification', upload.none(),getAllOfferNotificationsHandler)
-router.get('/offer/notification/store',upload.none(), getOfferNotificationByStoreIdHandler)
+// router.post('/offer/notification',upload.none(), addOfferNotificationHandler) added when update 
+router.get('/offer/notification/getAll',bearer, upload.none(),getAllOfferNotificationsHandler)
+router.get('/offer/notification/:id',bearer,upload.none(), getOfferNotificationByStoreIdHandler)
 
 router.post('/upload',uploadS3.array('file') ,uploadHandler)
 

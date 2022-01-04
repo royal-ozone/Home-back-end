@@ -466,8 +466,49 @@ const getProfileById = async (id) => {
         throw new Error(error.message)
     }
 }
+const getALLprofile =async ()=>{
+    try {
+        let SQL = 'SELECT * FROM profile ;';
+        let result = await client.query(SQL);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
-
+const updateNotification_all =async (data) => {
+    try {
+        let {boolean,profile_id}=data;
+        let SQL = 'UPDATE profile SET notification_all=$1 WHERE id =$2 RETURNING *;';
+        let safeValues =[boolean,profile_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+const updateNotification_store =async (data) => {
+    try {
+        let {boolean,profile_id}=data;
+        let SQL = 'UPDATE profile SET notification_store=$1 WHERE id =$2 RETURNING *;';
+        let safeValues =[boolean,profile_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+const updateNotification_city =async (data) => {
+    try {
+        let {boolean,profile_id}=data;
+        let SQL = 'UPDATE profile SET notification_city=$1 WHERE id =$2 RETURNING *;';
+        let safeValues =[boolean,profile_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 module.exports = {
     signup,
     signupGoogle,
@@ -504,6 +545,10 @@ module.exports = {
     getProfileByEmail,
     getAllBannedUsers,
     updateProfileEmail,
-    getProfileById
+    getProfileById,
+    getALLprofile,
+    updateNotification_all,
+    updateNotification_store,
+    updateNotification_city,
 }
 
