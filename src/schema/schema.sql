@@ -33,6 +33,7 @@ DROP TABLE IF EXISTS offer_notification;
 
 --  DROP TABLE IF EXISTS attachment;
 DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS offer;
 DROP TABLE IF EXISTS grandchild_category;
 DROP TABLE IF EXISTS child_category;
 DROP TABLE IF EXISTS parent_category;
@@ -94,9 +95,11 @@ CREATE TABLE profile(
   country VARCHAR (250) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
   profile_picture TEXT,
+  notification_all BOOLEAN DEFAULT TRUE,
+  notification_store BOOLEAN DEFAULT FALSE,
+  notification_city BOOLEAN DEFAULT FALSE,
   created_at timestamp not null default current_timestamp,
   
-
   FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
@@ -176,8 +179,8 @@ CREATE TABLE grandchild_category(
 CREATE TABLE product(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
-  enTitle VARCHAR(250) NOT NULL,
-  arTitle VARCHAR(250) NOT NULL,
+  entitle VARCHAR(250) NOT NULL,
+  artitle VARCHAR(250) NOT NULL,
   metaTitle VARCHAR(100),
   sku VARCHAR(100) UNIQUE,
   parent_category_id uuid NOT NULL,
@@ -200,6 +203,34 @@ CREATE TABLE product(
   FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id),
   created_at timestamp not null default current_timestamp
 );
+
+CREATE TABLE offer(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL,
+  entitle VARCHAR(250) NOT NULL,
+  artitle VARCHAR(250) NOT NULL,
+  metaTitle VARCHAR(100),
+  sku VARCHAR(100) UNIQUE,
+  parent_category_id uuid NOT NULL,
+  child_category_id uuid NOT NULL,
+  grandchild_category_id uuid,
+  discount_rate FLOAT NOT NULL,
+  price REAL NOT NULL,
+  currency VARCHAR(10) default 'jod',
+  brand_name VARCHAR(250),
+  description text NOT NULL,
+  status VARCHAR(250) DEFAULT 'pending',
+  quantity INT NOT NULL DEFAULT 0,
+  age VARCHAR(250) DEFAULT '15-30' NOT NULL,
+  size VARCHAR(250),
+  display BOOLEAN DEFAULT TRUE,
+  FOREIGN KEY (store_id) REFERENCES store(id),
+  FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
+  FOREIGN KEY (child_category_id) REFERENCES child_category(id),
+  FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id),
+  created_at timestamp not null default current_timestamp   
+);
+
 
 CREATE TABLE product_review(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -427,13 +458,13 @@ CREATE TABLE offer_notification(
   receiver_id uuid NOT NULL,
   message text NOT NULL,
   store_id uuid,
-  product_id uuid,
+  offer_id uuid,
   seen boolean DEFAULT false,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (receiver_id) REFERENCES profile(id),
   FOREIGN KEY (store_id) REFERENCES store(id),
-  FOREIGN KEY (product_id) REFERENCES product(id)
+  FOREIGN KEY (offer_id) REFERENCES offer(id)
 );
 
 

@@ -345,6 +345,15 @@ const updateNumberOfFollowersPlus = async (store_id)=>{
     }
 }
 
+const getALLStoreByProfileId = async (profile_id) => {
+    try {
+        let SQL ='SELECT * FROM store_follower WHERE follower=$1;';
+        let result = await client.query(SQL, [profile_id]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 module.exports = {
     createStore,
     getStore,
@@ -373,5 +382,6 @@ module.exports = {
     updateNumberOfFollowersMinus,
     createNumberOfStoreFollower,
     getNumberOfFollower,
-    getALLNumbersOFFollowers
+    getALLNumbersOFFollowers,
+    getALLStoreByProfileId,
 };

@@ -3,9 +3,9 @@ const client = require("../../db");
 
 const addOfferNotification = async data =>{
     try {
-        let {receiver_id,message,store_id,product_id} = data;
-        let SQL = "INSERT INTO offer_notification (receiver_id,message,store_id,product_id) VALUES ($1,$2,$3,$4) RETURNING *;";
-        let safeValues = [receiver_id,message,store_id,product_id];
+        let {receiver_id,message,store_id,offer_id} = data;
+        let SQL = "INSERT INTO offer_notification (receiver_id,message,store_id,offer_id) VALUES ($1,$2,$3,$4) RETURNING *;";
+        let safeValues = [receiver_id,message,store_id,offer_id];
         let response = await client.query(SQL,safeValues);
         return response.rows[0];
     } catch (error) {

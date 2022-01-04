@@ -21,8 +21,11 @@ const { signup,
     getTokenByUserId, 
     deactivateAccount,
     getAllBannedUsers,
-    updateProfileEmail
-} = require('../models/user')
+    updateProfileEmail,
+    updateNotification_store,
+    updateNotification_all,
+    updateNotification_city,
+} = require('../models/user');
 const {addCartModel} = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
 const {addProfilePicture} = require('../../api/models/profilePicture')
@@ -567,6 +570,33 @@ const deactivateAccountHandler = async (req, res, next) => {
     }
 };
 
+const updateNotification_allHandler =async(req, res)=>{
+    try {
+        let data= await updateNotification_all({profile_id:req.user.profile_id,boolean:req.body.boolean});
+        console.log("🚀 ~ file: authController.js ~ line 575 ~ constupdateNotification_allHandler=async ~ data", data)
+        res.status(200).send(data);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+const updateNotification_storeHandler = async(req, res)=>{
+    try {
+        let data= await updateNotification_store({profile_id:req.user.profile_id,boolean:req.body.boolean});
+        console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
+        res.status(200).send(data);
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const updateNotification_cityHandler = async(req, res)=>{
+    try {
+        let data= await updateNotification_city({profile_id:req.user.profile_id,boolean:req.body.boolean});
+        console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
+        res.status(200).send(data);
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 module.exports = {
     signupHandler,
     signInHandler,
@@ -586,5 +616,8 @@ module.exports = {
     updateProfilers,
     deactivateAccountHandler,
     codePasswordHandler,
-    getAllBannedUsersHandler
+    getAllBannedUsersHandler,
+    updateNotification_storeHandler,
+    updateNotification_allHandler,
+    updateNotification_cityHandler,
 }

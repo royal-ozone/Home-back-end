@@ -79,6 +79,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(id,req.body);
+    let notificationObj;
     
     if(data.status === 'accept') {
       let check = await getOrderNotificationByOrderId(data.id);
@@ -89,12 +90,18 @@ const updateOrderStatusHandler = async (req, res, next) => {
         allDataOrderItem.map(async (orderItem) => {
           storeArray.push(orderItem.store_id);
         });
-        let filtered = storeArray.filter((item, i, ar) => ar.indexOf(item) === i);
+         let filtered = storeArray.filter((item, i, ar) => ar.indexOf(item) === i);
         //[...new Set(storeArray)];
         
-          filtered.forEach( async (id) =>{
-            await addOrderNotificationHandler({receiver_id:id, order_id :data.id, message: 'you have order please prepare order '});
-          }) 
+         filtered.map( async (id) =>{
+        
+          let x =  await addOrderNotificationHandler({receiver_id:id, order_id :data.id, message: 'you have order please prepare order '});
+          
+          });
+           notificationObj = {
+            stores_id: await Promise.all(filtered)
+          } 
+          
               
       }
       
@@ -106,6 +113,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
     let response = {
       message: `Successfully update status order to ${data.status}`,
       dataOrder: data,
+      notification: notificationObj,
     };
     res.status(200).json(response);
   } catch (error) {
