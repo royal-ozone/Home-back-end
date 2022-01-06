@@ -32,13 +32,15 @@ const updateDeliveryTaskCompanyIdHandler = async (req, res) => {
     }
 }
 
-const updateDeliveryTaskCourierIdHandler = async (req, res) => { 
+const updateDeliveryTaskCourierIdHandler = async (req, res, next) => { 
     try {
         let result = await updateDeliveryTaskCourierId(req.body);
-        res.status(200).json({
-            message: 'Courier Id has been updated successfully',
-            ...result
-        })
+        // res.status(200).json({
+        //     message: 'Courier Id has been updated successfully',
+        //     ...result
+        // })
+        req.body = {...req.body, ...result};
+        next()
     } catch (error) {
         res.send(error.message)
     }

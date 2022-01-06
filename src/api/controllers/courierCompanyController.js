@@ -52,7 +52,7 @@ const getCourierCompanyByCompanyIdHandler = async (req, res) => {
 
 const updateCourierCompanyStatusHandler = async (req, res) => {
     try {
-        let result = await updateCourierCompanyStatus(req.params.id, req.body);
+        let result = await updateCourierCompanyStatus( req.body);
         res.status(200).send(`status has been updated successfully to ${result.status}`);
     } catch (error) {
         res.send(error.message);

@@ -379,7 +379,7 @@ CREATE TABLE cart(
 CREATE TABLE cart_item(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   cart_id uuid NOT NULL,
-  product_id uuid NOT NULL UNIQUE,
+  product_id uuid NOT NULL,
   store_id uuid NOT NULL,
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
