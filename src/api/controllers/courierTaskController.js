@@ -3,7 +3,7 @@ const {addCourierTask,getAllCourierTasks, getCourierTaskById, updateCourierTaskS
 const addCourierTaskHandler = async (req, res) => {
     try {
         let courierId = req.body.courier_id || req.user.courier_id
-        let result = await addCourierTask({courier_id: courierId, ...req.body})
+        let result = await addCourierTask({courier_id: courierId, task_id: req.body.id,...req.body})
         res.status(201).json({
             message: 'task has been added successfully',
             ...result
@@ -25,6 +25,7 @@ const getAllCourierTasksHandler = async (req, res) => {
 const  getCourierTaskByIdHandler = async (req, res) => {
     try {
         let id = req.body.id || req.user.courier_id;
+        console.log("🚀 ~ file: courierTaskController.js ~ line 28 ~ getCourierTaskByIdHandler ~ id", id)
         let result = await getCourierTaskById(id);
         res.status(200).json(result)
     } catch (error) {

@@ -8,6 +8,19 @@ INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first
  ('507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','009627966851','jordan','irbid','wesam','al-masri',true);
 INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,google_id,facebook_id,verified) VALUES 
 ('14a60467-c390-4ca7-a1be-5d0ee11d9ad8','aa0796780751@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780751','jordan','amman','ahmad','arman','aa25ss568165ajs','kjajjsu85895s',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('c18130af-13f7-406f-a166-97aefe30b0ac','omar@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780752','jordan','amman','omar','aloul',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('a15a4bc4-5d1c-41c0-a214-54ecb1bc4ac7','amr@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780753','jordan','amman','amr','aloul',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('ad49a1b2-c25d-40f6-a512-45398eebe024','khaled@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780754','jordan','amman','khaled','aloul',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('36577d44-f6a0-4008-a1e7-a5df77d60397','muhammad@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780755','jordan','amman','muhammad','aloul',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('9918922d-ae41-4477-937f-6485781877ef','hani@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780756','jordan','amman','hani','aloul',true);
+INSERT INTO client(id,email,user_password,country_code,mobile,country,city,first_name,last_name,verified) VALUES 
+('90dd4a83-0eab-41e5-930b-affc1c245306','ibrahim@gmail.com','$2b$10$6q.sFV1isD9UiWmEvQRwT.Zz8f2wkTJ4m59kYi6Jlmo11MXak2NSO','962','0796780757','jordan','amman','ibrahim','arman',true);
+
 
       
 -------------------------- profile Table --------------------------------
@@ -19,6 +32,18 @@ INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile,profile_
 ('1821db68-97c9-4380-9a55-ad8bc7f16eda','14a60467-c390-4ca7-a1be-5d0ee11d9ad8','ahmad','arman','amman','jordan','079655780751','5f04b02b-a142-4445-a65f-bf5542d1fbd4','aa0796780751@gmail.com');
 INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
 ('3be97674-8ce4-49a8-a378-605965c4b98c','507f39aa-9122-4f24-8d18-d928bea2c1ba','wesam','al-masri','irbid','jordan','009627966851','wesam@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('90f9a920-3a6e-49ee-89bb-96fe3a0c9c43','a15a4bc4-5d1c-41c0-a214-54ecb1bc4ac7','amr','aloul','amman','jordan','00962796780753','amr@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('80eb4f35-c33f-46e0-bcdf-cc48098bef89','c18130af-13f7-406f-a166-97aefe30b0ac','omar','aloul','amman','jordan','00962796780752','omar@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('9c4e87b5-fa2c-41e3-87b3-18fc0683b062','ad49a1b2-c25d-40f6-a512-45398eebe024','khaled','aloul','amman','jordan','00962796780754','khaled@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('e1da23a3-3bb6-4015-abff-9ce01815ab73','36577d44-f6a0-4008-a1e7-a5df77d60397','muhammad','aloul','amman','jordan','00962796780755','muhammad@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('f11940fb-3c57-44a8-bc77-4f6edfac093a','9918922d-ae41-4477-937f-6485781877ef','hani','aloul','amman','jordan','00962796780756','hani@gmail.com');
+INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
+('0aedb3fd-2953-4da9-9414-b9587b6d63f0','90dd4a83-0eab-41e5-930b-affc1c245306','ibrahim','arman','amman','jordan','00962796780757','ibrahim@gmail.com');
 
 
 ------------------------- Administrator Table ----------------------------------
@@ -97,19 +122,26 @@ INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,stree
 ('7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','fca8e07b-ac7d-4ce8-8437-53c54ca85857','jordan','amman','emran','aloul','0798009950','abdallah alnazhan','13','2');
 INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
 ('9e0e31ac-757b-4f25-afe1-61ed9ccb40d2','fca8e07b-ac7d-4ce8-8437-53c54ca85857','uae','dubai','emran','aloul','0798009950','abdallah alnazhan','13','8');
+INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
+('75251081-2962-4f89-b482-50caa0452c8d','0aedb3fd-2953-4da9-9414-b9587b6d63f0','jordan','amman','ibrahim','arman','0796780757','al rawda street','13','8');
+
+
 
 --------------------------------- new_order ----------------------------------------
 INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
 ('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','1','20','22');
 INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
 ('95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','20','22');
-
+INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('2fcc1422-4405-4031-b362-e76533ef3b8a','3be97674-8ce4-49a8-a378-605965c4b98c','75251081-2962-4f89-b482-50caa0452c8d','0.01','0.02','20','22');
 
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values
 ('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3' );
 INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values
 ('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3');
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values
+('ca9c4c67-c290-4342-b667-5dffaee2193b','2fcc1422-4405-4031-b362-e76533ef3b8a','3be97674-8ce4-49a8-a378-605965c4b98c','defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3');
 
 
 -------------------------------- transaction ----------------------------
@@ -124,11 +156,15 @@ INSERT INTO cart(id,profile_id,address_id)VALUES
 ('07426572-9679-435c-a973-70e24a508ce7','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
 INSERT INTO cart(id,profile_id,address_id)VALUES 
 ('07426572-9679-435c-a973-70e24a508ce5','3be97674-8ce4-49a8-a378-605965c4b98c','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f');
+INSERT INTO cart(id,profile_id,address_id)VALUES 
+('07426572-9679-435c-a973-70e24a508ce4','0aedb3fd-2953-4da9-9414-b9587b6d63f0','75251081-2962-4f89-b482-50caa0452c8d');
 
 
 ------------------------------------cart_item -----------------------------
 INSERT INTO cart_item(id,cart_id,product_id,store_id,price,discount,quantity)VALUES
 ('70dfb852-0925-44e9-b09b-4d7b07935cf9','07426572-9679-435c-a973-70e24a508ce7','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','2');
+INSERT INTO cart_item(id,cart_id,product_id,store_id,price,discount,quantity)VALUES
+('3b15f5d6-fdaa-443f-be99-cb42b85ae16c','07426572-9679-435c-a973-70e24a508ce4','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','2');
 
 
 
