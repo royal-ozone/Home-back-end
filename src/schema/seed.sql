@@ -184,8 +184,8 @@ INSERT INTO comment(id,comment,product_id,profile_id,store_id)VALUES
 
 
 ------------------------------offer_notification -------------------
-INSERT INTO offer_notification(id,receiver_id,message,store_id,product_id)VALUES
-('576f249f-a18c-4901-8cde-c9f8eadddb3c','fca8e07b-ac7d-4ce8-8437-53c54ca85857','swwwwwww','72280f37-2ca7-4808-90d2-3ecec783b163','0047da41-5e33-460a-88da-5cfa2b9d8724');
+-- INSERT INTO offer_notification(id,receiver_id,message,store_id,product_id)VALUES
+-- ('576f249f-a18c-4901-8cde-c9f8eadddb3c','fca8e07b-ac7d-4ce8-8437-53c54ca85857','swwwwwww','72280f37-2ca7-4808-90d2-3ecec783b163','0047da41-5e33-460a-88da-5cfa2b9d8724');
 
 
 ---------------------------- order_notification --------------------------------

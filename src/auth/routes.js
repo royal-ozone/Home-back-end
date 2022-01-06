@@ -26,11 +26,15 @@ const {
     ,updateProfilers,
     deactivateAccountHandler,
     codePasswordHandler ,
-    getAllBannedUsersHandler
+    getAllBannedUsersHandler,
+    updateNotification_cityHandler,
     } = require('./controllers/authController')
     
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
-
+const {
+    updateNotification_allHandler,
+    updateNotification_storeHandler,
+}=require('./controllers/authController');
 
 const googleAuth = require('./oauth/google-oauth');
 const facebookAuth = require('./oauth/facebook/facebook-oauth')
@@ -58,6 +62,9 @@ authRouter.put('/user/mobile', bearer, upload.none(),updateUserMobileHandler);
 authRouter.get('/user/all',bearer, checkAuth,upload.none(),getAllUsersHandler);
 
 authRouter.put('/update/profile', bearer,upload.none(), updateProfilers);
+authRouter.put('/update/notification_all',bearer,upload.none(),updateNotification_allHandler);
+authRouter.put('/update/notification_store',bearer,upload.none(),updateNotification_storeHandler);
+authRouter.put('/update/notification_city',bearer,upload.none(),updateNotification_cityHandler);
 
 authRouter.post('/admin/add',bearer,checkAdmin,upload.none(), addAdminHandler);
 
