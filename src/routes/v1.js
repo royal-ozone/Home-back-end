@@ -62,6 +62,7 @@ const {addOrderHandler,
 
 const {checkAdmin,
   checkMod,
+  checkSupervisor,
    checkAuth,
    checkStoreAuth,
    checkBan,
