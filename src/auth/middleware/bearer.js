@@ -4,7 +4,7 @@ const { authenticateWithToken } = require('../models/helpers');
 const { getProfileByUserId, getStoreIdByProfileId, getCompanyByProfileId,getCourierByProfileId } = require('../models/user')
 const {getCartByProfileId} = require('../../api/models/cart')
 const axios = require('axios')
-// require('dotenv').config()
+
 module.exports = async (req, res, next) => {
     try {
         if (!req.headers.authorization) {
@@ -12,15 +12,17 @@ module.exports = async (req, res, next) => {
         }
         let token = req.headers.authorization.split(' ').pop();
 
-        let tokenRecord = await getTokenRecord(token) ;
-        console.log("🚀 ~ file: bearer.js ~ line 18 ~ module.exports= ~ `${process.env.MANAGEMENT_API}/employee`", `${process.env.MANAGEMENT_API}/employee`)
-        let result = await axios({
-            method: 'GET',
-            url: `${process.env.MANAGEMENT_API}/employee`,
-            headers: {authorization:req.headers.authorization}
-        })
-        console.log("🚀 ~ file: bearer.js ~ line 22 ~ module.exports= ~ result", result)
-        // console.log("🚀 ~ file: bearer.js ~ line 20 ~ module.exports= ~ result", result)
+        let tokenRecord;
+        let result;
+        try{
+            result = await axios({
+                method: 'GET',
+                url: `${process.env.MANAGEMENT_API}/employee`,
+                headers: {authorization:req.headers.authorization}
+            })
+        }catch(err){
+            tokenRecord = await getTokenRecord(token)
+        }
         
         if (tokenRecord) {
 

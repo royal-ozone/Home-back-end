@@ -32,7 +32,9 @@ const addProductHandler = async(req, res) => {
 
 const getAllProductHandler = async(req, res) => {
     try {
-        let result = await getAllProduct()
+        let offset = req.query.offset || 0;
+        let limit = req.query.limit || 24;
+        let result = await getAllProduct(offset, limit)
         let resultWithPics = await result.map(async (product) => {
           let pictures = await getProductPicturesById(product.id)
           product['pictures'] = pictures;
@@ -45,13 +47,29 @@ const getAllProductHandler = async(req, res) => {
     }
 }
 
-const getProductHandler = async(req, res) => {
+const getProductHandler = async(req, res,next) => {
     try {
+      if(req.wishlist){
+
+        let wishlist = await req.wishlist.map(async item => {
+          let result = await getProduct(item.product_id);
+          let wishlistItem = item;
+          wishlistItem['product'] = result
+          let pictures = await getProductPicturesById(item.product_id)
+          wishlistItem.product['pictures']= await Promise.all(pictures);
+          delete wishlistItem.product_id
+          return wishlistItem
+        })
+        res.status(200).json(await Promise.all(wishlist))
+      }else{
         let id = req.params.id;
         let result = await getProduct(id);
         let pictures = await getProductPicturesById(id)
         result['pictures']= pictures;
-        res.status(200).json(result);
+        req.product = result;
+        next();
+      }
+        // res.status(200).json(result);
     } catch (error) {
       res.send(error.message)
     }

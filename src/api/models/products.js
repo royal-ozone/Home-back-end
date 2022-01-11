@@ -18,10 +18,10 @@ const addProduct = async data => {
     }
 };
 
-const getAllProduct = async () => {
+const getAllProduct = async (offset,limit) => {
 try {
-    let SQL = `SELECT * FROM product;`
-    let result = await client.query(SQL)
+    let SQL = `SELECT * FROM product LIMIT $2 OFFSET $1;`
+    let result = await client.query(SQL,[offset,limit])
     return result.rows
 } catch (error) {
     throw new Error(error.message)
@@ -40,10 +40,10 @@ const getProduct = async data => {
     }
 };
 
-const getStoreProducts = async id => {
+const getStoreProducts = async (id,limit,offset) => {
     try {
-        let SQL = `SELECT * FROM product WHERE store_id =$1;`;
-        let result = await client.query(SQL,[id]);
+        let SQL = `SELECT * FROM product WHERE store_id =$1 LIMIT $2 OFFSET $3;`;
+        let result = await client.query(SQL,[id,limit,offset]);
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
@@ -57,7 +57,6 @@ const updateProduct = async (id,data) => {
         let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, description=$7, quantity=$8,discount=$9,discount_rate=$10,arTitle=$12,age=$13,size=$14 WHERE id=$11 RETURNING *;';
         let safeValues = [store_id, enTitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate, id, arTitle,age,size];
         let result = await client.query(SQL, safeValues);
-        console.log("🚀 ~ file: products.js ~ line 51 ~ updateProduct ~ result.rows[0]", result.rows[0])
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message)

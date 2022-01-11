@@ -1,15 +1,17 @@
 "use strict";
 const client = require("../../db");
 const { calculation } = require("../controllers/helper");
-
+const orderId = require('order-id')('key');
 const addOrderModel = async (data) => {
   try {
+    const id = orderId.generate();
+
     let {profile_id, address_id, tax,shipping,discount_id,sub_total,grand_total} =data 
     let SQL =
-      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total,customer_order_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
     let safeValue = [
       profile_id,
-      address_id,tax,shipping,discount_id,sub_total,grand_total
+      address_id,tax,shipping,discount_id,sub_total,grand_total,orderId.getTime(id)
     ];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
@@ -53,10 +55,10 @@ const updateOrderStatusModel = async (id,data) => {
    throw new Error(error.message);
   }
 };
-const getAllOrderModel = async () => {
+const getAllOrderModel = async (limit,offset) => {
   try {
-    let SQL = "SELECT * FROM new_order ;";
-    let result = await client.query(SQL);
+    let SQL = "SELECT * FROM new_order LIMIT $1 OFFSET $2;";
+    let result = await client.query(SQL, [limit,offset]);
     return result.rows;
   } catch (error) {
     let response = {
@@ -66,10 +68,10 @@ const getAllOrderModel = async () => {
   }
 };
 
-const getAllOrderProfileIdModel =async (id)=> {
+const getAllOrderProfileIdModel =async (id,limit,offset)=> {
   try {
-    let SQL ='SELECT * FROM new_order WHERE profile_id=$1;';
-    let result = await client.query(SQL, [id]);
+    let SQL ='SELECT * FROM new_order WHERE profile_id=$1 LIMIT $2 OFFSET $3;';
+    let result = await client.query(SQL, [id,limit,offset]);
     return result.rows
   } catch (error) {
     throw new Error(error.message)

@@ -39,7 +39,8 @@ const {addAddressHandler,
   removeAddressHandler,
   updateAddressHandler,
   getAllAddressHandler,
-  getAddressByProfileIdModelHandler
+  getAddressByProfileIdModelHandler,
+  getAddressByIdHandler
 } = require('../api/controllers/addressControllers');
 
 const {addCartItemHandler
@@ -240,7 +241,7 @@ const {addOfferHandler,
   getALLOfferDisplayHandler
 }= require('../api/controllers/offerControllers');
 
-
+const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHandler} = require('../api/controllers/wishlistController')
 
 
 // Global middleware
@@ -303,7 +304,7 @@ router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePi
 router.post('/product',bearer,checkStoreAuth, uploadS3.array('image'), addProductHandler)
 router.get('/product',upload.none(), getAllProductHandler)
 router.get('/product/store', bearer, checkStoreAuth, upload.none(), getStoreProductsHandler)
-router.get('/product/:id',upload.none(), getProductHandler)
+router.get('/product/:id',upload.none(), getProductHandler, getParentCategoryById,getChildCategoryById,getGrandChildCategoryById)
 router.put('/product',bearer,checkStoreAuth,upload.none(), updateProductHandler)
 router.put('/product/status',bearer,checkAuth,upload.none(), updateProductStatusHandler)
 router.delete('/product',upload.none(), deleteProductHandler)
@@ -347,8 +348,8 @@ router.post('/checkCode',bearer,upload.none(),checkCodeHandler); // for people
 
 router.post('/addOrder',bearer,upload.none(),addOrderHandler);
 router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
-router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler);
-router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler);
+router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler,getAddressByIdHandler);
+router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
 router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
 //router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
@@ -463,6 +464,9 @@ router.put('/update/courier/feedback/:id',bearer,upload.none(),updateCourierFeed
 router.get('/get/courier/feedback/:id',bearer,upload.none(),getCourierFeedback);
 router.get('/getAll/courier/feedback',bearer,upload.none(),getAllCouriersFeedback);
 
+router.post('/addWishlistItem', bearer,upload.none(), addItemToWishListHandler);
+router.get('/getWishlistItems', bearer,upload.none(), getWishListItemsHandler,getProductHandler )
+router.delete('/deleteWishlistItem', bearer,upload.none(), deleteFromWishListHandler)
 // Test route
 router.get('/test', (req, res) => {
   res.send('working well');
