@@ -90,5 +90,35 @@ const getAddressByProfileIdModelHandler =async (req, res, next)=>{
         res.status(400).send(error.message)
     }
 }
+const getAddressByIdHandler =async (req, res, next)=>{
+    try {
+        if(req.orders){
+            let orders = await req.orders.map(async order=>{
+                const result = await getAddressById(order.address_id);
+                let finalOrder = order
+                delete finalOrder.address_id
+                delete result.profile_id
+                finalOrder['address'] = result
+                return finalOrder
+            })
+            res.status(200).json(await Promise.all(orders))
+        } else if(req.order){
+            const result = await getAddressById(order.address_id);
+            let order = req.order
+            delete order.address_id
+            order['address'] = result
+            res.status(200).json(order)
+        } else{
+            const result = await getAddressById(req.body.address_id);
+            if(result.id){
+                res.status(200).json(result)
+            }else {
+                res.status(403).send('something went wrong while getting address')
+            }
+        }
+    } catch (error) {
+        res.status(400).send(error.message)
+    }
+}
 
-module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler}
+module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler,getAddressByIdHandler}

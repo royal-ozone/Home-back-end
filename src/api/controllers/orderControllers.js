@@ -91,7 +91,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
           storeArray.push(orderItem.store_id);
         });
          let filtered = storeArray.filter((item, i, ar) => ar.indexOf(item) === i);
-        //[...new Set(storeArray)];
+        
         
          filtered.map( async (id) =>{
         
@@ -125,27 +125,35 @@ const updateOrderStatusHandler = async (req, res, next) => {
 };
 const getAllOrderHandler = async (req, res, next) => {
   try {
-    let data = await getAllOrderModel();
+    let limit = req.query.limit || 10;
+    let offset = req.query.offset || 0;
+    let data = await getAllOrderModel(limit, offset);
     let response = {
       message: "successfully get all orders ",
       all_order: data,
     };
-    res.status(200).send(response);
+    req.orders = data
+    next()
+    // res.status(200).send(response);
   } catch (error) {
     res.status(403).send(error.message);
   }
 };
-const getAllOrderProfileIdHandler = async (req, res)=>{
+const getAllOrderProfileIdHandler = async (req, res,next) => {
   try {
-    let data = await getAllOrderProfileIdModel(req.user.profile_id);
+    let limit = req.query.limit || 10;
+    let offset = req.query.offset || 0;
+    let data = await getAllOrderProfileIdModel(req.user.profile_id,limit,offset);
     let orderArray = data.map(async order => {
       let orderItems = await getOrderItemsByOrderId(order.id);
       order['items'] = orderItems
       return order
     })
-    res.status(200).json({orders: await Promise.all(orderArray)});
+    req.orders = await Promise.all(orderArray)
+    next()
+    // res.status(200).json({orders: await Promise.all(orderArray)});
   } catch (error) {
-    res.status(404).send('you do not have any orders before');
+    res.status(403).send('you do not have any orders before');
   }
 }
 const updateOrderItemStatusHandler = async (req,res) => {
@@ -168,7 +176,9 @@ const updateOrderItemStatusHandler = async (req,res) => {
 
 const getOrderByStoreIdHandler = async (req, res) =>{
   try {
-    let products = await getStoreProducts(req.user.store_id);
+    let limit = req.query.limit || 10;
+    let offset = req.query.offset || 0;
+    let products = await getStoreProducts(req.user.store_id,limit,offset);
     
     let productsArray = products.map((product) => {
       return product.id

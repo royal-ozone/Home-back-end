@@ -128,12 +128,12 @@ INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,stree
 
 
 --------------------------------- new_order ----------------------------------------
-INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
-('82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','1','20','22');
-INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
-('95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','20','22');
-INSERT INTO new_order(id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
-('2fcc1422-4405-4031-b362-e76533ef3b8a','3be97674-8ce4-49a8-a378-605965c4b98c','75251081-2962-4f89-b482-50caa0452c8d','0.01','0.02','20','22');
+INSERT INTO new_order(id,customer_order_id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('82e018d1-b731-489c-a62b-f719cdf4bb8b', 12345,'fca8e07b-ac7d-4ce8-8437-53c54ca85857','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','1','20','22');
+INSERT INTO new_order(id,customer_order_id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('95f3a0e3-aa40-47eb-8315-a58c42ed8697',12346,'1821db68-97c9-4380-9a55-ad8bc7f16eda','7c0c7345-9c9a-4697-9eec-5618cf4dbf8f','0.01','0.02','20','22');
+INSERT INTO new_order(id,customer_order_id,profile_id,address_id,tax,shipping,sub_total,grand_total)VALUES
+('2fcc1422-4405-4031-b362-e76533ef3b8a',12347,'3be97674-8ce4-49a8-a378-605965c4b98c','75251081-2962-4f89-b482-50caa0452c8d','0.01','0.02','20','22');
 
 -------------------------------- order_item ----------------------------------------
 INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity)Values

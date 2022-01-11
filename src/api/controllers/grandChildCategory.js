@@ -77,15 +77,25 @@ const updateGrandChildCategory = async (req, res, next) => {
       let response = {
         message: error.message,
       };
-      //  throw new Error(error.message);
+    
       res.status(401).json(response);
     }
   };
 const getGrandChildCategoryById= async (req, res, next) => {
-    let id = req.params.idGCG;
   try {
-    let response = await getGrandChildCategoryByIdModel(id);
-    res.status(200).json(response);
+    if(req.product){
+      let response = await getGrandChildCategoryByIdModel(req.product.grandchild_category_id);
+      let product = req.product
+      delete product.grandchild_category_id
+      product['grandChild_category'] = response
+     
+      res.status(200).json(product);
+    } else {
+
+      let id = req.params.idGCG;
+      let response = await getGrandChildCategoryByIdModel(id);
+      res.status(200).json(response);
+    }
   } catch (error) {
     res.status(400).json(error.message);
   }

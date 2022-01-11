@@ -15,7 +15,6 @@ const http = require('http');
 const multer = require('multer');
 let upload = multer()
 const events =require('./socket/event')
-
 const server = http.createServer(app);
 const socket =require('socket.io');
 const io =  socket(server ,{
@@ -82,6 +81,8 @@ events.on('storeReview',(data)=>{
     console.log('storeReview add',data);
     storeReview.emit('storeReview',data);
 });
+
+
 // io.on('connection', (socket)=>{
 //     console.log('a user connected on localhost  ')
 // })
