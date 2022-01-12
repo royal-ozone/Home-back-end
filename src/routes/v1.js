@@ -39,7 +39,8 @@ const {addAddressHandler,
   removeAddressHandler,
   updateAddressHandler,
   getAllAddressHandler,
-  getAddressByProfileIdModelHandler
+  getAddressByProfileIdModelHandler,
+  getAddressByIdHandler
 } = require('../api/controllers/addressControllers');
 
 const {addCartItemHandler
@@ -62,6 +63,7 @@ const {addOrderHandler,
 
 const {checkAdmin,
   checkMod,
+  checkSupervisor,
    checkAuth,
    checkStoreAuth,
    checkBan,
@@ -192,6 +194,10 @@ const {
   getCourierFeedback,
   getAllCouriersFeedback,
 } = require ('../api/controllers/courierFeedbackControllers')
+
+const payment = require('../api/controllers/paymentGateWay')
+
+
 const {createCourierCompanyHandler,
   updateCourierCompanyStatusHandler,
   updateCourierCompanyNameHandler,
@@ -236,13 +242,14 @@ const {addOfferHandler,
   getALLOfferDisplayHandler
 }= require('../api/controllers/offerControllers');
 
+const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHandler} = require('../api/controllers/wishlistController')
 
 
 // Global middleware
 // router.use(bearer);
 
 // end point for parent category 
-
+router.post('/payment', payment)
 router.post('/add/PG',bearer,checkAdmin,upload.none(),addParentCategory);
 router.delete('/remove/PG',bearer,upload.none(),checkAdmin,removeParentCategory);
 router.put('/update/PG',bearer,upload.none(),checkAuth,updateParentCategory);
@@ -298,7 +305,7 @@ router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePi
 router.post('/product',bearer,checkStoreAuth, uploadS3.array('image'), addProductHandler)
 router.get('/product',upload.none(), getAllProductHandler)
 router.get('/product/store', bearer, checkStoreAuth, upload.none(), getStoreProductsHandler)
-router.get('/product/:id',upload.none(), getProductHandler)
+router.get('/product/:id',upload.none(), getProductHandler, getParentCategoryById,getChildCategoryById,getGrandChildCategoryById)
 router.put('/product',bearer,checkStoreAuth,upload.none(), updateProductHandler)
 router.put('/product/status',bearer,checkAuth,upload.none(), updateProductStatusHandler)
 router.delete('/product',upload.none(), deleteProductHandler)
@@ -342,8 +349,8 @@ router.post('/checkCode',bearer,upload.none(),checkCodeHandler); // for people
 
 router.post('/addOrder',bearer,upload.none(),addOrderHandler);
 router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
-router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler);
-router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler);
+router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler,getAddressByIdHandler);
+router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
 router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
 //router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
@@ -422,35 +429,35 @@ router.get('/getMySuggestions',bearer,upload.none(),getMySuggestionHandler);
 router.put('/update/suggestion/status',bearer,upload.none(),checkAdmin,updateStatusSuggestionHandler);
 router.get('/getSuggestionById/:id', bearer, getMySuggestionByIdHandler)
 
-router.post('/courierCompany',upload.none(), createCourierCompanyHandler);
-router.get('/courierCompanies', upload.none(),getAllCourierCompaniesHandler)
-router.get('/courierCompany',upload.none(), getCourierCompanyByCompanyIdHandler)
-router.put('/courierCompany/name',upload.none(), updateCourierCompanyNameHandler)
-router.put('/courierCompany/status/:id',upload.none(),checkAuth, updateCourierCompanyStatusHandler)
+router.post('/courierCompany',bearer,upload.none(), createCourierCompanyHandler);
+router.get('/courierCompanies', bearer,upload.none(),checkAuth,getAllCourierCompaniesHandler)
+router.get('/courierCompany',bearer,upload.none(), getCourierCompanyByCompanyIdHandler)
+router.put('/courierCompany/name',bearer,upload.none(), updateCourierCompanyNameHandler)
+router.put('/courierCompany/status',bearer,upload.none(),checkAuth, updateCourierCompanyStatusHandler)
 
-router.post('/courier',upload.none(),checkCourierCompany, createCourierHandler)
-router.put('/courier',upload.none(),checkCourier, updateCourierStatusHandler) 
-router.delete('/courier',upload.none(),checkCourierCompany, deleteCourierHandler)
-router.get('/couriers',upload.none(), checkAuth,getAllCouriersHandler)
-router.get('/courier',upload.none(), checkCourierCompany,getCourierByIdHandler)
-router.get('/companyCouriers',upload.none(), checkCourierCompany,getCouriersByCompanyIdHandler)
-router.get('/courier/:id',upload.none(), checkCourierCompany,getCourierByIdHandler)
+router.post('/courier',bearer,upload.none(),checkCourierCompany, createCourierHandler)
+router.put('/courier',bearer,upload.none(),checkCourier, updateCourierStatusHandler) 
+router.delete('/courier',bearer,upload.none(),checkCourierCompany, deleteCourierHandler)
+router.get('/couriers',bearer,upload.none(), checkAuth,getAllCouriersHandler)
+router.get('/courier',bearer,upload.none(), checkCourierCompany,getCourierByIdHandler)
+router.get('/companyCouriers',bearer,upload.none(), checkCourierCompany,getCouriersByCompanyIdHandler)
+router.get('/courier/:id',bearer,upload.none(), checkCourierCompany,getCourierByIdHandler)
 
-router.post('/courierTask',upload.none(), addCourierTaskHandler)
-router.get('/courierTasks', upload.none(),getAllCourierTasksHandler)
-router.get('/courierTask',upload.none(), getCourierTaskByIdHandler)
-router.put('/courierTask/status',upload.none(), updateCourierTaskStatusHandler)
-router.put('/courierTask/courierId',upload.none(), updateCourierTaskCourierIdHandler)
+router.post('/courierTask',bearer,upload.none(), addCourierTaskHandler)
+router.get('/courierTasks', bearer,upload.none(),checkAuth,getAllCourierTasksHandler)
+router.get('/courierTask',bearer,upload.none(),checkCourier, getCourierTaskByIdHandler)
+router.put('/courierTask/status',bearer,upload.none(),checkCourier, updateCourierTaskStatusHandler)
+router.put('/courierTask/courierId',bearer,upload.none(),checkCourierCompany, updateCourierTaskCourierIdHandler)
 
-router.post('/deliveryTask',upload.none() ,addDeliveryTaskHandler)
-router.get('/deliveryTasks',upload.none(),checkCourierCompanyStatus, getAllDeliveryTasksHandler)
-router.put('/deliveryTask/companyId',upload.none(), updateDeliveryTaskCompanyIdHandler)
-router.put('/deliveryTask/courierId',upload.none(), updateDeliveryTaskCourierIdHandler)
-router.get('/deliveryTask',upload.none(), getDeliveryTaskByIdHandler)
+router.post('/deliveryTask',bearer,upload.none() ,addDeliveryTaskHandler)
+router.get('/deliveryTasks',bearer,upload.none(),checkCourierCompanyStatus, getAllDeliveryTasksHandler)
+router.put('/deliveryTask/companyId',bearer,upload.none(), updateDeliveryTaskCompanyIdHandler)
+router.put('/deliveryTask/courierId',bearer,upload.none(), updateDeliveryTaskCourierIdHandler, addCourierTaskHandler)
+router.get('/deliveryTask',bearer,upload.none(), getDeliveryTaskByIdHandler)
 
-router.post('/deliveryTask/notification',upload.none(), addDeliveryTaskNotificationHandler)
-router.get('/deliveryTask/notification',upload.none(),getDeliveryTaskNotificationByIdHandler)
-router.put('/deliveryTask/notification',upload.none(), updateDeliveryTaskHandler)
+router.post('/deliveryTask/notification',bearer,upload.none(), addDeliveryTaskNotificationHandler)
+router.get('/deliveryTask/notification',bearer,upload.none(),getDeliveryTaskNotificationByIdHandler)
+router.put('/deliveryTask/notification',bearer,upload.none(), updateDeliveryTaskHandler)
 
 router.post('/add/courier/feedback',bearer,upload.none(),addCourierFeedback);
 router.delete('/remove/courier/feedback/:id',bearer,upload.none(),removeCourierFeedback);
@@ -458,6 +465,9 @@ router.put('/update/courier/feedback/:id',bearer,upload.none(),updateCourierFeed
 router.get('/get/courier/feedback/:id',bearer,upload.none(),getCourierFeedback);
 router.get('/getAll/courier/feedback',bearer,upload.none(),getAllCouriersFeedback);
 
+router.post('/addWishlistItem', bearer,upload.none(), addItemToWishListHandler);
+router.get('/getWishlistItems', bearer,upload.none(), getWishListItemsHandler,getProductHandler )
+router.delete('/deleteWishlistItem', bearer,upload.none(), deleteFromWishListHandler)
 // Test route
 router.get('/test', (req, res) => {
   res.send('working well');

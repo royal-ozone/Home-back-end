@@ -81,10 +81,20 @@ const updateChildCategory = async (req, res, next) => {
   }
 };
 const getChildCategoryById = async (req, res, next) => {
-  let id = req.params.idCG;
   try {
-    let response = await getChildCategoryByIdModel(id);
-    res.status(200).json(response);
+    if(req.product){
+      let response = await getChildCategoryByIdModel(req.product.child_category_id);
+      let product = req.product
+      delete product.child_category_id
+      product['child_category'] = response
+      req.product = product
+      next();
+    } else {
+      let id = req.params.idCG;
+      let response = await getChildCategoryByIdModel(id);
+      res.status(200).json(response);
+
+    }
   } catch (error) {
     res.status(400).json(error.message);
   }

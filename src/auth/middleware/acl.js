@@ -1,6 +1,6 @@
 const client = require('../../db')
 const { getProfileByUserId, activateAccount } = require('../models/user')
-
+const axios = require('axios')
 const {getCourierCompanyByCompanyId} = require('../../api/models/courierCompany');
 const {getCourierById} = require('../../api/models/courier');
 const {getStore} =require('../../api/models/stores');
@@ -49,10 +49,8 @@ let profileView = async (req, res, next) => {
 
 let checkAdmin = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        if (result.rows[0]) {
+      
+        if (req.employee.role === 'admin') {
             next();
         } else {
             res.status(403).json({
@@ -61,16 +59,15 @@ let checkAdmin = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
-let checkMod = async (req, res, next) => {
+let checkSupervisor = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM MODERATOR WHERE id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        if (result.rows[0]) {
+        let auth = ['admin', 'supervisor']
+       
+        if (auth.includes(req.employee.role)) {
             next();
         } else {
             res.status(403).json({
@@ -79,18 +76,36 @@ let checkMod = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
+    }
+};
+let checkMod = async (req, res, next) => {
+    try {
+        let auth = ['admin', 'supervisor', 'moderator']
+       
+        if (auth.includes(req.employee.role)) {
+            next();
+        } else {
+            res.status(403).json({
+                status: 403,
+                message: 'User unauthorized, access denied!',
+            });
+        }
+    } catch (error) {
+        res.send(error.message)
     }
 };
 
 let checkAuth = async (req, res, next) => {
     try {
-        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
-        let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        let result2 = await client.query(SQL2, safeValue);
-        if (result.rows[0] || result2.rows[0]) {
+        // let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
+        // let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
+        // let safeValue = [req.user.id];
+        // let result = await client.query(SQL, safeValue);
+        // let result2 = await client.query(SQL2, safeValue);
+        let auth = ['admin', 'supervisor', 'moderator', 'advisor']
+
+        if (auth.includes(req.employee.role)) {
             next();
         } else {
             res.status(403).json({
@@ -99,7 +114,7 @@ let checkAuth = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
@@ -113,20 +128,15 @@ let checkStoreOwner = async (profile_id) => {
         let result = await client.query(SQL, safeValue);
         return result;
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
 let checkStoreAuth = async (req, res, next) => {
     try {
-        let storeOwner = await checkStoreOwner(req.user.profile_id);
-        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
-        let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        let result2 = await client.query(SQL2, safeValue);
-
-        if (result.rows[0] || result2.rows[0] || storeOwner.rows[0]) {
+        
+        let auth = ['admin', 'supervisor', 'moderator', 'advisor']
+        if (auth.includes(req.employee.role) || req.user.store_id) {
             next();
         } else {
             res.status(403).json({
@@ -135,7 +145,7 @@ let checkStoreAuth = async (req, res, next) => {
             });
         }
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
@@ -151,7 +161,7 @@ let checkBan = async (req, res, next) => {
             });
         } else next();
     } catch (error) {
-        throw new Error(error.message)
+        res.send(error.message)
     }
 };
 
@@ -266,4 +276,4 @@ const checkOrderStatusForReturn = async (req, res, next) =>{
 
 
 
-module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus,checkOrderStatusForReturn};
+module.exports = { profileView, productComment, checkAdmin, checkMod, checkAuth, checkStoreAuth, checkBan, checkActive,checkCourierCompany, checkCourier, checkCourierCompanyStatus, checkCourierStatus ,checkStoreStatus,checkOrderStatusForReturn,checkSupervisor};

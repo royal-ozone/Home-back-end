@@ -20,6 +20,7 @@
   "homepage": "https://github.com/royal-ozone/Home-back-end#readme",
   "dependencies": {
     "aws-sdk": "^2.1023.0",
+    "axios": "^0.24.0",
     "base-64": "^1.0.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
@@ -33,6 +34,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.3",
     "multer-s3": "^2.10.0",
+    "order-id": "^2.1.2",
     "passport": "^0.5.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",

@@ -3,6 +3,7 @@ const { getTokenRecord } = require('../models/jwt');
 const { authenticateWithToken } = require('../models/helpers');
 const { getProfileByUserId, getStoreIdByProfileId, getCompanyByProfileId,getCourierByProfileId } = require('../models/user')
 const {getCartByProfileId} = require('../../api/models/cart')
+const axios = require('axios')
 
 module.exports = async (req, res, next) => {
     try {
@@ -11,15 +12,20 @@ module.exports = async (req, res, next) => {
         }
         let token = req.headers.authorization.split(' ').pop();
 
-        let tokenRecord = await getTokenRecord(token);
-        
-        if (!tokenRecord) {
-            res.status(403).json({
-                status: 403,
-                message: 'Invalid token!',
-            });
+        let tokenRecord;
+        let result;
+        try{
+            result = await axios({
+                method: 'GET',
+                url: `${process.env.MANAGEMENT_API}/employee`,
+                headers: {authorization:req.headers.authorization}
+            })
+        }catch(err){
+            tokenRecord = await getTokenRecord(token)
         }
-        else {
+        
+        if (tokenRecord) {
+
             let validUser = await authenticateWithToken(token, 'access');
             let userProfile = await getProfileByUserId(validUser.id);
             let store = await getStoreIdByProfileId(userProfile.id);
@@ -34,10 +40,20 @@ module.exports = async (req, res, next) => {
             req.user.cart_id = cart? cart.id : null;
             req.user.store_id = store ? store.id : null;
             req.user.courier_company_id = company? company.id : null;
-            req.user.courier_id = courier ? courier.id : null;
-            
+            req.user.courier_id = courier ? courier.id : null; 
             
             next();
+        } 
+        else if (result.data.id){
+            req.employee = result.data
+            next();
+        }
+        else {
+           
+            res.status(403).json({
+                status: 403,
+                message: 'Invalid token!',
+            });
         }
 
     } catch (error) {

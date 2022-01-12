@@ -4,7 +4,7 @@ const client = require('../../db')
 const addCourierTask = async data => {
     try {
         let {courier_id, task_id} = data 
-        let SQL = 'INSERT INTO courier_task (courier_id, task_id) VALUES ($1.$2) RETURNING *;';
+        let SQL = 'INSERT INTO courier_task (courier_id, task_id) VALUES ($1,$2) RETURNING *;';
         let safeValues = [courier_id, task_id];
         let result = await client.query(SQL, safeValues)
         return result.rows[0];
@@ -27,15 +27,15 @@ const getCourierTaskById = async id => {
     try {
         let SQL = 'SELECT * FROM courier_task WHERE id=$1 OR courier_id=$1 OR task_id=$1;'
         let result = await client.query(SQL, [id])
-        return result.rows[0]
+        return result.rows
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
-const updateCourierTaskStatus = async (id,data) => {
+const updateCourierTaskStatus = async (data) => {
     try {
-        let {status} = data;
+        let {id,status} = data;
         let SQL = 'UPDATE courier_task SET status=$1 WHERE id=$2 RETURNING *;';
         let safeValues = [status, id];
         let result = await client.query(SQL, safeValues);

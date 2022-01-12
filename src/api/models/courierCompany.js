@@ -13,9 +13,9 @@ const createCourierCompany = async data => {
     }
 }
 
-const updateCourierCompanyName = async (id,data) => {
+const updateCourierCompanyName = async (data) => {
     try {
-        let {company_name} = data;
+        let {id,company_name} = data;
         let SQL = 'UPDATE courier_company SET company_name=$1 WHERE id=$2 RETURNING *;'
         let safeValues = [company_name, id];
         let result = await client.query(SQL, safeValues);
@@ -46,9 +46,9 @@ const getCourierCompanyByCompanyId = async id => {
     }
 }
 
-const updateCourierCompanyStatus = async (id,data) => {
+const updateCourierCompanyStatus = async (data) => {
     try {
-        let {status, rejected_reason} = data;
+        let {id,status, rejected_reason} = data;
         let SQL = 'UPDATE courier_company SET status=$1, rejected_reason=$2 WHERE id=$3 RETURNING *;';
         let safeValues = [status, rejected_reason,id];
         let result = await client.query(SQL, safeValues);

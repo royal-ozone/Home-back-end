@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS product_tag;
+DROP TABLE IF EXISTS wishlist;
 DROP TABLE IF EXISTS tag;
 
 DROP TABLE IF EXISTS courier_feedback;
@@ -361,6 +362,7 @@ CREATE TABLE promo(
 
 CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  customer_order_id INT NOT NULL,
   profile_id uuid NOT NULL,
   address_id uuid NOT NULL,
   status VARCHAR (250)  DEFAULT 'pending',
@@ -425,7 +427,7 @@ CREATE TABLE cart(
 CREATE TABLE cart_item(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   cart_id uuid NOT NULL,
-  product_id uuid NOT NULL UNIQUE,
+  product_id uuid NOT NULL,
   store_id uuid NOT NULL,
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
@@ -594,6 +596,16 @@ CREATE TABLE courier_feedback(
 
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (courier_id) REFERENCES courier(id)
+);
+
+CREATE TABLE wishlist(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  profile_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  created_at timestamp not null default current_timestamp,
+
+ FOREIGN KEY (profile_id) REFERENCES profile(id),
+ FOREIGN KEY (product_id) REFERENCES product(id)
 )
 
 
