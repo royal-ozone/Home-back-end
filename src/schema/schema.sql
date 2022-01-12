@@ -304,9 +304,9 @@ CREATE TABLE store_review(
 CREATE TABLE store_review_2(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   store_id uuid NOT NULL,
-  fulfilled_orders INT NOT NULL DEFAULT 0 ,
-  ontime_orders INT NOT DEFAULT 0,
-  overall_orders INT NOT DEFAULT 0 ,
+  fulfilled_orders INT DEFAULT 0,
+  ontime_orders INT DEFAULT 0,
+  overall_orders INT DEFAULT 0,
   last_update timestamp ,
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (store_id) REFERENCES store(id)
