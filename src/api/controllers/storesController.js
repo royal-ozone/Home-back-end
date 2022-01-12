@@ -29,21 +29,23 @@ const {
     updateNumberOfFollowersPlus,
     createNumberOfStoreFollower,
     getNumberOfFollower,
-    getALLNumbersOFFollowers
+    getALLNumbersOFFollowers,
+    addStoreReviewModel2,
+    updateStoreReview2,
 } = require('../models/stores');
 
  
 
 // Store handlers----------------------------------------------------------------------------------------------
-const createStoreHandler = async (req, res) => {
+const createStoreHandler = async (req, res,next) => {
     try {
         let result = await createStore({ profile_id: req.user.profile_id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE, ...req.body })
         if (result) {
-            res.status(200).json({
-                status: 200,
-                message: 'Store request created successfully',
-                data: result
-            });
+            
+            req.store =result;
+            next();
+           
+            
         }
 
         else {
@@ -52,6 +54,20 @@ const createStoreHandler = async (req, res) => {
                 message: 'Something went wrong while creating your store request!',
             });
         }
+    } catch (error) {
+        res.send(error.message)
+    }
+}
+const addStoreReview2 = async(req,res) => {
+    try {
+      let store =req.store;
+       await addStoreReviewModel2(store.id);
+       
+        res.status(200).json({
+                status: 200,
+                message: 'Store request created successfully',
+                data: store
+            });
     } catch (error) {
         res.send(error.message)
     }
@@ -431,6 +447,7 @@ module.exports = {
     deleteStorefollowerHandler,
     updateStorePictureHandler,
     deleteStorePictureHandler,
-    getALLNumbersOFFollowersHandler
+    getALLNumbersOFFollowersHandler,
+    addStoreReview2
 
 }

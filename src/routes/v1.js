@@ -142,7 +142,8 @@ const  {createStoreHandler,
   deleteStorefollowerHandler,
    updateStorePictureHandler,
   deleteStorePictureHandler,
-  getALLNumbersOFFollowersHandler
+  getALLNumbersOFFollowersHandler,
+  addStoreReview2
 } = require('../api/controllers/storesController');
 
 const {uploadS3} = require('../api/middleware/uploader');
@@ -279,7 +280,7 @@ router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler
 
 // store 
 
-router.post('/store',bearer, uploadS3.single('image'), createStoreHandler);
+router.post('/store',bearer, uploadS3.single('image'), createStoreHandler,addStoreReview2);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
 router.get('/store',bearer,upload.none(), getStoreHandler);

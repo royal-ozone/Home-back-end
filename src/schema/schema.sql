@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS profile_picture;
 DROP TABLE IF EXISTS product_review;
 DROP TABLE IF EXISTS product_rating;
 DROP TABLE IF EXISTS store_review;
+DROP TABLE IF EXISTS store_review_2;
 
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS return_request;
@@ -292,9 +293,21 @@ CREATE TABLE store_review(
   store_id uuid NOT NULL,
   review VARCHAR(250) NOT NULL,
   rate FLOAT NOT NULL DEFAULT 0,
+  
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profile(id),
+  FOREIGN KEY (store_id) REFERENCES store(id)
+);
+
+CREATE TABLE store_review_2(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  store_id uuid NOT NULL,
+  fulfilled_orders INT NOT NULL DEFAULT 0 ,
+  ontime_orders INT NOT DEFAULT 0,
+  overall_orders INT NOT DEFAULT 0 ,
+  last_update timestamp ,
+  created_at timestamp not null default current_timestamp,
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
@@ -374,6 +387,8 @@ CREATE TABLE order_item (
   price_after FLOAT,
   status VARCHAR(50) DEFAULT 'pending',
   cancellation_reason TEXT,
+  last_update timestamp ,
+  date_after_day VARCHAR(255) NOT NULL,
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (store_id) REFERENCES store(id), 
   FOREIGN KEY (order_id) REFERENCES new_order(id),
@@ -473,6 +488,7 @@ CREATE TABLE order_notification(
   receiver_id uuid NOT NULL,
   order_id uuid NOT NULL,
   message text NOT NULL,
+ 
 
   FOREIGN KEY (receiver_id) REFERENCES store(id),
   FOREIGN KEY (order_id) REFERENCES new_order(id)

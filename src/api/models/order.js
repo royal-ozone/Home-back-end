@@ -4,12 +4,12 @@ const { calculation } = require("../controllers/helper");
 
 const addOrderModel = async (data) => {
   try {
-    let {profile_id, address_id, tax,shipping,discount_id,sub_total,grand_total} =data 
+    let {profile_id, address_id, tax,shipping,discount_id,sub_total,grand_total,date_after_day} =data 
     let SQL =
-      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total,date_after_day) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
     let safeValue = [
       profile_id,
-      address_id,tax,shipping,discount_id,sub_total,grand_total
+      address_id,tax,shipping,discount_id,sub_total,grand_total,date_after_day
     ];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
@@ -75,11 +75,11 @@ const getAllOrderProfileIdModel =async (id)=> {
     throw new Error(error.message)
   }
 }
-const updateOrderItemStatusModel = async (data) => {
+const updateOrderItemStatusModel = async (data,dateTimeNow) => {
   try {
     let {id,order_id,product_id,status} = data;
-    let SQL = 'UPDATE order_item SET status=$1 WHERE id=$2 OR (order_id=$3 AND product_id=$4)  RETURNING *;';
-    let result = await client.query(SQL,[status,id,order_id,product_id]);
+    let SQL = 'UPDATE order_item SET status=$1,last_update=$5 WHERE id=$2 OR (order_id=$3 AND product_id=$4)  RETURNING *;';
+    let result = await client.query(SQL,[status,id,order_id,product_id,dateTimeNow]);
     return result.rows[0];
   } catch (error) {
     throw new Error(error.message)
@@ -105,6 +105,15 @@ const getOrderItemByProductId = async id => {
     throw new Error(error.message)
   }
 }
+const getAllOrderItemByStoreId = async storeId => {
+  try {
+    let SQL = 'SELECT * FROM order_item WHERE store_id=$1;';
+    let result = await client.query(SQL, [storeId]);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 module.exports = {
   addOrderModel,
   addOrderItemModel,
@@ -114,5 +123,6 @@ module.exports = {
   getAllOrderProfileIdModel,
   updateOrderItemStatusModel,
   getOrderItemsByOrderId,
-  getOrderItemByProductId
+  getOrderItemByProductId,
+  getAllOrderItemByStoreId
 };
