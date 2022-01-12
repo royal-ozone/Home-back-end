@@ -1,5 +1,6 @@
 'use strict';
-const {addOfferModule,
+const {
+    addOfferModule,
     displayOfferModule,
     updateOfferModule,
     updateStatusOfferModule,
@@ -39,21 +40,30 @@ const displayOfferHandler = async(req, res) => {
             let store = await getCityStoreModule(data.store_id);
             if(data.display === true){
                 let allClient = await getALLprofile();
-               // console.log("🚀 ~ file: offerControllers.js ~ line 40 ~ displayOfferHandler ~ allClient", allClient)
+
+                // all notifications 
+                  let filterNotificationALL= allClient.filter((client)=>{ 
+                    return client.notification_all===true
+                  });
+
+                  if(filterNotificationALL){
+
+                    filterNotificationALL.map(async(client)=>{
+                        await addOfferNotificationHandler({store_id:data.store_id,receiver_id:client.id,offer_id:data.id,message:'لحق العرض الرهيب هاد'});
+                    })
+                }
 
                // notification store 
-                let storeFollower = await getStoreFollowers(data.store_id);
-                let profiles=[];
-                storeFollower.forEach((follower)=>{
+                  let storeFollower = await getStoreFollowers(data.store_id);
+                  let profiles=[];
+                  storeFollower.forEach((follower)=>{
                     profiles.push(follower.follower);
-                });
+                  });
                 
-                let filterNotificationStore=allClient.filter((item)=>{
-                   return item.notification_store===true
-                });
-
-                console.log("🚀 ~ file: offerControllers.js ~ line 54 ~ displayOfferHandler ~ filterNotificationStore", filterNotificationStore)
-                if(filterNotificationStore){
+                  let filterNotificationStore=allClient.filter((item)=>{
+                   return item.notification_store===true &&  item.notification_city===false
+                  });
+                  if(filterNotificationStore){
                     filterNotificationStore.forEach(async(client)=>{  
 
                         if(profiles.includes(client.id)){                          
@@ -61,39 +71,41 @@ const displayOfferHandler = async(req, res) => {
                       }
                     
                   })
-                }
-
-                // all notifications 
-                let filterNotificationALL= allClient.filter((client)=>{ 
-                    return client.notification_all===true});
-
-                console.log("🚀 ~ file: offerControllers.js ~ line 46 ~ displayOfferHandler ~ filterNotificationALL", filterNotificationALL)
-                if(filterNotificationALL){
-
-                    filterNotificationALL.map(async(client)=>{
-                        await addOfferNotificationHandler({store_id:data.store_id,receiver_id:client.id,offer_id:data.id,message:'لحق العرض الرهيب هاد'});
-                    })
-                }
+                 }
 
                 // city notification 
 
-                let filterNotificationCity=allClient.filter((item)=>{
-                    return item.notification_city===true
-                 });
-                console.log("🚀 ~ file: offerControllers.js ~ line 78 ~ filterNotificationCity ~ filterNotificationCity", filterNotificationCity)
-                 
-                console.log("🚀 ~ file: offerControllers.js ~ line 89 ~ filterNotificationCity.forEach ~ store.city", store.city)
+                 let filterNotificationCity=allClient.filter((item)=>{
+                    return item.notification_city===true &&  item.notification_store===false
+                 }); 
                  if(filterNotificationCity){
                     filterNotificationCity.forEach(async(client)=>{  
  
-                         if(client.city===store.city){                          
-                             console.log("🚀 ~ file: offerControllers.js ~ line 90 ~ filterNotificationCity.forEach ~ client.city", client.city)
+                         if(client.city===store.city){   
+
                              await addOfferNotificationHandler({store_id:data.store_id,receiver_id:client.id,offer_id:data.id,message:'لحق العرض الرهيب هاد'});
                        }
                      
                    })
-                 }
-               
+                }    
+
+                // city & store notification 
+
+                 let filterNotificationCityAndStore = allClient.filter((item)=>{
+                     return item.notification_city ===true && item.notification_store===true
+                 })
+
+                  if(filterNotificationCityAndStore){
+                    filterNotificationCityAndStore.forEach(async(client)=>{
+                        
+                        if(profiles.includes(client.id) && client.city===store.city ) {
+                            await addOfferNotificationHandler({store_id:data.store_id,receiver_id:client.id,offer_id:data.id,message:'لحق العرض الرهيب هاد'});
+
+                        }
+                    })
+                
+                 } 
+                    
               res.status(200).json({message:'Successfully display offer update ',data:data});
 
             }

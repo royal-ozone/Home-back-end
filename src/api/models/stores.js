@@ -15,6 +15,7 @@ const createStore = async data => {
     }
 }
 
+
 const deleteStore = async id => {
     try {
         let SQL = 'DELETE FROM STORE WHERE profile_id=$1 RETURNING *;';
@@ -146,6 +147,38 @@ const createStoreReview = async (profile_id,data) => {
         throw new Error(error.message)
     }
 }
+const addStoreReviewModel2 = async(store_id)=>{
+    try {
+        
+        let SQL ='INSERT INTO STORE_REVIEW_2 (store_id) VALUES ($1) RETURNING *;';
+        let safeValues = [store_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const updateStoreReview2 = async(store_id,data)=>{
+    try {
+        let {fulfilled_orders,ontime_orders,overall_orders}=data
+        let SQL ='UPDATE STORE_REVIEW_2 SET fulfilled_orders =$1,ontime_orders=$2 ,overall_orders=$3 WHERE store_id=$4; RETURNING *;';
+        let safeValues = [fulfilled_orders,ontime_orders,overall_orders,store_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const getStoreReview2ByStoreId = async (store_id) => {
+    try {
+        let SQL = 'SELECT * FROM store_review_2 WHERE store_id =$1;';
+        let safeValues = [store_id];
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 const getAllStoreReviews = async () => {
     try {
@@ -171,9 +204,8 @@ const getStoreReviews = async (storeId) => {
 const updateStoreReview = async (profile_id, store_id, data) => {
     try {
         let { review, rate } = data;
-        console.log("🚀 ~ file: stores.js ~ line 174 ~ updateStoreReview ~ data", data)
         
-        let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2 WHERE store_id=$3 AND profile_id=$4 RETURNING *;';
+        let SQL = 'UPDATE STORE_REVIEW SET review=$1,rate=$2,fulfillment_rate, WHERE store_id=$3 AND profile_id=$4 RETURNING *;';
         let safeValues = [review, rate, store_id, profile_id];
         let result = await client.query(SQL, safeValues)
         return result.rows[0];
@@ -384,4 +416,7 @@ module.exports = {
     getNumberOfFollower,
     getALLNumbersOFFollowers,
     getALLStoreByProfileId,
+    addStoreReviewModel2,
+    updateStoreReview2,
+    getStoreReview2ByStoreId
 };

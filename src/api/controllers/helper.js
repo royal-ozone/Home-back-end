@@ -2,7 +2,30 @@ const client = require('../../db')
 
  const {
     getDiscountCodeById
- } = require('../models/discountCode')
+} = require('../models/discountCode')
+
+const dateTimeNow =()=>{
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
+    return dateTime;
+}
+const dateTimeTomorrow =()=>{
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+(today.getDate()+1);
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
+    return dateTime;
+}
+
+const differentBetweenDate = (date_1,date_2)=>{
+    const date1 = new Date(date_1);
+    const date2 = new Date(date_2);
+    const diffTime = Math.abs(date2 - date1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    return diffDays ; 
+};
 
 const calculation = (tax,discount,shipping,sub_total)=>{
     let grand_total = 0;
@@ -85,5 +108,8 @@ module.exports = {
     calculation,
     timer,
     myTimer,
-    checkUserAuth
+    checkUserAuth,
+    dateTimeNow,
+    dateTimeTomorrow,
+    differentBetweenDate
 }
