@@ -32,6 +32,8 @@ const {
     getALLNumbersOFFollowers,
     addStoreReviewModel2,
     updateStoreReview2,
+    getStoreReview2ByStoreId,
+    getAllStoreReview2,
 } = require('../models/stores');
 
  
@@ -299,6 +301,25 @@ const deleteStoreReviewHandler = async (req, res) => {
     }
 }
 
+// store review 2 ---------------------------
+const getAllStoreReview2Handler = async (req, res) => {
+    try {
+        let data = await getAllStoreReview2();
+        res.status(200).send(data); 
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}
+const getStoreReview2Handler = async (req, res) => {
+    try {
+        let store_id= req.params.store_id;
+        let data = await getStoreReview2ByStoreId(store_id);
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}
+
 // Store follower ---------------------------------------------------------------------------------------------------
 const getALLNumbersOFFollowersHandler = async (req, res )=>{
     try {
@@ -448,6 +469,8 @@ module.exports = {
     updateStorePictureHandler,
     deleteStorePictureHandler,
     getALLNumbersOFFollowersHandler,
-    addStoreReview2
+    addStoreReview2,
+    getAllStoreReview2Handler,
+    getStoreReview2Handler,
 
 }

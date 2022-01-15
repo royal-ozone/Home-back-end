@@ -145,7 +145,9 @@ const  {createStoreHandler,
    updateStorePictureHandler,
   deleteStorePictureHandler,
   getALLNumbersOFFollowersHandler,
-  addStoreReview2
+  addStoreReview2,
+  getAllStoreReview2Handler,
+  getStoreReview2Handler,
 } = require('../api/controllers/storesController');
 
 const {uploadS3} = require('../api/middleware/uploader');
@@ -351,7 +353,7 @@ router.post('/addOrder',bearer,upload.none(),addOrderHandler);
 router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
 router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler,getAddressByIdHandler);
 router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
-router.put('/update/order_item/cancel',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
+router.put('/update/order_item',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
 //router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
 
@@ -361,6 +363,11 @@ router.delete('/store/review',bearer,upload.none(), deleteStoreReviewHandler);
 router.put('/store/review',bearer,upload.none(), updateStoreReviewHandler);
 router.get('/store/review',bearer,upload.none(), getAllStoreReviewHandler);
 router.get('/store/review/:store_id',bearer,upload.none(),getStoreReviewHandler);
+
+// store review2
+router.get('/store/review2/:store_id',bearer,checkStoreAuth,upload.none(),getStoreReview2Handler);
+router.get('/store/review2/all',upload.none(),getAllStoreReview2Handler);
+
 
 // store follower 
 router.post('/store/follower',bearer,upload.none(),createStorefollowerHandler);

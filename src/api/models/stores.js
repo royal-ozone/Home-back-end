@@ -160,9 +160,9 @@ const addStoreReviewModel2 = async(store_id)=>{
 }
 const updateStoreReview2 = async(store_id,data)=>{
     try {
-        let {fulfilled_orders,ontime_orders,overall_orders}=data
-        let SQL ='UPDATE STORE_REVIEW_2 SET fulfilled_orders =$1,ontime_orders=$2 ,overall_orders=$3 WHERE store_id=$4; RETURNING *;';
-        let safeValues = [fulfilled_orders,ontime_orders,overall_orders,store_id];
+        let {fulfilled_orders,ontime_orders,overall_orders,last_update}=data
+        let SQL ='UPDATE STORE_REVIEW_2 SET fulfilled_orders =$1,ontime_orders=$2 ,overall_orders=$3 ,last_update=$5 WHERE store_id=$4 RETURNING *;';
+        let safeValues = [fulfilled_orders,ontime_orders,overall_orders,store_id,last_update];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -175,6 +175,15 @@ const getStoreReview2ByStoreId = async (store_id) => {
         let safeValues = [store_id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const getAllStoreReview2 = async ()=>{
+    try {
+        let SQL = 'SELECT * FROM store_review_2 ;';
+        let result = await client.query(SQL);
+        return result.rows;
     } catch (error) {
         throw new Error(error.message)
     }
@@ -418,5 +427,6 @@ module.exports = {
     getALLStoreByProfileId,
     addStoreReviewModel2,
     updateStoreReview2,
-    getStoreReview2ByStoreId
+    getStoreReview2ByStoreId,
+    getAllStoreReview2
 };

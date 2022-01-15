@@ -362,7 +362,7 @@ CREATE TABLE promo(
 
 CREATE TABLE new_order(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  customer_order_id INT NOT NULL,
+  customer_order_id BIGINT NOT NULL,
   profile_id uuid NOT NULL,
   address_id uuid NOT NULL,
   status VARCHAR (250)  DEFAULT 'pending',

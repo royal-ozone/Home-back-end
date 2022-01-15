@@ -116,6 +116,10 @@ INSERT INTO profile_picture (id,profile_id,profile_picture) VALUES
 INSERT INTO store_review(id,profile_id,store_id,review,rate)VALUES
 ('cda2e641-a419-444a-b8d7-65ce8ff3d0cd','3be97674-8ce4-49a8-a378-605965c4b98c','72280f37-2ca7-4808-90d2-3ecec783b163','the store is very good offers ','4.3');
 
+-------------------------------- store_reviews2 -----------------------------------
+INSERT INTO store_review(id,store_id)VALUES
+('cda2e641-a419-844a-b7d7-65ce8ee3d0cd','72280f37-2ca7-4808-90d2-3ecec783b163');
+
 
 ----------------------------------address -----------------------------
 INSERT INTO address(id,profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number)VALUES 
@@ -136,12 +140,12 @@ INSERT INTO new_order(id,customer_order_id,profile_id,address_id,tax,shipping,su
 ('2fcc1422-4405-4031-b362-e76533ef3b8a',12347,'3be97674-8ce4-49a8-a378-605965c4b98c','75251081-2962-4f89-b482-50caa0452c8d','0.01','0.02','20','22');
 
 -------------------------------- order_item ----------------------------------------
-INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update)Values
-('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3',10-04-19);
-INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update)Values
-('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3',10-04-19);
-INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update)Values
-('ca9c4c67-c290-4342-b667-5dffaee2193b','2fcc1422-4405-4031-b362-e76533ef3b8a','3be97674-8ce4-49a8-a378-605965c4b98c','defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3',10-04-19);
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update,date_after_day)Values
+('39d9e68f-98a3-4347-b961-2c5bb4db1c26','82e018d1-b731-489c-a62b-f719cdf4bb8b','fca8e07b-ac7d-4ce8-8437-53c54ca85857','0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3','2022-01-18 16:58:06.490','2022-01-19');
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update,date_after_day)Values
+('31c4c913-80b6-4ef0-846b-42e98bf5066b','95f3a0e3-aa40-47eb-8315-a58c42ed8697','1821db68-97c9-4380-9a55-ad8bc7f16eda','0047da41-5e33-460a-88da-5cfa2b9d8724','93e4029f-2aae-4d75-83df-ee4a06d2e589','12.99','0','3','2022-01-05 16:58:06.490','2022-01-06');
+INSERT INTO order_item (id,order_id,profile_id,product_id,store_id,price,discount,quantity,last_update,date_after_day)Values
+('ca9c4c67-c290-4342-b667-5dffaee2193b','2fcc1422-4405-4031-b362-e76533ef3b8a','3be97674-8ce4-49a8-a378-605965c4b98c','defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','12.99','0','3','2022-04-15 16:58:06.490','2022-04-15');
 
 
 -------------------------------- transaction ----------------------------

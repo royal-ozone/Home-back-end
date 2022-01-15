@@ -33,11 +33,12 @@ const getOrderByIdModel = async (id) => {
 };
 const addOrderItemModel = async (data) => {
   try {
-    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id} = data;
+    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id,date_after_day,last_update} = data;
+    console.log("🚀 ~ file: order.js ~ line 37 ~ addOrderItemModel ~ data", data)
 
     let SQL =
-      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
-    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id];
+      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id,date_after_day,last_update) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING * ;";
+    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id,date_after_day,last_update];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
@@ -47,10 +48,11 @@ const addOrderItemModel = async (data) => {
    throw new Error(response);
   }
 };
-const updateOrderStatusModel = async (id,data) => {
+const updateOrderStatusModel = async (data) => {
   try {
+    let {status ,id}= data
     let SQL = "UPDATE new_order SET status=$1 WHERE id=$2 RETURNING *;";
-    let safeValue = [data.status, id];
+    let safeValue = [status, id];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {

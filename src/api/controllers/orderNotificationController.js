@@ -38,4 +38,8 @@ const getOrderNotificationByStoreIdHandler = async (req, res) =>{
     }
 }
 
-module.exports = {addOrderNotificationHandler,getOrderNotificationHandler,getOrderNotificationByStoreIdHandler}
+module.exports = {
+    addOrderNotificationHandler,
+    getOrderNotificationHandler,
+    getOrderNotificationByStoreIdHandler,
+}

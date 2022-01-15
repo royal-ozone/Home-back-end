@@ -3,7 +3,8 @@
 
 const {addDeliveryTask} = require('../models/deliveryTask');
 const {getStoreProducts} = require('../models/products');
-const {addOrderNotificationHandler,getOrderNotificationByOrderId} =require('./orderNotificationController');
+const {addOrderNotificationHandler} =require('./orderNotificationController');
+const {getOrderNotificationByOrderId}= require('../models/orderNotifications');
 
 const {
   getCartByProfileIdModel,
@@ -57,7 +58,7 @@ const addOrderHandler = async (req, res, next) => {
       if(data.id){
     
         let productArray = await cartItems.map(async (cartItem) => {
-          let result = await addOrderItemModel({...cartItem,order_id: data.id, profile_id:req.user.profile_id,date_after_day:dateTimeTomorrow()});
+          let result = await addOrderItemModel({...cartItem,order_id: data.id, profile_id:req.user.profile_id,date_after_day:dateTimeTomorrow(),last_update:dateTimeNow()});
           return result;
         });   
         if (productArray) {
@@ -92,7 +93,7 @@ const addOrderHandler = async (req, res, next) => {
 const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.body.id || req.body;
-    let data = await updateOrderStatusModel(id,req.body);
+    let data = await updateOrderStatusModel(req.body);
     let notificationObj;
     
     if(data.status === 'accepted') {
@@ -173,9 +174,9 @@ const getAllOrderProfileIdHandler = async (req, res,next) => {
 const updateOrderItemStatusHandler = async (req,res) => {
   try {
     
-    let store_id= req.body.store_id;
     let data = await updateOrderItemStatusModel(req.body,dateTimeNow());
-    let {fulfilled_orders,ontime_orders,overall_orders} = await getStoreReview2ByStoreId(data.store_id);
+    let  {fulfilled_orders,ontime_orders,overall_orders} = await getStoreReview2ByStoreId(data.store_id);
+    
     
     
 
@@ -185,24 +186,20 @@ const updateOrderItemStatusHandler = async (req,res) => {
        if(day>1){
         fulfilled_orders++;
         overall_orders++;
-        let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders});
-        console.log("🚀 ~ file: orderControllers.js ~ line 193 ~ updateOrderItemStatusHandler ~ updateOnTimeShipmentRate", updateOnTimeShipmentRate)
+        let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders,last_update:dateTimeNow()});
       }
       else{
         fulfilled_orders++;
         overall_orders++;
         ontime_orders++;
 
-        let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders});
-        console.log("🚀 ~ file: orderControllers.js ~ line 190 ~ updateOrderItemStatusHandler ~ updateOnTimeShipmentRate", updateOnTimeShipmentRate)
+        let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders,last_update:dateTimeNow()});
 
       }
     }
     if(data.status === 'canceled'){
-      overall_orders++;
-       
-      let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders});
-      console.log("🚀 ~ file: orderControllers.js ~ line 198 ~ updateOrderItemStatusHandler ~ updateOnTimeShipmentRate", updateOnTimeShipmentRate)
+      overall_orders++; 
+      let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders,last_update:dateTimeNow()});
     }
     let orderItems = await getOrderItemsByOrderId(data.order_id);
 
