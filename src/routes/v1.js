@@ -4,6 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
+const basic = require('../auth/middleware/basic')
 const bearer = require('../auth/middleware/bearer');
 const multer = require('multer');
 let upload = multer()
@@ -245,7 +246,7 @@ const {addOfferHandler,
 }= require('../api/controllers/offerControllers');
 
 const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHandler} = require('../api/controllers/wishlistController')
-
+const {signInHandler} = require('../auth/controllers/authController')
 
 // Global middleware
 // router.use(bearer);
@@ -288,7 +289,7 @@ router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
 router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
 
 // store 
-
+router.post('/store/signin', upload.none(), basic, checkStoreAuth, signInHandler )
 router.post('/store',bearer, uploadS3.single('image'), createStoreHandler,addStoreReview2);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
@@ -436,6 +437,7 @@ router.get('/getMySuggestions',bearer,upload.none(),getMySuggestionHandler);
 router.put('/update/suggestion/status',bearer,upload.none(),checkAdmin,updateStatusSuggestionHandler);
 router.get('/getSuggestionById/:id', bearer, getMySuggestionByIdHandler)
 
+router.post('/courierCompany/signin',basic,upload.none(), checkCourierCompany, signInHandler);
 router.post('/courierCompany',bearer,upload.none(), createCourierCompanyHandler);
 router.get('/courierCompanies', bearer,upload.none(),checkAuth,getAllCourierCompaniesHandler)
 router.get('/courierCompany',bearer,upload.none(), getCourierCompanyByCompanyIdHandler)
