@@ -136,7 +136,7 @@ let checkStoreAuth = async (req, res, next) => {
     try {
         
         let auth = ['admin', 'supervisor', 'moderator', 'advisor']
-        if (auth.includes(req.employee.role) || req.user.store_id) {
+        if (auth.includes(req.employee?req.employee.role: false ) || req.user.store_id) {
             next();
         } else {
             res.status(403).json({
@@ -181,12 +181,13 @@ const checkActive = async (req, res, next) =>{
 
 const checkCourierCompany = async (req, res, next) =>{
     try {
-        let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
-        let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
-        let safeValue = [req.user.id];
-        let result = await client.query(SQL, safeValue);
-        let result2 = await client.query(SQL2, safeValue);
-        if(req.user.courier_company_id || result.rows[0] ||result2.rows[0] ){
+        // let SQL = `SELECT * FROM ADMINISTRATOR WHERE user_id=$1;`;
+        // let SQL2 = `SELECT * FROM MODERATOR WHERE user_id=$1;`;
+        // let safeValue = [req.user.id];
+        // let result = await client.query(SQL, safeValue);
+        // let result2 = await client.query(SQL2, safeValue);
+        let auth = ['admin', 'supervisor', 'moderator', 'advisor']
+        if(req.user.courier_company_id || auth.includes(req.employee?req.employee.role: false )){
             next();
         } else{
             res.status(403).send('your are not a courier company')
