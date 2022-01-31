@@ -85,7 +85,7 @@ const getStoreHandler = async (req, res) => {
         }
 
         else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'There is no store with this profile_id',
             });

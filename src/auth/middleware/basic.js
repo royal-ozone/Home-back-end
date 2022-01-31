@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
     delete userTokens.id;
     delete userTokens.user_id;
     if (userData.verified === false) {
-      res.status(403).json({
+      res.json({
         status: 403,
         message: 'User is not verified, please verify your mobile number!',
       });
@@ -38,7 +38,7 @@ module.exports = async (req, res, next) => {
   }
 
   function _authError() {
-    res.status(403).json({
+    res.json({
       status: 403,
       message: 'Either email or password is wrong!',
     });
