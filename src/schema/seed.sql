@@ -54,10 +54,10 @@ INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec
 
 ------------------------- Stores Table ----------------------------------
 INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
-('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','5');
+('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','https://horizon-uploader.s3.us-east-2.amazonaws.com/default+pictures/1923159.png','5');
 
 INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
-('93e4029f-2aae-4d75-83df-ee4a06d2e589','1821db68-97c9-4380-9a55-ad8bc7f16eda','DK-beauty-daleen','amman','love live love dk-beauty-daleen','الجودة عالية والاسعار منافسة','b6d0861e-90ac-48d6-9460-5aed8515ecbf','4');
+('93e4029f-2aae-4d75-83df-ee4a06d2e589','1821db68-97c9-4380-9a55-ad8bc7f16eda','DK-beauty-daleen','amman','love live love dk-beauty-daleen','الجودة عالية والاسعار منافسة','https://horizon-uploader.s3.us-east-2.amazonaws.com/default+pictures/1923159.png','4');
 
 ------------------------------- parent_category -----------------------------------------
 
