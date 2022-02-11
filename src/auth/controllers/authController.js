@@ -6,6 +6,7 @@ const { signup,
     getUserByMobile,
     getUserIdFromToken,
     getAllUsers,
+    getProfileById,
     createProfile,
     addAdmin,
     addMod,
@@ -100,6 +101,24 @@ const signupHandler = async (req, res, next) => {
         next(error);
     }
 };
+const getProfileHandler = async (req, res, next) => {
+    try {
+        let id =req.user.profile_id;
+        let user = await getProfileById(id);
+        if(user) {
+
+            res.status(200).json(user)
+        }else{
+            res.json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
+        }
+
+    } catch (error) {
+        next(error);
+    }
+}
 
 const updateProfilers = async (req, res, next) => {
     try {
@@ -561,6 +580,7 @@ const getAllUsersHandler = async (req, res, next) => {
 };
 
 
+
 const deactivateAccountHandler = async (req, res, next) => {
     try {
         let resdd = await deactivateAccount(req.user.id)
@@ -613,6 +633,7 @@ module.exports = {
     resetPasswordHandler,
     refreshHandler,
     getAllUsersHandler,
+    getProfileHandler,
     updateProfilers,
     deactivateAccountHandler,
     codePasswordHandler,

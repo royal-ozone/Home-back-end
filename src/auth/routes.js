@@ -22,8 +22,9 @@ const {
     updateUserEmailHandler,
     updateUserMobileHandler,
     refreshHandler,
-    getAllUsersHandler
-    ,updateProfilers,
+    getAllUsersHandler,
+    getProfileHandler,
+    updateProfilers,
     deactivateAccountHandler,
     codePasswordHandler ,
     getAllBannedUsersHandler,
@@ -45,7 +46,7 @@ authRouter.use(facebookAuth);
 authRouter.post('/signup', uploadS3.single('image'), signupHandler);
 authRouter.post('/signin', basicAuth,upload.none(), checkActive,checkBan, signInHandler);
 authRouter.post('/signout', bearer,upload.none(), signOutHandler);
-authRouter.post('/user/verification', bearer,upload.none(), sendVerificationCodeHandler);
+authRouter.post('/user/verification/550005', bearer,upload.none(), sendVerificationCodeHandler);
 authRouter.post('/user/verify', bearer, upload.none(),verifyUserHandler);
 authRouter.post('/user/send/message',upload.none(),sendMessageHandler);
 authRouter.post('/refresh', upload.none(),refreshHandler);
@@ -60,6 +61,7 @@ authRouter.put('/user/password/change',upload.none(), updateUserResetPasswordHan
 authRouter.put('/user/email', bearer, upload.none(),updateUserEmailHandler);
 authRouter.put('/user/mobile', bearer, upload.none(),updateUserMobileHandler);
 authRouter.get('/user/all',bearer, checkAuth,upload.none(),getAllUsersHandler);
+authRouter.get('/profile', bearer, upload.none(),getProfileHandler);
 
 authRouter.put('/update/profile', bearer,upload.none(), updateProfilers);
 authRouter.put('/update/notification_all',bearer,upload.none(),updateNotification_allHandler);

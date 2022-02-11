@@ -125,6 +125,7 @@ const getUserById = async id => {
     }
 };
 
+
 const getUserByGoogleId = async google_id => {
     try {
         let SQL = `SELECT * FROM client WHERE google_id=$1;`;
