@@ -99,7 +99,7 @@ const updateProductHandler = async(req, res) => {
     try {
         let id = req.body.id;
         let data = await getProduct(id)
-        let result = await updateProduct(id, {...data,...req.body});
+        let result = await updateProduct({...data,...req.body});
         if(result){
           res.status(200).json({message:'product has been updated successfully' ,result});
         } else {
@@ -172,4 +172,52 @@ const deleteProductPictureHandler = async(req, res) => {
   }
 }
 
-module.exports = {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler}
+const decreaseSizeQuantity = async (req, res) => {
+    try {
+        const {id, size, quantity} = req.body
+        let product = await getProduct(id);
+        let newSize = product.size.map(val =>{
+            if(val.size ===size){
+                return {size: val.size, quantity: val.quantity - Number(quantity)}
+            }
+            return val
+        } )
+
+        let newProduct = {...product, quantity: newSize.reduce((p,c)=> p+c.quantity, 0), size: newSize}
+
+        let result = await updateProduct(newProduct)
+        res.json({
+          status: 200,
+          message: 'quantity has been decreased successfully',
+          product: result,
+        })
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const increaseSizeQuantity = async (req, res) => {
+  try {
+      const {id, size, quantity} = req.body
+      let product = await getProduct(id);
+      let newSize = product.size.map(val =>{
+          if(val.size ===size){
+              return {size: val.size, quantity: val.quantity + Number(quantity)}
+          }
+          return val
+      } )
+
+      let newProduct = {...product, quantity: newSize.reduce((p,c)=> p+c.quantity, 0), size: newSize}
+
+      let result = await updateProduct(newProduct)
+      res.json({
+        status: 200,
+        message: 'quantity has been increased successfully',
+        product: result,
+      })
+  } catch (error) {
+      throw new Error(error.message)
+  }
+}
+
+module.exports = {addProductHandler, updateProductStatusHandler,deleteProductHandler,updateProductHandler,getProductHandler,getAllProductHandler,updateProductPictureHandler,deleteProductPictureHandler,getStoreProductsHandler,increaseSizeQuantity,decreaseSizeQuantity}

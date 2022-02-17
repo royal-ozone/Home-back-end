@@ -24,7 +24,7 @@ let getTokenRecord = async (token,tokenType = 'access') =>{
     try {
         let SQL = 'SELECT * FROM JWT WHERE access_token = $1;';
         if(tokenType ==='refresh') {
-            SQL = 'SELECT * FROM JWT WHERE access_token=$1;';
+            SQL = 'SELECT * FROM JWT WHERE refresh_token=$1;';
         }
         let safeValue = [token];
         let result = await client.query(SQL,safeValue);

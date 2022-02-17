@@ -48,6 +48,8 @@ const {
   getStoreReview2ByStoreId,
   addStoreReview2
 }= require("../models/stores");
+
+const {decreaseSizeQuantity, increaseSizeQuantity} = require("../models/products")
 const addOrderHandler = async (req, res, next) => {
   try {
     let profile_id =req.user.profile_id;
@@ -59,6 +61,10 @@ const addOrderHandler = async (req, res, next) => {
     
         let productArray = await cartItems.map(async (cartItem) => {
           let result = await addOrderItemModel({...cartItem,order_id: data.id, profile_id:req.user.profile_id,date_after_day:dateTimeTomorrow(),last_update:dateTimeNow()});
+          await decreaseSizeQuantity({id:cartItem.product_id, quantity:cartItem.quantity, size:cartItem.size})
+          // if(cartItem.size){
+
+          // }
           return result;
         });   
         if (productArray) {
@@ -94,6 +100,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(req.body);
+    console.log("🚀 ~ file: orderControllers.js ~ line 103 ~ updateOrderStatusHandler ~ data", data)
     let notificationObj;
     
     if(data.status === 'accepted') {
@@ -108,7 +115,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
          let filtered = storeArray.filter((item, i, ar) => ar.indexOf(item) === i);
         
         
-         filtered.map( async (id) =>{
+         filtered.map(async (id) =>{
         
           let x =  await addOrderNotificationHandler({receiver_id:id, order_id :data.id, message: 'you have order please prepare order '});
           
@@ -122,7 +129,16 @@ const updateOrderStatusHandler = async (req, res, next) => {
     }
     if(data.status === 'ready to be shipped') {
       await addDeliveryTask({order_id: data.id,address_id:data.address_id});
+    }
 
+    if(data.status === 'canceled'){
+      let a = await getOrderItemsByOrderId(data.id)
+      console.log("🚀 ~ file: orderControllers.js ~ line 136 ~ updateOrderStatusHandler ~ a", a)
+      let pendingOrderItems =  a.filter(val => val.status !== 'canceled')
+      await pendingOrderItems.map(async item =>{
+        await updateOrderItemStatusModel({...item,status: 'canceled'},dateTimeNow());
+        await increaseSizeQuantity({id: item.id, quantity: item.quantity, size: item.size})
+      }) 
     }
     
     let response = {
@@ -198,6 +214,7 @@ const updateOrderItemStatusHandler = async (req,res) => {
       }
     }
     if(data.status === 'canceled'){
+      await increaseSizeQuantity({id:data.id, size:data.size, quantity:data.quantity})
       overall_orders++; 
       let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id,{fulfilled_orders,ontime_orders,overall_orders,last_update:dateTimeNow()});
     }

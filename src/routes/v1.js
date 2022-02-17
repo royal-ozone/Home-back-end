@@ -289,8 +289,21 @@ router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
 router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
 
 // store 
+
+const email = (req, res, next) => {
+if(req.body.email) {
+    req= req
+    req.user= {}
+    req.user.profile_id = null
+    next()
+  } else{
+    res.send('email is not provided')
+  }
+
+} 
 router.post('/store/signin', upload.none(), basic, checkStoreAuth, signInHandler )
-router.post('/store',bearer, uploadS3.single('image'), createStoreHandler,addStoreReview2);
+router.post('/store', bearer, uploadS3.single('image'), createStoreHandler,addStoreReview2);
+router.post('/store/email', email, uploadS3.single('image'), createStoreHandler,addStoreReview2);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
 router.get('/store',bearer,upload.none(), getStoreHandler);

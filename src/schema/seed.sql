@@ -45,16 +45,9 @@ INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) 
 INSERT INTO profile(id,user_id,first_name,last_name,city,country,mobile, email) VALUES
 ('0aedb3fd-2953-4da9-9414-b9587b6d63f0','90dd4a83-0eab-41e5-930b-affc1c245306','ibrahim','arman','amman','jordan','00962796780757','ibrahim@gmail.com');
 
-
-------------------------- Administrator Table ----------------------------------
-INSERT INTO ADMINISTRATOR (id,user_id,profile_id) VALUES ('ead286ec-467d-40fc-a750-58ed77e83d22','4b9a4f7b-6c1c-4039-9e29-26909a63021c','d7a36645-a598-4584-a158-23615a865ac9');
-
-------------------------- Moderator Table ----------------------------------
-INSERT INTO MODERATOR (id,user_id) VALUES ('3044fd16-432b-4c89-b3cd-c883681103ec','14a60467-c390-4ca7-a1be-5d0ee11d9ad8');
-
 ------------------------- Stores Table ----------------------------------
-INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
-('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','https://horizon-uploader.s3.us-east-2.amazonaws.com/default+pictures/1923159.png','5');
+INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating, status) VALUES 
+('72280f37-2ca7-4808-90d2-3ecec783b163','fca8e07b-ac7d-4ce8-8437-53c54ca85857','DK-beauty','amman','love live love dk-beauty','الجودة عالية والاسعار منافسة','https://horizon-uploader.s3.us-east-2.amazonaws.com/default+pictures/1923159.png','5', 'approved');
 
 INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,store_rating) VALUES 
 ('93e4029f-2aae-4d75-83df-ee4a06d2e589','1821db68-97c9-4380-9a55-ad8bc7f16eda','DK-beauty-daleen','amman','love live love dk-beauty-daleen','الجودة عالية والاسعار منافسة','https://horizon-uploader.s3.us-east-2.amazonaws.com/default+pictures/1923159.png','4');
@@ -74,11 +67,11 @@ INSERT INTO grandchild_category(id,parent_id,entitle,artitle,metaTitle,content) 
 
 ------------------------- Product Table ----------------------------------
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ','5');
+('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ',5);
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ','5');
+('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ',5);
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice','5');
+('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice',5);
 
 ----------------------------- product_review ------------------------------------
 INSERT INTO product_review(id,profile_id,product_id,review,rate)

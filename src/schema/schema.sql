@@ -105,20 +105,7 @@ CREATE TABLE profile(
   FOREIGN KEY (user_id) REFERENCES client(id)
 );
 
-CREATE TABLE administrator(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
-  profile_id uuid NOT NULL UNIQUE,
-  FOREIGN KEY (user_id) REFERENCES client(id),
-  FOREIGN KEY (profile_id) REFERENCES profile(id)
-);
 
-CREATE TABLE moderator(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
-  
-  FOREIGN KEY (user_id) REFERENCES client(id)
-);
 
 CREATE TABLE banned_user(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -196,7 +183,7 @@ CREATE TABLE product(
   description text NOT NULL,
   quantity INT NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
-  age VARCHAR(250) DEFAULT '15-30' NOT NULL,
+  age VARCHAR(250),
   size VARCHAR(250),
   display BOOLEAN DEFAULT TRUE,
   FOREIGN KEY (store_id) REFERENCES store(id),
@@ -383,6 +370,7 @@ CREATE TABLE order_item (
   profile_id uuid NOT NULL,
   product_id uuid NOT NULL,
   store_id uuid NOT NULL,
+  size VARCHAR(25),
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,
@@ -430,6 +418,7 @@ CREATE TABLE cart_item(
   product_id uuid NOT NULL,
   store_id uuid NOT NULL,
   price FLOAT NOT NULL,
+  size VARCHAR(25),
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,
   price_after FLOAT ,
