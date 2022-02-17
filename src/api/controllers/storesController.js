@@ -36,22 +36,23 @@ const {
     getAllStoreReview2,
 } = require('../models/stores');
 
- 
+ const {getProfileByEmail} = require('../../auth/models/user')
 
 // Store handlers----------------------------------------------------------------------------------------------
 const createStoreHandler = async (req, res,next) => {
     try {
-        let result = await createStore({ profile_id: req.user.profile_id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE, ...req.body })
+        let user = await getProfileByEmail(req.body.email)
+        // console.log("🚀 ~ file: storesController.js ~ line 45 ~ createStoreHandler ~ user", user.id)
+        if(!user && !req.user.profile_id) return res.send('User not found')
+        let result = await createStore({ profile_id: req.user.profile_id || user.id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE, ...req.body })
         if (result) {
             
             req.store =result;
             next();
-           
-            
         }
 
         else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Something went wrong while creating your store request!',
             });

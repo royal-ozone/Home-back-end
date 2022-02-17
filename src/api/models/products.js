@@ -51,11 +51,11 @@ const getStoreProducts = async (id,limit,offset) => {
 }
 
 
-const updateProduct = async (id,data) => {
+const updateProduct = async (data) => {
     try {
-        let {store_id, enTitle, arTitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate,age,size} = data;
+        let {id,store_id, entitle, artitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate,age,size} = data;
         let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, description=$7, quantity=$8,discount=$9,discount_rate=$10,arTitle=$12,age=$13,size=$14 WHERE id=$11 RETURNING *;';
-        let safeValues = [store_id, enTitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate, id, arTitle,age,size];
+        let safeValues = [store_id, entitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate, id, artitle,age,size];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -96,5 +96,63 @@ const updateProductDisplay = async id =>{
     }
 }
 
+const decreaseSizeQuantity = async data => {
+    try {
+        const {id, size, quantity} = data
+        let product = await getProduct(id);
+        if(size){
+            let arr = JSON.parse(product.size) 
+            let newSize = arr.map(val =>{
+            if(val.size === size){
+                return {size: val.size, quantity: val.quantity - Number(quantity)}
+            } else{
+                return val
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts};
+            }
+        } )
+
+        let newProduct = {...product, quantity: newSize.reduce((p,c)=> p+c.quantity, 0), size: JSON.stringify(newSize)}
+
+        let result = await updateProduct(newProduct)
+        return result
+
+    } else{
+        let result = await updateProduct({...product, quantity: Number(product.quantity) - Number(quantity)})
+        return result
+      }
+       
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const increaseSizeQuantity = async data => {
+  try {
+      const {id, size, quantity} = data
+      let product = await getProduct(id);
+      if(size){
+          let newSize = product.size.map(val =>{
+              if(val.size ===size){
+                  return {size: val.size, quantity: val.quantity + Number(quantity)}
+              }
+              return val
+          } )
+    
+          let newProduct = {...product, quantity: newSize.reduce((p,c)=> p+c.quantity, 0), size: newSize}
+    
+          let result = await updateProduct(newProduct)
+        return result
+
+      } else{
+        let result = await updateProduct({...product, quantity: product.quantity + Number(quantity)})
+        return result
+      }
+  } catch (error) {
+      throw new Error(error.message)
+  }
+}
+
+
+
+
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity};
