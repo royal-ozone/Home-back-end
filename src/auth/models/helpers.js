@@ -53,9 +53,8 @@ let authenticateWithToken = async (token,tokenType='access')=>{
         let parsedToken = jwt.verify(token,process.env.SECRET);
 
         if(parsedToken.tokenType !== tokenType) {
-            throw new Error('Invalid token');
+            return null;
         }
-        
          const user = await getUserById(parsedToken.userId);
          if(user) return user;
     } catch (error) {

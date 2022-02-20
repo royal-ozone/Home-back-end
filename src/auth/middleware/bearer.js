@@ -21,12 +21,12 @@ module.exports = async (req, res, next) => {
                 headers: {authorization:req.headers.authorization}
             })
         }catch(err){
-            tokenRecord = await getTokenRecord(token)
+            tokenRecord = await getTokenRecord(token) || await getTokenRecord(token, 'refresh')
         }
         
         if (tokenRecord) {
 
-            let validUser = await authenticateWithToken(token, 'access');
+            let validUser = await authenticateWithToken(token, 'access') || await authenticateWithToken(token, 'refresh') ;
             let userProfile = await getProfileByUserId(validUser.id);
             let store = await getStoreIdByProfileId(userProfile.id);
             let company = await getCompanyByProfileId(userProfile.id);
@@ -44,7 +44,7 @@ module.exports = async (req, res, next) => {
             
             next();
         } 
-        else if (result.data.id){
+        else if (result){
             req.employee = result.data
             next();
         }
