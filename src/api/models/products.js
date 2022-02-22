@@ -3,14 +3,14 @@ const client = require('../../db')
 const addProduct = async data => {
     try {
         
-        let {store_id,entitle,artitle,metatitle, sku, price, brand_name, description, quantity,age,size,parent_category_id,child_category_id,grandchild_category_id} = data;
-        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,description,quantity, age, size,parent_category_id,child_category_id,grandchild_category_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11 ,$12,$13,$14) RETURNING *;`;
+        let {store_id,entitle,artitle,metatitle, sku, price, brand_name, endescription, quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription} = data;
+        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity, age, size,parent_category_id,child_category_id,grandchild_category_id,ardescription) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11 ,$12,$13,$14,$15) RETURNING *;`;
         if(!entitle && artitle){
             entitle = artitle
         } else if(!artitle && entitle){
             artitle = entitle
         }
-        let safeValues = [store_id,entitle,artitle,metatitle,sku,price,brand_name,description,quantity,age,size,parent_category_id,child_category_id,grandchild_category_id];
+        let safeValues = [store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription];
         let result = await client.query(SQL,safeValues)
         return result.rows[0];
     } catch (error) {
@@ -53,9 +53,9 @@ const getStoreProducts = async (id,limit,offset) => {
 
 const updateProduct = async (data) => {
     try {
-        let {id,store_id, entitle, artitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate,age,size} = data;
-        let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, description=$7, quantity=$8,discount=$9,discount_rate=$10,arTitle=$12,age=$13,size=$14 WHERE id=$11 RETURNING *;';
-        let safeValues = [store_id, entitle, metaTitle, sku, price, brand_name, description, quantity, discount, discount_rate, id, artitle,age,size];
+        let {id,store_id, entitle, artitle, metaTitle, sku, price, brand_name, endescription, quantity, discount, discount_rate,age,size,ardescription} = data;
+        let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, endescription=$7, quantity=$8,discount=$9,discount_rate=$10,arTitle=$12,age=$13,size=$14, ardescription=$15 WHERE id=$11 RETURNING *;';
+        let safeValues = [store_id, entitle, metaTitle, sku, price, brand_name, endescription, quantity, discount, discount_rate, id, artitle,age,size,ardescription];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
