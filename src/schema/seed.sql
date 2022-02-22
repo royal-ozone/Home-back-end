@@ -66,12 +66,12 @@ INSERT INTO grandchild_category(id,parent_id,entitle,artitle,metaTitle,content) 
 ('257750e6-0e74-424e-9f45-34317a397480','84ba935f-61a3-4ae7-97b6-1c04b016c920','summer','الصيف','the clothes are perfect with summer', 'summer');
 
 ------------------------- Product Table ----------------------------------
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ',5);
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ',5);
-INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,description,quantity) VALUES 
-('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice',5);
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
+('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ',5, 'منتج');
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
+('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ',5, 'منتج');
+INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
+('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice',5, 'منتج');
 
 ----------------------------- product_review ------------------------------------
 INSERT INTO product_review(id,profile_id,product_id,review,rate)
