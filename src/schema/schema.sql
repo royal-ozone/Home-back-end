@@ -175,14 +175,15 @@ CREATE TABLE product(
   parent_category_id uuid NOT NULL,
   child_category_id uuid NOT NULL,
   grandchild_category_id uuid,
-  discount_rate FLOAT NOT NULL,
+  discount BOOLEAN DEFAULT FALSE,
+  discount_rate FLOAT DEFAULT 0,
   price REAL NOT NULL,
   currency VARCHAR(10) default 'jod',
   brand_name VARCHAR(250),
   endescription text NOT NULL,
   ardescription text NOT NULL,
-  status VARCHAR(250) DEFAULT 'pending',
   quantity INT NOT NULL DEFAULT 0,
+  status VARCHAR(250) DEFAULT 'pending',
   age VARCHAR(250),
   size VARCHAR(250),
   display BOOLEAN DEFAULT TRUE,
@@ -190,7 +191,7 @@ CREATE TABLE product(
   FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
   FOREIGN KEY (child_category_id) REFERENCES child_category(id),
   FOREIGN KEY (grandchild_category_id) REFERENCES grandchild_category(id),
-  created_at timestamp not null default current_timestamp   
+  created_at timestamp not null default current_timestamp
 );
 
 CREATE TABLE offer(
