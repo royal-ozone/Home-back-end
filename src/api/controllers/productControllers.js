@@ -24,7 +24,7 @@ const addProductHandler = async (req, res) => {
       })
     }
     if (result.id) {
-      res.json({ message: 'product has been added successfully', status: 201, ...result, pictures: await Promise.all(pictures) })
+      res.json({ message: 'product has been added successfully', status: 201, result:{...result, pictures: await Promise.all(pictures) }})
     } else {
       res.json({ message: result.message, status: 403 })
     }
