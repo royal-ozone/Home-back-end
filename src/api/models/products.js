@@ -3,14 +3,14 @@ const client = require('../../db')
 const addProduct = async data => {
     try {
         
-        let {store_id,entitle,artitle,metatitle, sku, price, brand_name, endescription, quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription} = data;
-        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity, age, size,parent_category_id,child_category_id,grandchild_category_id,ardescription) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11 ,$12,$13,$14,$15) RETURNING *;`;
+        let {store_id,entitle,artitle,metatitle, sku, price, brand_name, endescription, quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription,discount,discount_rate } = data;
+        let SQL = `INSERT INTO product (store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity, age, size,parent_category_id,child_category_id,grandchild_category_id,ardescription,discount,discount_rate) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11 ,$12,$13,$14,$15,$16,$17) RETURNING *;`;
         if(!entitle && artitle){
             entitle = artitle
         } else if(!artitle && entitle){
             artitle = entitle
         }
-        let safeValues = [store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription];
+        let safeValues = [store_id,entitle,artitle,metatitle,sku,price,brand_name,endescription,quantity,age,size,parent_category_id,child_category_id,grandchild_category_id,ardescription,discount,discount_rate];
         let result = await client.query(SQL,safeValues)
         return result.rows[0];
     } catch (error) {
