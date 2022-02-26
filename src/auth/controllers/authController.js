@@ -1,5 +1,5 @@
 'use strict';
-const clientForVerification = require('twilio')(process.env.ACCOUNT_SID ,process.env.AUTH_TOKEN);
+const clientForVerification = require('twilio')(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 const { signup,
     getUserById,
     getUserByEmail,
@@ -17,9 +17,9 @@ const { signup,
     updateUserEmail,
     updateUserMobile,
     updateProfilersModel,
-    updateUserModel, 
-    updateProfileMobile, 
-    getTokenByUserId, 
+    updateUserModel,
+    updateProfileMobile,
+    getTokenByUserId,
     deactivateAccount,
     getAllBannedUsers,
     updateProfileEmail,
@@ -27,9 +27,9 @@ const { signup,
     updateNotification_all,
     updateNotification_city,
 } = require('../models/user');
-const {addCartModel} = require('../../api/models/cart')
+const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
-const {addProfilePicture} = require('../../api/models/profilePicture')
+const { addProfilePicture } = require('../../api/models/profilePicture')
 const { createToken, deleteToken } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 
@@ -86,10 +86,10 @@ const signupHandler = async (req, res, next) => {
             let result = await signup(req.body)
 
             let result2 = await createProfile(result);
-            if(req.file){
-               await addProfilePicture({profile_id: result2.id, profile_picture: req.file.location})
+            if (req.file) {
+                await addProfilePicture({ profile_id: result2.id, profile_picture: req.file.location })
             } else {
-                await addProfilePicture({profile_id: result2.id, profile_picture: process.env.DEFAULT_PROFILE_PICTURE})
+                await addProfilePicture({ profile_id: result2.id, profile_picture: process.env.DEFAULT_PROFILE_PICTURE })
             }
 
             await addCartModel(result2.id)
@@ -103,12 +103,12 @@ const signupHandler = async (req, res, next) => {
 };
 const getProfileHandler = async (req, res, next) => {
     try {
-        let id =req.user.profile_id;
+        let id = req.user.profile_id;
         let user = await getProfileById(id);
-        if(user) {
+        if (user) {
 
             res.status(200).json(user)
-        }else{
+        } else {
             res.json({
                 status: 403,
                 message: 'Something went wrong!',
@@ -124,8 +124,8 @@ const updateProfilers = async (req, res, next) => {
     try {
         let id = req.user.id;
         let dataProfile = await getUserById(req.user.id);
-        let result = await updateProfilersModel({...dataProfile,...req.body}, id)
-        let resultFromProfile = await updateUserModel({...dataProfile,...req.body}, id)
+        let result = await updateProfilersModel({ ...dataProfile, ...req.body }, id)
+        let resultFromProfile = await updateUserModel({ ...dataProfile, ...req.body }, id)
         let response = {
             profile: result,
             user: resultFromProfile
@@ -142,7 +142,7 @@ const updateProfilers = async (req, res, next) => {
 const signInHandler = async (req, res, next) => {
     try {
         delete req.tokens.created_at;
-        res.status(200).json(req.tokens);
+        res.json({ status: 200, ...req.tokens });
     } catch (error) {
         next(error);
     }
@@ -153,7 +153,7 @@ const signInHandler = async (req, res, next) => {
 const signOutHandler = async (req, res, next) => {
     try {
         await deleteToken(req.user.id);
-        res.status(200).json({
+        res.json({
             status: 200,
             message: 'successfully signed out',
         });
@@ -175,21 +175,21 @@ const updateUserPasswordHandler = async (req, res, next) => {
         const valid = await checkPassword(oldPassword, user.user_password);
 
         if (!oldPassword || !newPassword || !newPassword2) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Missing parameters, please enter all required fields!',
             });
         }
 
         else if (newPassword !== newPassword2) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'New password mismatch! please write the same new password in both fields!',
             });
         }
 
         else if (!validatePassword(newPassword)) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
                     `1- One capital letter.`,
@@ -206,13 +206,13 @@ const updateUserPasswordHandler = async (req, res, next) => {
                 status: 200,
                 message: 'Password updated successfully',
             };
-            res.status(200).json(response);
+            res.json(response);
         } else {
             const response = {
                 status: 403,
                 message: 'Old password is incorrect!',
             };
-            res.status(403).json(response);
+            res.json(response);
         }
     } catch (e) {
         next(e);
@@ -221,28 +221,28 @@ const updateUserPasswordHandler = async (req, res, next) => {
 
 const updateUserResetPasswordHandler = async (req, res, next) => {
     try {
-        const mobile=req.body.mobile;
+        const mobile = req.body.mobile;
         const newPassword = req.body.new;
         const newPassword2 = req.body.re_type_new;
 
         let user = await getUserByMobile(mobile);
 
         if (!newPassword || !newPassword2) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Missing parameters, please enter all required fields!',
             });
         }
 
         else if (newPassword !== newPassword2) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'New password mismatch! please write the same new password in both fields!',
             });
         }
 
         else if (!validatePassword(newPassword)) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
                     `1- One capital letter.`,
@@ -281,24 +281,24 @@ const updateUserEmailHandler = async (req, res, next) => {
         // let user = await getUserById(req.user.id);
 
         if (!email) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Missing parameters, email',
             });
         }
-            else {
-                let user = await updateUserEmail(id, email);
-                let profile = await updateProfileEmail(id,email)
+        else {
+            let user = await updateUserEmail(id, email);
+            let profile = await updateProfileEmail(id, email)
 
-                const response = {
-                    status: 200,
-                    message: 'Email updated successfully',
-                    user,
-                    profile
-                };
-                res.status(200).json(response);
-            }
-        
+            const response = {
+                status: 200,
+                message: 'Email updated successfully',
+                user,
+                profile
+            };
+            res.json(response);
+        }
+
     } catch (e) {
         res.send(e.message)
     }
@@ -312,99 +312,103 @@ const updateUserMobileHandler = async (req, res, next) => {
         // let user = await getUserById(id);
 
         if (!newMobile) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Missing parameters, please enter all required fields!',
             });
         }
-            else  {
+        else {
 
-                let result = await updateUserMobile(id, newMobile);
-                let resultFromProfile = await updateProfileMobile(id, newMobile);
-                // let token = await getTokenByUserId(id)
-                const response = {
-                    status: 200,
-                    message: 'mobile updated successfully please verify your mobile number!',
-                    user: result,
-                    profile: resultFromProfile
-                    // token: token
-                };
-                res.status(200).send(response);
-            }
-       
+            let result = await updateUserMobile(id, newMobile);
+            let resultFromProfile = await updateProfileMobile(id, newMobile);
+            // let token = await getTokenByUserId(id)
+            const response = {
+                status: 200,
+                message: 'mobile updated successfully please verify your mobile number!',
+                user: result,
+                profile: resultFromProfile
+                // token: token
+            };
+            res.send(response);
+        }
+
     } catch (e) {
         res.send(e.message)
     }
 };
 
-const resetPasswordHandler = async(req, res, next) => {
- let {country_code,mobile}= req.body;
+const resetPasswordHandler = async (req, res, next) => {
+    let { country_code, mobile } = req.body;
 
- if (!mobile ) {
-    res.status(403).json({
-        status: 403,
-        message: 'Missing parameters,mobile ',
-    });
- }
- let user = await getUserByMobile(mobile);
- 
-    if(user){
-      clientForVerification
-      .verify
-      .services(process.env.SERVICE_ID)
-      .verifications
-      .create({
-          to:'+'+country_code+mobile,
-          channel:'sms'
-      })
-      .then((data) => {
-         return res.status(200).send({
-              message:"Verification was sent!",
-              mobile: mobile,
-              data
-          });
-      })
-      .catch((err) =>{
-          res.send(err.message)
-      } )
-    }else{
-        res.status(401).send({
-            message:"please enter your phone number ex:962796780751",
+    if (!mobile) {
+        res.json({
+            status: 403,
+            message: 'Missing parameters,mobile ',
+        });
+    }
+    let user = await getUserByMobile(mobile);
+
+    if (user) {
+        clientForVerification
+            .verify
+            .services(process.env.SERVICE_ID)
+            .verifications
+            .create({
+                to: '+' + country_code + mobile,
+                channel: 'sms'
+            })
+            .then((data) => {
+                return res.send({
+                    message: "Verification was sent!",
+                    mobile: mobile,
+                    status: 200,
+                    data
+                });
+            })
+            .catch((err) => {
+                res.send(err.message)
+            })
+    } else {
+        res.send({
+            message: "please enter your phone number ex:962796780751",
+            status: 401,
             data
         })
     }
-  }
-  
-const codePasswordHandler = async(req, res, next) => {
-    let {country_code,mobile,code}= req.body;
-    if(code){
-    clientForVerification
-    .verify
-    .services(process.env.SERVICE_ID)
-    .verificationChecks
-    .create({
-        to:'+'+country_code+mobile,
-        code:code
-    }) 
-    .then(async(data) => {
-        if(data.status==='approved'){
-          return  res.status(200).send({
-                message:"User has been Verified successfully!",
-                data,
+}
+
+const codePasswordHandler = async (req, res, next) => {
+    let { country_code, mobile, code } = req.body;
+    if (code) {
+        clientForVerification
+            .verify
+            .services(process.env.SERVICE_ID)
+            .verificationChecks
+            .create({
+                to: '+' + country_code + mobile,
+                code: code
             })
-        }else{
-            res.status(401).send({
-                message:"Wrong phone number or code :(",
-                data
+            .then(async (data) => {
+                if (data.status === 'approved') {
+                    return res.send({
+                        message: "User has been Verified successfully!",
+                        status: 200,
+                        data,
+                    })
+                } else {
+                    res.send({
+                        message: "Wrong phone number or code :(",
+                        status: 401,
+                        data
+                    })
+                }
             })
-        }
-    })
-    .catch((err) =>{
-        res.send(err.message)
-    } )
+            .catch((err) => {
+                res.send(err.message)
+            })
     }
     return 'the code is not exist !!'
-  }
+}
 
 
 
@@ -417,9 +421,9 @@ const refreshHandler = async (req, res, next) => {
             const newTokens = await createToken(user.id);
             delete newTokens.id;
             delete newTokens.user_id;
-            res.status(200).json(newTokens);
+            res.json({ status: 200, ...newTokens });
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Invalid user refresh token!',
             });
@@ -438,7 +442,7 @@ const addAdminHandler = async (req, res, next) => {
             res.status(200).json('Adminstrator has been added!')
 
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Something went wrong!',
             });
@@ -453,21 +457,21 @@ const addModHandler = async (req, res, next) => {
         let { email } = req.body;
         let mod = await addMod(email);
         if (mod === 0) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'You can\'t add an admininstrator as a moderator!',
             });
         }
 
         if (mod === -1) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'This mobile number does not exist!',
             });
         }
 
         if (mod === 1) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'This user is already a moderator!',
             });
@@ -517,13 +521,13 @@ const banUserHandler = async (req, res, next) => {
 
         }
         if (banned === 0) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'You can\'t ban an admininstrator!',
             });
         }
         else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Something went wrong!',
             });
@@ -542,7 +546,7 @@ const removeBanUserHandler = async (req, res, next) => {
             res.status(200).json('Ban has been lifted from the user!')
 
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Something went wrong!',
             });
@@ -555,7 +559,7 @@ const removeBanUserHandler = async (req, res, next) => {
 const getAllBannedUsersHandler = async (req, res) => {
     try {
         let response = await getAllBannedUsers()
-        res.status(200).json(response);
+        res.json({ status: 200, ...response });
     } catch (error) {
         res.send(error.message)
     }
@@ -566,10 +570,10 @@ const getAllUsersHandler = async (req, res, next) => {
 
         let users = await getAllUsers();
         if (users) {
-            res.status(200).json(users)
+            res.json({status: 200, users})
 
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Something went wrong!',
             });
@@ -583,38 +587,36 @@ const getAllUsersHandler = async (req, res, next) => {
 
 const deactivateAccountHandler = async (req, res, next) => {
     try {
-        let resdd = await deactivateAccount(req.user.id)
+        let result = await deactivateAccount(req.user.id)
         res.send('your account has been deactivated')
     } catch (error) {
         next(error);
     }
 };
 
-const updateNotification_allHandler =async(req, res)=>{
+const updateNotification_allHandler = async (req, res) => {
     try {
-        let data= await updateNotification_all({profile_id:req.user.profile_id,boolean:req.body.boolean});
-        console.log("🚀 ~ file: authController.js ~ line 575 ~ constupdateNotification_allHandler=async ~ data", data)
-        res.status(200).send(data);
+        let data = await updateNotification_all({ profile_id: req.user.profile_id, boolean: req.body.boolean });
+        res.send({ status: 200, ...data });
     } catch (error) {
-        throw new Error(error.message);
+        res.send({ status: 403, error: error.message })
     }
 }
-const updateNotification_storeHandler = async(req, res)=>{
+const updateNotification_storeHandler = async (req, res) => {
     try {
-        let data= await updateNotification_store({profile_id:req.user.profile_id,boolean:req.body.boolean});
+        let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
         console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
-        res.status(200).send(data);
+        res.send({status: 200, data});
     } catch (error) {
-        throw new Error(error.message)
+        res.send({ status: 403, error: error.message })
     }
 }
-const updateNotification_cityHandler = async(req, res)=>{
+const updateNotification_cityHandler = async (req, res) => {
     try {
-        let data= await updateNotification_city({profile_id:req.user.profile_id,boolean:req.body.boolean});
-        console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
+        let data = await updateNotification_city({ profile_id: req.user.profile_id, boolean: req.body.boolean });
         res.status(200).send(data);
     } catch (error) {
-        throw new Error(error.message)
+        res.send({ status: 403, error: error.message })
     }
 }
 module.exports = {
