@@ -139,7 +139,7 @@ let checkStoreAuth = async (req, res, next) => {
         if (auth.includes(req.employee?req.employee.role: false ) || req.user.store_id) {
             next();
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'User unauthorized, access denied!',
             });
