@@ -119,8 +119,9 @@ const getProfileHandler = async (req, res, next) => {
         res.json({
             status: 403,
             message: 'Invalid token!',
+            error:error.message 
         });
-        next(error);
+        // next(error);
     }
 }
 
