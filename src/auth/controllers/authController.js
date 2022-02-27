@@ -41,21 +41,21 @@ const signupHandler = async (req, res, next) => {
         let mobileCheck = await getUserByMobile(mobile);
 
         if (!email || !password || !country_code || !mobile || !country || !city || !first_name || !last_name) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Missing parameters, please fill all the required fields!',
             });
         }
 
         else if (!validateEmail(email)) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Invalid email format, please write a correct email!',
             });
         }
 
         else if (!validatePassword(password)) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: [`Invalid password format, password should have at least:`,
                     `1- One capital letter.`,
@@ -69,7 +69,7 @@ const signupHandler = async (req, res, next) => {
 
 
         else if (emailCheck) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'This email is already in use, please write a different email address!',
             });
@@ -77,7 +77,7 @@ const signupHandler = async (req, res, next) => {
 
 
         else if (mobileCheck) {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'This mobile is already in use, please write a different mobile number!',
             });
@@ -94,7 +94,7 @@ const signupHandler = async (req, res, next) => {
 
             await addCartModel(result2.id)
             let userTokens = await createToken(result.id)
-            res.status(200).json({ accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
+            res.json({ status:200,accessToken: userTokens.access_token, refreshToken: userTokens.refresh_token })
         }
 
     } catch (error) {
@@ -107,7 +107,7 @@ const getProfileHandler = async (req, res, next) => {
         let user = await getProfileById(id);
         if (user) {
 
-            res.status(200).json(user)
+            res.json({status:200,...user})
         } else {
             res.json({
                 status: 403,
@@ -127,10 +127,11 @@ const updateProfilers = async (req, res, next) => {
         let result = await updateProfilersModel({ ...dataProfile, ...req.body }, id)
         let resultFromProfile = await updateUserModel({ ...dataProfile, ...req.body }, id)
         let response = {
+            status:200,
             profile: result,
             user: resultFromProfile
         }
-        res.status(200).send(response);
+        res.send(response);
     } catch (error) {
         next(error);
     }
