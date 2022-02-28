@@ -29,6 +29,7 @@ const {
     codePasswordHandler ,
     getAllBannedUsersHandler,
     updateNotification_cityHandler,
+    refreshAccessToken,
     } = require('./controllers/authController')
     
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
@@ -42,6 +43,7 @@ const facebookAuth = require('./oauth/facebook/facebook-oauth')
 const {uploadS3} = require('../api/middleware/uploader')
 authRouter.use(googleAuth); // calling google oauth
 authRouter.use(facebookAuth);
+
 
 authRouter.post('/signup', uploadS3.single('image'), signupHandler);
 authRouter.post('/signin', basicAuth,upload.none(), checkActive,checkBan, signInHandler);
