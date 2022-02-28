@@ -48,6 +48,18 @@ async function deleteToken(user_id) {
       throw new Error(e);
     }
   }
+
+
+  const updateAccessToken = async (userId) => {
+      try {
+          let accessToken = await getToken(userId)
+          let SQL = `UPDATE JWT SET access_token =$1 WHERE user_id=$2 RETURING *`;
+          let result = await client.update(SQL, [accessToken,userId])
+          return result.rows[0]
+      } catch (error) {
+          throw new Error(error.message)
+      }
+  }
   
 
 

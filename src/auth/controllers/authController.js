@@ -30,7 +30,7 @@ const { signup,
 const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
 const { addProfilePicture } = require('../../api/models/profilePicture')
-const { createToken, deleteToken } = require('../models/jwt')
+const { createToken, deleteToken, updateAccessToken } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 
 
@@ -415,7 +415,8 @@ const codePasswordHandler = async (req, res, next) => {
 
 const refreshHandler = async (req, res, next) => {
     try {
-        const user = await authenticateWithToken(req.body.refresh_token, 'refresh');
+
+        const user = await authenticateWithToken(req.headers.authorization.split(' ').pop(), 'refresh');
         if (user) {
             await deleteToken(user.id);
             const newTokens = await createToken(user.id);
@@ -570,7 +571,7 @@ const getAllUsersHandler = async (req, res, next) => {
 
         let users = await getAllUsers();
         if (users) {
-            res.json({status: 200, users})
+            res.json({ status: 200, users })
 
         } else {
             res.json({
@@ -606,7 +607,7 @@ const updateNotification_storeHandler = async (req, res) => {
     try {
         let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
         console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
-        res.send({status: 200, data});
+        res.send({ status: 200, data });
     } catch (error) {
         res.send({ status: 403, error: error.message })
     }
@@ -617,6 +618,17 @@ const updateNotification_cityHandler = async (req, res) => {
         res.status(200).send(data);
     } catch (error) {
         res.send({ status: 403, error: error.message })
+    }
+}
+
+const refreshAccessToken = async (req, res, next) => {
+    try {
+        let token = req.headers.authorization.split(' ').pop();
+        let resfreshToken =  await getTokenRecord(token, 'refresh')
+        let result = await updateAccessToken(resfreshToken.user_id);
+        res.send({ status: 200, result })
+    } catch (error) {
+        res.send(error.message)
     }
 }
 module.exports = {
@@ -643,4 +655,5 @@ module.exports = {
     updateNotification_storeHandler,
     updateNotification_allHandler,
     updateNotification_cityHandler,
+    refreshAccessToken
 }
