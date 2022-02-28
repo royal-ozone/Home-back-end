@@ -469,7 +469,7 @@ const getProfileById = async (id) => {
 }
 const getProfilePictureByProfileId = async (id) => {
     try {
-        let SQL = 'SELECL * FROM profile_picture WHERE profile_id = $1;';
+        let SQL = 'SELECT * FROM profile_picture WHERE profile_id = $1;';
         let result = await client.query(SQL,[id]);
         return result.rows[0];
     } catch (error) {
