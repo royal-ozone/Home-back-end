@@ -7,6 +7,7 @@ const { signup,
     getUserIdFromToken,
     getAllUsers,
     getProfileById,
+    getProfilePictureByProfileId,
     createProfile,
     addAdmin,
     addMod,
@@ -105,9 +106,14 @@ const getProfileHandler = async (req, res, next) => {
     try {
         let id = req.user.profile_id;
         let user = await getProfileById(id);
+        delete user.id ;
+        delete user.user_id;
+        delete user.profile_picture;
+        let picture = await getProfilePictureByProfileId(id);
+        delete picture.id ;
+        delete picture.profile_id ;
         if (user) {
-
-            res.json({status:200,...user})
+            res.json({status:200,...user,...picture})
         } else {
             res.json({
                 status: 403,

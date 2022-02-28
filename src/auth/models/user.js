@@ -467,6 +467,15 @@ const getProfileById = async (id) => {
         throw new Error(error.message)
     }
 }
+const getProfilePictureByProfileId = async (id) => {
+    try {
+        let SQL = 'SELECL * FROM profile_picture WHERE profile_id = $1;';
+        let result = await client.query(SQL,[id]);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 const getALLprofile =async ()=>{
     try {
         let SQL = 'SELECT * FROM profile ;';
@@ -547,6 +556,7 @@ module.exports = {
     getAllBannedUsers,
     updateProfileEmail,
     getProfileById,
+    getProfilePictureByProfileId,
     getALLprofile,
     updateNotification_all,
     updateNotification_store,
