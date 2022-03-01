@@ -1,42 +1,39 @@
-"use strict";
-const clientForVerification = require("twilio")(
-  process.env.ACCOUNT_SID,
-  process.env.AUTH_TOKEN
-);
-const {
-  signup,
-  getUserById,
-  getUserByEmail,
-  getUserByMobile,
-  getUserIdFromToken,
-  getAllUsers,
-  getProfileById,
-  getProfilePictureByProfileId,
-  createProfile,
-  addAdmin,
-  addMod,
-  removeMod,
-  banUser,
-  unbanUser,
-  updateUserPassword,
-  updateUserEmail,
-  updateUserMobile,
-  updateProfilersModel,
-  updateUserModel,
-  updateProfileMobile,
-  getTokenByUserId,
-  deactivateAccount,
-  getAllBannedUsers,
-  updateProfileEmail,
-  updateNotification_store,
-  updateNotification_all,
-  updateNotification_city,
-} = require("../models/user");
-const { addCartModel } = require("../../api/models/cart");
-const { authenticateWithToken, getToken } = require("../models/helpers");
-const { addProfilePicture } = require("../../api/models/profilePicture");
-const { createToken, deleteToken } = require("../models/jwt");
-const { validateEmail, validatePassword, checkPassword } = require("./helpers");
+'use strict';
+const clientForVerification = require('twilio')(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
+const { signup,
+    getUserById,
+    getUserByEmail,
+    getUserByMobile,
+    getUserIdFromToken,
+    getAllUsers,
+    getProfileById,
+    getProfilePictureByProfileId,
+    createProfile,
+    addAdmin,
+    addMod,
+    removeMod,
+    banUser,
+    unbanUser,
+    updateUserPassword,
+    updateUserEmail,
+    updateUserMobile,
+    updateProfilersModel,
+    updateUserModel,
+    updateProfileMobile,
+    getTokenByUserId,
+    deactivateAccount,
+    getAllBannedUsers,
+    updateProfileEmail,
+    updateNotification_store,
+    updateNotification_all,
+    updateNotification_city,
+} = require('../models/user');
+const { addCartModel } = require('../../api/models/cart')
+const { authenticateWithToken, getToken } = require('../models/helpers')
+const { addProfilePicture } = require('../../api/models/profilePicture')
+const { createToken, deleteToken, updateAccessToken } = require('../models/jwt')
+const { validateEmail, validatePassword, checkPassword } = require('./helpers');
+
 
 const signupHandler = async (req, res, next) => {
   try {
@@ -438,23 +435,25 @@ const codePasswordHandler = async (req, res, next) => {
 };
 
 const refreshHandler = async (req, res, next) => {
-  try {
-    const user = await authenticateWithToken(req.body.refresh_token, "refresh");
-    if (user) {
-      await deleteToken(user.id);
-      const newTokens = await createToken(user.id);
-      delete newTokens.id;
-      delete newTokens.user_id;
-      res.json({ status: 200, ...newTokens });
-    } else {
-      res.json({
-        status: 403,
-        message: "Invalid user refresh token!",
-      });
+    try {
+
+        const user = await authenticateWithToken(req.headers.authorization.split(' ').pop(), 'refresh');
+        if (user) {
+            await deleteToken(user.id);
+            const newTokens = await createToken(user.id);
+            delete newTokens.id;
+            delete newTokens.user_id;
+            res.json({ status: 200, ...newTokens });
+        } else {
+            res.json({
+                status: 403,
+                message: 'Invalid user refresh token!',
+            });
+        }
+    } catch (e) {
+        next(e);
     }
-  } catch (e) {
-    next(e);
-  }
+  
 };
 
 const addAdminHandler = async (req, res, next) => {
@@ -578,19 +577,22 @@ const getAllBannedUsersHandler = async (req, res) => {
 };
 
 const getAllUsersHandler = async (req, res, next) => {
-  try {
-    let users = await getAllUsers();
-    if (users) {
-      res.json({ status: 200, users });
-    } else {
-      res.json({
-        status: 403,
-        message: "Something went wrong!",
-      });
+    try {
+
+        let users = await getAllUsers();
+        if (users) {
+            res.json({ status: 200, users })
+
+        } else {
+            res.json({
+                status: 403,
+                message: 'Something went wrong!',
+            });
+        }
+    } catch (e) {
+        next(e);
     }
-  } catch (e) {
-    next(e);
-  }
+  
 };
 
 const deactivateAccountHandler = async (req, res, next) => {
@@ -614,53 +616,56 @@ const updateNotification_allHandler = async (req, res) => {
   }
 };
 const updateNotification_storeHandler = async (req, res) => {
-  try {
-    let data = await updateNotification_store({
-      profile_id: req.user.profile_id,
-      boolean: req.body.boolean,
-    });
-    console.log(
-      "🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data",
-      data
-    );
-    res.send({ status: 200, data });
-  } catch (error) {
-    res.send({ status: 403, error: error.message });
-  }
-};
+    try {
+        let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
+        console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
+        res.send({ status: 200, data });
+    } catch (error) {
+        res.send({ status: 403, error: error.message })
+    }
+}
 const updateNotification_cityHandler = async (req, res) => {
-  try {
-    let data = await updateNotification_city({
-      profile_id: req.user.profile_id,
-      boolean: req.body.boolean,
-    });
-    res.status(200).send(data);
-  } catch (error) {
-    res.send({ status: 403, error: error.message });
-  }
-};
+    try {
+        let data = await updateNotification_city({ profile_id: req.user.profile_id, boolean: req.body.boolean });
+        res.status(200).send(data);
+    } catch (error) {
+        res.send({ status: 403, error: error.message })
+    }
+}
+
+const refreshAccessToken = async (req, res, next) => {
+    try {
+        let token = req.headers.authorization.split(' ').pop();
+        let resfreshToken =  await getTokenRecord(token, 'refresh')
+        let result = await updateAccessToken(resfreshToken.user_id);
+        res.send({ status: 200, result })
+    } catch (error) {
+        res.send(error.message)
+    }
+}
 module.exports = {
-  signupHandler,
-  signInHandler,
-  signOutHandler,
-  addAdminHandler,
-  addModHandler,
-  removeModHandler,
-  banUserHandler,
-  removeBanUserHandler,
-  updateUserPasswordHandler,
-  updateUserResetPasswordHandler,
-  updateUserEmailHandler,
-  updateUserMobileHandler,
-  resetPasswordHandler,
-  refreshHandler,
-  getAllUsersHandler,
-  getProfileHandler,
-  updateProfilers,
-  deactivateAccountHandler,
-  codePasswordHandler,
-  getAllBannedUsersHandler,
-  updateNotification_storeHandler,
-  updateNotification_allHandler,
-  updateNotification_cityHandler,
-};
+    signupHandler,
+    signInHandler,
+    signOutHandler,
+    addAdminHandler,
+    addModHandler,
+    removeModHandler,
+    banUserHandler,
+    removeBanUserHandler,
+    updateUserPasswordHandler,
+    updateUserResetPasswordHandler,
+    updateUserEmailHandler,
+    updateUserMobileHandler,
+    resetPasswordHandler,
+    refreshHandler,
+    getAllUsersHandler,
+    getProfileHandler,
+    updateProfilers,
+    deactivateAccountHandler,
+    codePasswordHandler,
+    getAllBannedUsersHandler,
+    updateNotification_storeHandler,
+    updateNotification_allHandler,
+    updateNotification_cityHandler,
+    refreshAccessToken
+}

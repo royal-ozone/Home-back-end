@@ -1,5 +1,5 @@
 'use strict';
-const { getTokenRecord } = require('../models/jwt');
+const { getTokenRecord, updateAccessToken } = require('../models/jwt');
 const { authenticateWithToken } = require('../models/helpers');
 const { getProfileByUserId, getStoreIdByProfileId, getCompanyByProfileId,getCourierByProfileId } = require('../models/user')
 const {getCartByProfileId} = require('../../api/models/cart')
@@ -14,6 +14,7 @@ module.exports = async (req, res, next) => {
 
         let tokenRecord;
         let result;
+        
         try{
             result = await axios({
                 method: 'GET',
@@ -21,12 +22,13 @@ module.exports = async (req, res, next) => {
                 headers: {authorization:req.headers.authorization}
             })
         }catch(err){
-            tokenRecord = await getTokenRecord(token) || await getTokenRecord(token, 'refresh')
+            tokenRecord = await getTokenRecord(token)
+           
         }
         
         if (tokenRecord) {
 
-            let validUser = await authenticateWithToken(token, 'access') || await authenticateWithToken(token, 'refresh') ;
+            let validUser = await authenticateWithToken(token, 'access');
             let userProfile = await getProfileByUserId(validUser.id);
             let store = await getStoreIdByProfileId(userProfile.id);
             let company = await getCompanyByProfileId(userProfile.id);
@@ -48,8 +50,7 @@ module.exports = async (req, res, next) => {
             req.employee = result.data
             next();
         }
-        else {
-           
+        else { 
             res.status(403).json({
                 status: 403,
                 message: 'Invalid token!',
