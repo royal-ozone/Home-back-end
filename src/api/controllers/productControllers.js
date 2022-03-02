@@ -105,7 +105,7 @@ const getStoreProductsByStatusHandler = async (req, res) => {
     let id = req.user.store_id;
     let offset = req.query.offset || 0;
     let limit = req.query.limit || 24;
-    let result = await getStoreProductsByStatus(id,limit,offset,req.body.status)
+    let result = await getStoreProductsByStatus(id,limit,offset,req.params.status)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPicturesById(product.id)
       product['pictures'] = pictures;
