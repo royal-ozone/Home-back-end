@@ -4,15 +4,26 @@ const {deleteRemoteFile} = require('../middleware/uploader')
 const updateProfilePictureHandler = async (req,res) => {
     try {
         let result = await getProfilePictureByProfileId(req.user.profile_id);
-        if(result.id){
-            await deleteRemoteFile(result.profile_picture);
-            let result2 = await updateProfilePicture({profile_id: req.user.profile_id, profile_picture: req.file.location})  
-            if(result2.id){
-                res.status(200).json({message:'profile picture updated successfully', ...result2});      
-            } else res.status(403).send('something went wrong while getting the picture')
-        }else res.status(403).send('something went wrong while getting the picture')
+        if(result){
+
+            if(result.id){
+                await deleteRemoteFile(result.profile_picture);
+                let result2 = await updateProfilePicture({profile_id: req.user.profile_id, profile_picture: req.file.location})  
+                if(result2.id){
+                    res.json({  status:200,message:'profile picture updated successfully', ...result2});      
+                } else res.json({status:403,message:'something went wrong while getting the picture'})
+            }else res.json({status:403,message:'something went wrong while getting the picture'})
+        }else{
+            let result = await addProfilePicture({profile_id: req.user.profile_id, profile_picture: req.file.location})
+
+            res.json({
+                status:200,
+                message:'profile picture updated successfully',
+                ...result,
+            })
+        }
     } catch (error) {
-        res.send(error.message)
+        res.json(error.message)
     }
 };
 
@@ -23,23 +34,23 @@ const deleteProfilePictureHandler = async (req,res) => {
             await deleteRemoteFile(result.profile_picture)
             let result2 = await addProfilePicture({profile_id: req.user.profile_id, profile_picture: process.env.DEFAULT_PROFILE_PICTURE})
             if(result2.id){
-                res.status(200).send('profile picture deleted successfully');
-            } else res.status(403).send('something went wrong while deleting the picture')
-        } else res.status(403).send('something went wrong while deleting the picture')
+                res.json({status:200,message:'profile picture deleted successfully'});
+            } else res.json({status:403,message:'something went wrong while deleting the picture'})
+        } else res.json({status:403,message:'something went wrong while deleting the picture'})
     } catch (error) {
-        res.send(error.message)
+        res.json(error.message)
     }
 }
 
 const getProfilePictureByProfileIdHandler = async (req,res) => {
     try {
         let result = await getProfilePictureByProfileId(req.user.profile_id);
-        res.status(200).json({
+        res.json({
             status: 200,
             data: result
         })
     } catch (error) {
-        res.send(error.message)
+        res.json(error.message)
     }
 }
 
