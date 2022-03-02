@@ -105,7 +105,7 @@ const getStoreProductsByStatusHandler = async (req, res) => {
     let id = req.user.store_id;
     let offset = req.query.offset || 0;
     let limit = req.query.limit || 24;
-    let result = await getStoreProductsByStatus(id,limit,offset,req.params.status)
+    let {result,count} = await getStoreProductsByStatus(id,limit,offset,req.params.status)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPicturesById(product.id)
       product['pictures'] = pictures;
@@ -113,7 +113,7 @@ const getStoreProductsByStatusHandler = async (req, res) => {
       return product;
     })
     if (result) {
-      res.json({ status: 200, result: await Promise.all(resultWithPics) })
+      res.json({ status: 200,count:Number(count), result: await Promise.all(resultWithPics) })
     } else {
       res.send({message:'something went wrong while fetching the data', status: 403})
     }
