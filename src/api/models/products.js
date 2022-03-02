@@ -50,6 +50,16 @@ const getStoreProducts = async (id,limit,offset) => {
     }
 }
 
+const getStoreProductsByStatus = async (id,limit,offset, status) => {
+    try {
+        let SQL = `SELECT * FROM product WHERE store_id=$1 AND status=$4 LIMIT $2 OFFSET $3;`;
+        let result = await client.query(SQL,[id,limit,offset, status]);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 
 const updateProduct = async (data) => {
     try {
@@ -155,4 +165,4 @@ const increaseSizeQuantity = async data => {
 
 
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity};
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus};
