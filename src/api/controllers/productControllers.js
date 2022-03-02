@@ -1,4 +1,4 @@
-const { addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -81,7 +81,9 @@ const getProductHandler = async (req, res, next) => {
 const getStoreProductsHandler = async (req, res) => {
   try {
     let id = req.user.store_id;
-    let result = await getStoreProducts(id)
+    let offset = req.query.offset || 0;
+    let limit = req.query.limit || 24;
+    let result = await getStoreProducts(id,limit,offset)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPicturesById(product.id)
       product['pictures'] = pictures;
@@ -89,9 +91,31 @@ const getStoreProductsHandler = async (req, res) => {
       return product;
     })
     if (result) {
-      res.status(200).json({ result: await Promise.all(resultWithPics) })
+      res.json({ status: 200, result: await Promise.all(resultWithPics) })
     } else {
-      res.status(403).send('something went wrong while fetching the data')
+      res.send({message:'something went wrong while fetching the data', status: 403})
+    }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const getStoreProductsByStatusHandler = async (req, res) => {
+  try {
+    let id = req.user.store_id;
+    let offset = req.query.offset || 0;
+    let limit = req.query.limit || 24;
+    let result = await getStoreProductsByStatus(id,limit,offset,req.body.status)
+    let resultWithPics = await result.map(async (product) => {
+      let pictures = await getProductPicturesById(product.id)
+      product['pictures'] = pictures;
+      delete product.pictures.product_id
+      return product;
+    })
+    if (result) {
+      res.json({ status: 200, result: await Promise.all(resultWithPics) })
+    } else {
+      res.send({message:'something went wrong while fetching the data', status: 403})
     }
   } catch (error) {
     res.send(error.message)
@@ -223,4 +247,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity }
