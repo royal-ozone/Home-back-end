@@ -87,7 +87,8 @@ const {addProductHandler,
    updateProductPictureHandler,
    deleteProductPictureHandler,
    getStoreProductsHandler,
-   getStoreProductsByStatusHandler
+   getStoreProductsByStatusHandler,
+   addProductPictureHandler
   } = require('../api/controllers/productControllers');
 
 const {addTagHandler,
@@ -329,6 +330,7 @@ router.put('/product/status',bearer,checkAuth,upload.none(), updateProductStatus
 router.delete('/product',upload.none(), deleteProductHandler)
 router.put('/product/picture', bearer, uploadS3.array('image'), updateProductPictureHandler )
 router.delete('/product/picture',bearer,checkStoreAuth,upload.none(), deleteProductPictureHandler)
+router.post('/product/picture', bearer, uploadS3.single('image'), addProductPictureHandler)
 
 //tag
 router.post('/tag',bearer,checkAuth,upload.none(),addTagHandler)

@@ -176,13 +176,26 @@ const updateProductPictureHandler = async (req, res) => {
     let result = await getProductPicturesById(req.body.product_id);
     let pictures = [];
     if (result.length >= 5 || (req.files.length + result.length) > 5) {
-      res.status(403).send(`you currently have ${result.length} pictures, you can't add more than 5 pictures`)
+      res.send(`you currently have ${result.length} pictures, you can't add more than 5 pictures`)
     } else {
       pictures = await req.files.map(async (file) => {
         let pic = await addProductPicture({ product_id: req.body.product_id, product_picture: file.location })
         return pic
       })
-      res.status(200).json({ message: 'pictures has been added successfully', pictures: await Promise.all(pictures) })
+      res.json({ message: 'pictures has been added successfully',status: 200, pictures: await Promise.all(pictures) })
+    }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const addProductPictureHandler = async (req, res) => {
+  try {
+    let result = await addProductPicture({product_id: req.body.id, product_picture: req.file.location})
+    if(result.id){
+      res.send({message: 'product picture added successfully', status: 200, data: result})
+    } else {
+      res.send({message: result, status: 403})
     }
   } catch (error) {
     res.send(error.message)
@@ -247,4 +260,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler }
