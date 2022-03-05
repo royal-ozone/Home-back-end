@@ -4,6 +4,10 @@ const {
   deleteProfilePicture,
   getProfilePictureByProfileId,
 } = require("../models/profilePicture");
+
+const { 
+    getProfileById
+} =require('../../auth/models/user');
 const { deleteRemoteFile } = require("../middleware/uploader");
 
 const updateProfilePictureHandler = async (req, res) => {
