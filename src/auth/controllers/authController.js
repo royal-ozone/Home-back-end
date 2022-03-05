@@ -609,7 +609,7 @@ const getAllUsersHandler = async (req, res, next) => {
 const deactivateAccountHandler = async (req, res, next) => {
   try {
     let result = await deactivateAccount(req.user.id);
-    res.send("your account has been deactivated");
+    res.send({status:200,message:"your account has been deactivated"});
   } catch (error) {
     next(error);
   }
