@@ -179,7 +179,7 @@ const updateProfilers = async (req, res, next) => {
     let response = {
       status: 200,
       profile: result,
-      picture: picture
+      picture: picture.profile_picture
       // user: resultFromProfile,
     };
     res.send(response);
