@@ -157,19 +157,30 @@ const getProfileHandler = async (req, res, next) => {
 const updateProfilers = async (req, res, next) => {
   try {
     let id = req.user.id;
+    let profile_id = req.user.profile_id;
     let dataProfile = await getUserById(req.user.id);
     let result = await updateProfilersModel(
       { ...dataProfile, ...req.body },
       id
     );
+    if(result){
+      delete result.id;
+      delete result.user_id;
+    }
     let resultFromProfile = await updateUserModel(
       { ...dataProfile, ...req.body },
       id
     );
+    let picture = await getProfilePictureByProfileId(profile_id);
+    if (picture) {
+      delete picture.id;
+      delete picture.profile_id;
+    }
     let response = {
       status: 200,
       profile: result,
-      user: resultFromProfile,
+      picture: picture
+      // user: resultFromProfile,
     };
     res.send(response);
   } catch (error) {
