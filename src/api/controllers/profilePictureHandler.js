@@ -21,12 +21,12 @@ const updateProfilePictureHandler = async (req, res) => {
           profile_picture: req.file.location,
         });
         
-        let user = await getProfileById(req.user.profile_id);
-      if (user) {
-        delete user.id;
-        delete user.user_id;
-        delete user.profile_picture;
-      }
+    //     let user = await getProfileById(req.user.profile_id);
+    //   if (user) {
+    //     delete user.id;
+    //     delete user.user_id;
+    //     delete user.profile_picture;
+    //   }
         if (result2.id) {
             delete result2.id;
             delete result2.profile_id;
@@ -34,7 +34,6 @@ const updateProfilePictureHandler = async (req, res) => {
             status: 200,
             message: "profile picture updated successfully",
             ...result2,
-            profile:user
           });
         } else
           res.json({

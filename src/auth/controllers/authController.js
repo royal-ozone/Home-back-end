@@ -171,15 +171,15 @@ const updateProfilers = async (req, res, next) => {
       { ...dataProfile, ...req.body },
       id
     );
-    let picture = await getProfilePictureByProfileId(profile_id);
-    if (picture) {
-      delete picture.id;
-      delete picture.profile_id;
-    }
+    // let picture = await getProfilePictureByProfileId(profile_id);
+    // if (picture) {
+    //   delete picture.id;
+    //   delete picture.profile_id;
+    // }
     let response = {
       status: 200,
-      profile: result,
-      picture: picture.profile_picture
+       ...result,
+      // picture: picture.profile_picture
       // user: resultFromProfile,
     };
     res.send(response);

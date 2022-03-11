@@ -63,6 +63,6 @@ async function deleteToken(user_id) {
   
 
 
-module.exports = {createToken,deleteToken,getTokenRecord}
+module.exports = {createToken,deleteToken,getTokenRecord,updateAccessToken}
 
 
