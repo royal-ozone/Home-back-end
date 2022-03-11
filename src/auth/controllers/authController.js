@@ -166,6 +166,7 @@ const updateProfilers = async (req, res, next) => {
     if(result){
       delete result.id;
       delete result.user_id;
+      delete result.profile_picture;
     }
     let resultFromProfile = await updateUserModel(
       { ...dataProfile, ...req.body },
