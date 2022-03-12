@@ -79,9 +79,10 @@ CREATE TABLE client(
 
 CREATE TABLE jwt(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  user_id uuid NOT NULL UNIQUE,
-  access_token VARCHAR(250) NOT NULL,
-  refresh_token VARCHAR(250) NOT NULL,
+  user_id uuid NOT NULL,
+  session_id uuid DEFAULT uuid_generate_v4 (),
+  access_token TEXT NOT NULL,
+  refresh_token TEXT NOT NULL,
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (user_id) REFERENCES client(id)
 );

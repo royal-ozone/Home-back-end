@@ -36,7 +36,7 @@ let getToken = (userId, tokenType = 'access') => {
         let expireDate = 3600;
 
         if (tokenType === 'refresh') {
-            expireDate = 86400;
+            expireDate = '7d';
         }
 
         return jwt.sign(payload, process.env.SECRET, { expiresIn: expireDate });
