@@ -52,7 +52,7 @@ authRouter.post('/user/verification/550005', bearer,upload.none(), sendVerificat
 authRouter.post('/user/verify', bearer, upload.none(),verifyUserHandler);
 authRouter.post('/user/send/message',upload.none(),sendMessageHandler);
 authRouter.post('/refresh', upload.none(),refreshHandler);
-authRouter.post('/deactivate', bearer,upload.none(), deactivateAccountHandler);
+authRouter.put('/deactivate', bearer,upload.none(), deactivateAccountHandler);
 
 authRouter.put('/user/password', bearer, upload.none(),updateUserPasswordHandler);
 

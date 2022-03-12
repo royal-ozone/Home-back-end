@@ -157,19 +157,31 @@ const getProfileHandler = async (req, res, next) => {
 const updateProfilers = async (req, res, next) => {
   try {
     let id = req.user.id;
+    let profile_id = req.user.profile_id;
     let dataProfile = await getUserById(req.user.id);
     let result = await updateProfilersModel(
       { ...dataProfile, ...req.body },
       id
     );
+    if(result){
+      delete result.id;
+      delete result.user_id;
+      delete result.profile_picture;
+    }
     let resultFromProfile = await updateUserModel(
       { ...dataProfile, ...req.body },
       id
     );
+    // let picture = await getProfilePictureByProfileId(profile_id);
+    // if (picture) {
+    //   delete picture.id;
+    //   delete picture.profile_id;
+    // }
     let response = {
       status: 200,
-      profile: result,
-      user: resultFromProfile,
+       ...result,
+      // picture: picture.profile_picture
+      // user: resultFromProfile,
     };
     res.send(response);
   } catch (error) {
@@ -320,11 +332,13 @@ const updateUserEmailHandler = async (req, res, next) => {
     } else {
       let user = await updateUserEmail(id, email);
       let profile = await updateProfileEmail(id, email);
-
+      if(profile){
+        delete profile.id;
+        delete profile.user_id;
+        delete profile.profile_picture;
+      }
       const response = {
         status: 200,
-        message: "Email updated successfully",
-        user,
         profile,
       };
       res.json(response);
@@ -599,7 +613,7 @@ const getAllUsersHandler = async (req, res, next) => {
 const deactivateAccountHandler = async (req, res, next) => {
   try {
     let result = await deactivateAccount(req.user.id);
-    res.send("your account has been deactivated");
+    res.send({status:200,message:"your account has been deactivated"});
   } catch (error) {
     next(error);
   }
