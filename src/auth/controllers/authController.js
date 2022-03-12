@@ -332,11 +332,13 @@ const updateUserEmailHandler = async (req, res, next) => {
     } else {
       let user = await updateUserEmail(id, email);
       let profile = await updateProfileEmail(id, email);
-
+      if(profile){
+        delete profile.id;
+        delete profile.user_id;
+        delete profile.profile_picture;
+      }
       const response = {
         status: 200,
-        message: "Email updated successfully",
-        user,
         profile,
       };
       res.json(response);
