@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
 
   try {
     let userData = await authenticateBasic(email, password);
-    await deleteToken(userData.id);
+    // await deleteToken(userData.id);
     const userTokens = await createToken(userData.id);
     let userProfile = await getProfileByUserId(userData.id);
     let store = await getStoreIdByProfileId(userProfile.id) || {} ;

@@ -55,7 +55,7 @@ INSERT INTO store(id,profile_id,store_name,city,caption,about,store_picture,stor
 ------------------------------- parent_category -----------------------------------------
 
 INSERT INTO parent_category(id,entitle,artitle ,metaTitle,content) VALUES 
-('2f4894ff-12a9-441d-b606-d235bd2449be','clothing','ملايس','clothing', 'clothing');
+('2f4894ff-12a9-441d-b606-d235bd2449be','clothing','ملابس','clothing', 'clothing');
 
 --------------------------- child_category -----------------------------------------------
 INSERT INTO child_category(id,parent_id,entitle,artitle,metaTitle,content) VALUES 
@@ -69,7 +69,7 @@ INSERT INTO grandchild_category(id,parent_id,entitle,artitle,metaTitle,content) 
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
 ('0047da41-5e33-460a-88da-5cfa2b9d8724','72280f37-2ca7-4808-90d2-3ecec783b163','shoes','حذاء','boot','55556936862ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.02','12.99','DK','boot very nive and beautiful ',5, 'منتج');
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
-('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملايس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ',5, 'منتج');
+('771fea26-f56c-4e19-b842-9b136b889473','72280f37-2ca7-4808-90d2-3ecec783b163','clothing','ملابس','EXLURA Womens High Waist Polka Dot Pleated Skirt Midi Swing Skirt with Pockets','555569368s62ls','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','5.99','DK','boot very nive and beautiful ',5, 'منتج');
 INSERT INTO product(id,store_id,enTitle,arTitle,metaTitle,sku,parent_category_id,child_category_id,grandchild_category_id,discount,discount_rate,price,brand_name,endescription,quantity,ardescription) VALUES 
 ('defdba13-6d21-4147-982e-6444ca9e2361','72280f37-2ca7-4808-90d2-3ecec783b163','watches','ساعات','watch very nive and beautiful','5945919951A','2f4894ff-12a9-441d-b606-d235bd2449be','84ba935f-61a3-4ae7-97b6-1c04b016c920','257750e6-0e74-424e-9f45-34317a397480',false,'0.01','15.99','DK','nice',5, 'منتج');
 
@@ -96,12 +96,12 @@ VALUES('d4df9477-0b36-4376-8927-b5f974abfa98','771fea26-f56c-4e19-b842-9b136b889
 
 ------------------------------- product_pictures --------------------------------------
 INSERT INTO product_picture(id,product_id,product_picture) VALUES 
-('b7f0ab0c-1b3a-405c-8935-fea9232e0f28','0047da41-5e33-460a-88da-5cfa2b9d8724','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
+('b7f0ab0c-1b3a-405c-8935-fea9232e0f28','0047da41-5e33-460a-88da-5cfa2b9d8724','https://static.zajo.net/content/mediagallery/zajo_dcat/image/product/types/X/9088.png');
 
 
 ------------------------------ profile_picture -----------------------------------------
 INSERT INTO profile_picture (id,profile_id,profile_picture) VALUES 
-('8f236701-30e5-4277-9bc8-cec66d21aae0','fca8e07b-ac7d-4ce8-8437-53c54ca85857','https://www.planetware.com/wpimages/2019/10/switzerland-in-pictures-store.jpg');
+('8f236701-30e5-4277-9bc8-cec66d21aae0','fca8e07b-ac7d-4ce8-8437-53c54ca85857','https://static.zajo.net/content/mediagallery/zajo_dcat/image/product/types/X/9088.png');
 
 
 

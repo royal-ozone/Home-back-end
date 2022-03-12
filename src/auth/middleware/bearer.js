@@ -1,5 +1,5 @@
-'use strict';
-const { getTokenRecord, updateAccessToken } = require('../models/jwt');
+'use strict'
+const { getTokenRecord } = require('../models/jwt');
 const { authenticateWithToken } = require('../models/helpers');
 const { getProfileByUserId, getStoreIdByProfileId, getCompanyByProfileId,getCourierByProfileId } = require('../models/user')
 const {getCartByProfileId} = require('../../api/models/cart')
@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
             return _authError();
         }
         let token = req.headers.authorization.split(' ').pop();
-
+        let session_id = req.headers.session_id
         let tokenRecord;
         let result;
         
@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
                 headers: {authorization:req.headers.authorization}
             })
         }catch(err){
-            tokenRecord = await getTokenRecord(token)
+            tokenRecord = await getTokenRecord(token, session_id)
            
         }
         

@@ -31,7 +31,7 @@ const { signup,
 const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
 const { addProfilePicture } = require('../../api/models/profilePicture')
-const { createToken, deleteToken, updateAccessToken } = require('../models/jwt')
+const { createToken, deleteToken, updateTokens, getTokenRecord } = require('../models/jwt')
 const { validateEmail, validatePassword, checkPassword } = require('./helpers');
 
 
@@ -192,7 +192,7 @@ const signInHandler = async (req, res, next) => {
 
 const signOutHandler = async (req, res, next) => {
   try {
-    await deleteToken(req.user.id);
+    await deleteToken(req.headers.session_id);
     res.json({
       status: 200,
       message: "successfully signed out",
@@ -438,16 +438,17 @@ const refreshHandler = async (req, res, next) => {
     try {
 
         const user = await authenticateWithToken(req.headers.authorization.split(' ').pop(), 'refresh');
-        if (user) {
-            await deleteToken(user.id);
-            const newTokens = await createToken(user.id);
+        const tokenRecord = await getTokenRecord(req.headers.authorization.split(' ').pop(),req.headers.session_id, 'refresh')
+        if (user && tokenRecord) {
+            // await deleteToken(user.session_id);
+            const newTokens = await updateTokens(user.id,req.headers.session_id );
             delete newTokens.id;
             delete newTokens.user_id;
             res.json({ status: 200, ...newTokens });
         } else {
             res.json({
                 status: 403,
-                message: 'Invalid user refresh token!',
+                message: 'Invalid user refresh token or session_id!',
             });
         }
     } catch (e) {
@@ -637,7 +638,7 @@ const refreshAccessToken = async (req, res, next) => {
     try {
         let token = req.headers.authorization.split(' ').pop();
         let resfreshToken =  await getTokenRecord(token, 'refresh')
-        let result = await updateAccessToken(resfreshToken.user_id);
+        let result = await updateTokens(resfreshToken.user_id);
         res.send({ status: 200, result })
     } catch (error) {
         res.send(error.message)

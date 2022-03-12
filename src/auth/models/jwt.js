@@ -19,14 +19,14 @@ let createToken = async user_id =>{
     }
 }
 
-let getTokenRecord = async (token,tokenType = 'access') =>{
+let getTokenRecord = async (token, session_id,tokenType = 'access') =>{
 
     try {
-        let SQL = 'SELECT * FROM JWT WHERE access_token = $1;';
+        let SQL = 'SELECT * FROM JWT WHERE access_token = $1 AND session_id = $2;';
         if(tokenType ==='refresh') {
-            SQL = 'SELECT * FROM JWT WHERE refresh_token=$1;';
+            SQL = 'SELECT * FROM JWT WHERE refresh_token=$1 AND session_id = $2;';
         }
-        let safeValue = [token];
+        let safeValue = [token,session_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
         
@@ -38,10 +38,10 @@ let getTokenRecord = async (token,tokenType = 'access') =>{
 
 // This function is used for deleting tokens for users:
 
-async function deleteToken(user_id) {
+async function deleteToken(session_id) {
     try {
-      let SQL = `DELETE FROM JWT WHERE user_id=$1;`;
-      let removeToken = [user_id];
+      let SQL = `DELETE FROM JWT WHERE session_id=$1;`;
+      let removeToken = [session_id];
       let tokenQuery = await client.query(SQL, removeToken);
       return tokenQuery;
     } catch (e) {
@@ -50,11 +50,12 @@ async function deleteToken(user_id) {
   }
 
 
-  const updateAccessToken = async (userId) => {
+  const updateTokens = async (userId, session_id) => {
       try {
-          let accessToken = await getToken(userId)
-          let SQL = `UPDATE JWT SET access_token =$1 WHERE user_id=$2 RETURING *`;
-          let result = await client.update(SQL, [accessToken,userId])
+          const accessToken = await getToken(userId);
+          const refreshToken = await getToken(userId, 'refresh');
+          let SQL = `UPDATE JWT SET access_token=$1, refresh_token=$3 WHERE session_id=$2 RETURNING *;`;
+          let result = await client.query(SQL, [accessToken,session_id,refreshToken ])
           return result.rows[0]
       } catch (error) {
           throw new Error(error.message)
@@ -63,6 +64,6 @@ async function deleteToken(user_id) {
   
 
 
-module.exports = {createToken,deleteToken,getTokenRecord}
+module.exports = {createToken,deleteToken,getTokenRecord,updateTokens}
 
 
