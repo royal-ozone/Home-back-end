@@ -1,4 +1,4 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -128,9 +128,35 @@ const updateProductHandler = async (req, res) => {
     let data = await getProduct(id)
     let result = await updateProduct({ ...data, ...req.body });
     if (result) {
-      res.status(200).json({ message: 'product has been updated successfully', result });
+      res.json({ message: 'product has been updated successfully', result, status: 200 });
     } else {
-      res.status(403).send('something went wrong while updating the product')
+      res.send('something went wrong while updating the product')
+    }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const updateSizeAndQuantityHandler = async (req, res) =>{
+  try {
+    let result = await updateSizeAndQuantity(req.body)
+    if (result.id) {
+      res.json({ message: 'product has been updated successfully', result, status: 200 });
+    } else {
+      res.send('something went wrong while updating the product')
+    }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const updateDiscountHandler = async (req, res) => {
+  try {
+    let result = await updateDiscount(req.body)
+    if (result.id) {
+      res.json({ message: 'product has been updated successfully', result, status: 200 });
+    } else {
+      res.send('something went wrong while updating the product')
     }
   } catch (error) {
     res.send(error.message)
@@ -260,4 +286,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler }
