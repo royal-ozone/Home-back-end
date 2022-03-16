@@ -65,15 +65,39 @@ const getStoreProductsByStatus = async (id,limit,offset, status) => {
 
 const updateProduct = async (data) => {
     try {
-        let {id,store_id, entitle, artitle, metaTitle, sku, price, brand_name, endescription, quantity, discount, discount_rate,age,size,ardescription} = data;
-        let SQL = 'UPDATE product SET store_id=$1, enTitle=$2, metaTitle=$3, sku=$4, price=$5, brand_name=$6, endescription=$7, quantity=$8,discount=$9,discount_rate=$10,arTitle=$12,age=$13,size=$14, ardescription=$15 WHERE id=$11 RETURNING *;';
-        let safeValues = [store_id, entitle, metaTitle, sku, price, brand_name, endescription, quantity, discount, discount_rate, id, artitle,age,size,ardescription];
+        let {id, entitle, artitle, metaTitle, sku, price, brand_name, endescription,age,ardescription} = data;
+        let SQL = 'UPDATE product SET enTitle=$1, metaTitle=$2, sku=$3, price=$4, brand_name=$5, endescription=$6, arTitle=$7,age=$8,ardescription=$9, status=$10 WHERE id=$11 RETURNING *;';
+        let safeValues = [ entitle, metaTitle, sku, price, brand_name, endescription, artitle, age,ardescription,'pending', id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
     }
 };
+
+const updateSizeAndQuantity = async (data)=>{
+    try {
+        let {id,quantity, size} = data;
+        let SQL = "UPDATE product SET quantity=$2, size=$3 WHERE id=$1 RETURNING *;";
+        let safeValue = [ id, quantity, size]
+        let result = await client.query(SQL,safeValue)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+const updateDiscount = async (data)=>{
+    try {
+        let {id, discount,discount_rate} = data
+        let SQL = "UPDATE product SET discount =$2, discount_rate=$3 WHERE id=$1 RETURNING *;"
+        let safeValue = [id, discount, discount_rate]
+        let result = await client.query(SQL,safeValue)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 const updateProductStatus = async (data) => {
     try {
@@ -167,4 +191,4 @@ const increaseSizeQuantity = async data => {
 
 
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus};
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus,updateSizeAndQuantity,updateDiscount};
