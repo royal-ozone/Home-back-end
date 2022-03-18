@@ -1,4 +1,4 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -45,6 +45,19 @@ const getAllProductHandler = async (req, res) => {
       return product;
     })
     res.status(200).json({ result: await Promise.all(resultWithPics) })
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const getSearchDataHandler  = async (req, res) =>{
+  try {
+    let status = JSON.parse(req.params.status)
+      let result =await getSearchData(status[0], status[1])
+      if(result){
+        return res.send({status: 200, data: result})
+      }
+      res.send({status: 403, message: result})
   } catch (error) {
     res.send(error.message)
   }
@@ -286,4 +299,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler }

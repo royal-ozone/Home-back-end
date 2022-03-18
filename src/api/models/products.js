@@ -87,6 +87,18 @@ const updateSizeAndQuantity = async (data)=>{
     }
 }
 
+const getSearchData = async (status1, status2 =  null) => {
+    try {
+        let SQL = 'SELECT id, entitle, artitle FROM product WHERE status=$1 OR status=$2;';
+        let safeValue = [status1,status2 ]     
+        let result = await client.query(SQL,safeValue)
+        return result.rows
+
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 const updateDiscount = async (data)=>{
     try {
         let {id, discount,discount_rate} = data
@@ -191,4 +203,4 @@ const increaseSizeQuantity = async data => {
 
 
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus,updateSizeAndQuantity,updateDiscount};
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus,updateSizeAndQuantity,updateDiscount, getSearchData};
