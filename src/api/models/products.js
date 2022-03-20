@@ -65,9 +65,9 @@ const getStoreProductsByStatus = async (id,limit,offset, status) => {
 
 const updateProduct = async (data) => {
     try {
-        let {id, entitle, artitle, metaTitle, sku, price, brand_name, endescription,age,ardescription} = data;
-        let SQL = 'UPDATE product SET enTitle=$1, metaTitle=$2, sku=$3, price=$4, brand_name=$5, endescription=$6, arTitle=$7,age=$8,ardescription=$9, status=$10 WHERE id=$11 RETURNING *;';
-        let safeValues = [ entitle, metaTitle, sku, price, brand_name, endescription, artitle, age,ardescription,'pending', id];
+        let {id, entitle, artitle, metaTitle, sku, price, brand_name, endescription,age,ardescription,parent_category_id,child_category_id,grandchild_category_id} = data;
+        let SQL = 'UPDATE product SET enTitle=$1, metaTitle=$2, sku=$3, price=$4, brand_name=$5, endescription=$6, arTitle=$7,age=$8,ardescription=$9, status=$10,parent_category_id=$12,child_category_id=$13,grandchild_category_id=$14 WHERE id=$11 RETURNING *;';
+        let safeValues = [ entitle, metaTitle, sku, price, brand_name, endescription, artitle, age,ardescription,'pending', id,,parent_category_id,child_category_id,grandchild_category_id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
