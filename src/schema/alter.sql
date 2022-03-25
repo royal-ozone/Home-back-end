@@ -1,6 +1,5 @@
 ALTER TABLE store
-ADD verified_email BOOLEAN;
+ADD mobile VARCHAR (15) NOT NULL UNIQUE;
 
-ALTER TABLE store
-ADD verification_code INT;
+
 
