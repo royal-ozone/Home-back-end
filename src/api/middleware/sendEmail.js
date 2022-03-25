@@ -14,9 +14,9 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
             user:process.env.email, // generated ethereal user
             pass: process.env.password, // generated ethereal password
           },
-          tls:{
-              rejectUnauthorized: false,
-          }
+          // tls:{
+          //     rejectUnauthorized: false,
+          // }
         });
 
        const message = `<p>Dear Seller<br>
