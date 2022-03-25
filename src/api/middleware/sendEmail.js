@@ -37,7 +37,7 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
         console.log("Message sent: %s", info.messageId);
         // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
         if(info.messageId){
-            res.send( {message:'Verification code has been sent to your email', result: req.store})
+            res.send( {status: 200,message:'Verification code has been sent to your email', result: req.store})
         }
         // Preview only available when sending through an Ethereal account
     } catch (error) {
