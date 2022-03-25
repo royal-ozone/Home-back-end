@@ -27,7 +27,7 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
        </p>`
         
         let info = await transporter.sendMail({
-          from: '"Horizon" <emranaloul1992@hotmail.com>', // sender address
+          from: '"Horizon" <ae-horizon@outlook.com>', // sender address
           to: `${req.store.email}`, // list of receivers
           subject: "Seller Account Verification", // Subject line
           text: "Your seller account verification code", // plain text body
