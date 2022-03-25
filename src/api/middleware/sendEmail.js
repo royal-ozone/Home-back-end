@@ -11,12 +11,12 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
           port: 587,
           secure: false, // true for 465, false for other ports
           auth: {
-            user:'emranaloul1992@hotmail.com', // generated ethereal user
-            pass: 'Oquwtehome10$', // generated ethereal password
+            user:process.env.email, // generated ethereal user
+            pass: process.env.password, // generated ethereal password
           },
-          tls:{
-              rejectUnauthorized: false,
-          }
+          // tls:{
+          //     rejectUnauthorized: false,
+          // }
         });
 
        const message = `<p>Dear Seller<br>

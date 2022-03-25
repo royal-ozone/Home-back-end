@@ -1,5 +1,7 @@
 ALTER TABLE store
-ADD mobile VARCHAR (15) NOT NULL UNIQUE;
+ADD mobile VARCHAR (15) UNIQUE;
+
+
 
 
 
