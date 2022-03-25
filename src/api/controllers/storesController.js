@@ -34,20 +34,28 @@ const {
     updateStoreReview2,
     getStoreReview2ByStoreId,
     getAllStoreReview2,
+    updateVerificationCode,
+    updateVerifiedEmail
 } = require('../models/stores');
 
- const {getProfileByEmail} = require('../../auth/models/user')
+ const {getProfileByEmail, getProfileById} = require('../../auth/models/user')
 
 // Store handlers----------------------------------------------------------------------------------------------
 const createStoreHandler = async (req, res,next) => {
     try {
         let user = await getProfileByEmail(req.body.email)
-        // console.log("🚀 ~ file: storesController.js ~ line 45 ~ createStoreHandler ~ user", user.id)
+        let verifiedEmail = true;
+        let verificationCode = null;
+        if(req.body.email){
+            verifiedEmail = false;
+            verificationCode = (Math.random() * 1000000).toFixed(0)
+        }
+       
         if(!user && !req.user.profile_id) return res.send('User not found')
-        let result = await createStore({ profile_id: req.user.profile_id || user.id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE, ...req.body })
+        let result = await createStore({ profile_id: req.user.profile_id || user.id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE,verified_email: verifiedEmail, verification_code: verificationCode, ...req.body })
         if (result) {
             
-            req.store =result;
+            req.store ={email: req.body.email,...result};
             next();
         }
 
@@ -61,16 +69,47 @@ const createStoreHandler = async (req, res,next) => {
         res.send(error.message)
     }
 }
-const addStoreReview2 = async(req,res) => {
+
+const checkVerificationCodeHandler = async (req, res) => {
+    try {
+        let response = await getStore(req.body.id)
+        if(response.verification_code === Number(req.body.code)){
+            let result =  await updateVerifiedEmail({...req.body, verified_email: true})
+            res.send({status: 200, result: result, message: 'email verified successfully'})
+        } else{
+            res.send({status: 403, message: 'wrong verification code'})
+        }
+    } catch (error) {
+        res.send(error.message)
+    }
+}
+
+const updateVerificationCodeHandler = async (req, res, next) => {
+    try {
+        
+        let result = await updateVerificationCode({...req.body, code:(Math.random() * 1000000).toFixed(0) })
+        console.log("🚀 ~ file: storesController.js ~ line 91 ~ updateVerificationCodeHandler ~ result", result)
+        let profile = await getProfileById(result.profile_id)
+        req.store ={email : profile.email, ...result}
+        next()
+        // res.send('verification code updated successfully')
+    } catch (error) {
+        res.send(error.message)
+    }
+}
+const addStoreReview2 = async(req,res,next) => {
     try {
       let store =req.store;
        await addStoreReviewModel2(store.id);
-       
-        res.status(200).json({
-                status: 200,
-                message: 'Store request created successfully',
-                data: store
-            });
+       if(store.verified_email){
+           res.status(200).json({
+                   status: 200,
+                   message: 'Store request created successfully',
+                   data: store
+               });
+       } else{
+           next()
+       }
     } catch (error) {
         res.send(error.message)
     }
@@ -473,5 +512,7 @@ module.exports = {
     addStoreReview2,
     getAllStoreReview2Handler,
     getStoreReview2Handler,
+    updateVerificationCodeHandler,
+    checkVerificationCodeHandler
 
 }

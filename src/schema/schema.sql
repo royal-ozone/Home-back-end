@@ -123,10 +123,13 @@ CREATE TABLE store(
   city VARCHAR (250) NOT NULL,
   caption VARCHAR(250),
   about VARCHAR(250),
+  mobile VARCHAR (15) NOT NULL UNIQUE,
   store_picture TEXT,
   store_rating REAL NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
   rejected_reason TEXT DEFAULT '',
+  verified_email BOOLEAN,
+  verification_code INT,
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profile(id)
