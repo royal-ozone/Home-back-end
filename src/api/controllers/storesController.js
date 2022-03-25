@@ -88,7 +88,6 @@ const updateVerificationCodeHandler = async (req, res, next) => {
     try {
         
         let result = await updateVerificationCode({...req.body, code:(Math.random() * 1000000).toFixed(0) })
-        console.log("🚀 ~ file: storesController.js ~ line 91 ~ updateVerificationCodeHandler ~ result", result)
         let profile = await getProfileById(result.profile_id)
         req.store ={email : profile.email, ...result}
         next()
