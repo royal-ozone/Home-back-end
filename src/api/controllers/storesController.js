@@ -44,6 +44,7 @@ const {
 const createStoreHandler = async (req, res,next) => {
     try {
         let user = await getProfileByEmail(req.body.email)
+        if(!user && !req.user.profile_id) return res.send('User not found')
         let store = await getStore(user.id)
         let verifiedEmail = true;
         let verificationCode = null;
@@ -52,7 +53,6 @@ const createStoreHandler = async (req, res,next) => {
             verificationCode = (Math.random() * 1000000).toFixed(0)
         }
         if(store) return res.send('Account already exists')
-        if(!user && !req.user.profile_id) return res.send('User not found')
         let result = await createStore({ profile_id: req.user.profile_id || user.id,  store_picture: req.file? req.file.location: process.env.DEFAULT_STORE_PICTURE,verified_email: verifiedEmail, verification_code: verificationCode, ...req.body })
         if (result) {
             

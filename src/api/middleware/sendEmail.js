@@ -21,7 +21,7 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
 
        const message = `<p>Dear Seller<br>
        
-       Kindly find your email conirmation code <a href="">${req.store.verification_code}</a>.<br>
+       Kindly find your email confirmation code <a href="">${req.store.verification_code}</a>.<br>
 
        Regards,
        </p>`
@@ -34,7 +34,6 @@ console.log("🚀 ~ file: sendEmail.js ~ line 5 ~ sendEmail ~ req", req.store)
           html: message, // html body
         });
         
-        console.log("Message sent: %s", info.messageId);
         // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
         if(info.messageId){
             res.send( {status: 200,message:'Verification code has been sent to your email', result: req.store})
