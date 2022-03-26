@@ -87,10 +87,10 @@ const updateSizeAndQuantity = async (data)=>{
     }
 }
 
-const getSearchData = async (status1, status2 =  null) => {
+const getSearchData = async (status1, status2 =  null, id) => {
     try {
-        let SQL = 'SELECT id, entitle, artitle FROM product WHERE status=$1 OR status=$2;';
-        let safeValue = [status1,status2 ]     
+        let SQL = 'SELECT id, entitle, artitle FROM product WHERE (status=$1 OR status=$2) AND store_id=$3;';
+        let safeValue = [status1,status2 ,id]     
         let result = await client.query(SQL,safeValue)
         return result.rows
 

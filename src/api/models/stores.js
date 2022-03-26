@@ -51,9 +51,9 @@ const deleteStore = async id => {
 
 const updateStore = async (id, data) => {
     try {
-        let { city, caption, about } = data;
-        let SQL = 'UPDATE STORE SET city=$1,caption=$2,about=$3 WHERE profile_id=$4 RETURNING *;';
-        let safeValues = [city,caption, about, id];
+        let { city, caption, about,mobile } = data;
+        let SQL = 'UPDATE STORE SET city=$1,caption=$2,about=$3, mobile=$5 WHERE profile_id=$4 RETURNING *;';
+        let safeValues = [city,caption, about, id,mobile];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
