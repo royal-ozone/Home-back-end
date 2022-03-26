@@ -53,7 +53,7 @@ const getAllProductHandler = async (req, res) => {
 const getSearchDataHandler  = async (req, res) =>{
   try {
     let status = JSON.parse(req.params.status)
-      let result =await getSearchData(status[0], status[1])
+      let result =await getSearchData(status[0], status[1], req.user.store_id)
       if(result){
         return res.send({status: 200, data: result})
       }
