@@ -89,6 +89,7 @@ const {addProductHandler,
    getStoreProductsHandler,
    getStoreProductsByStatusHandler,
    addProductPictureHandler
+   ,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler
   } = require('../api/controllers/productControllers');
 
 const {addTagHandler,
@@ -151,6 +152,8 @@ const  {createStoreHandler,
   addStoreReview2,
   getAllStoreReview2Handler,
   getStoreReview2Handler,
+  updateVerificationCodeHandler,
+    checkVerificationCodeHandler
 } = require('../api/controllers/storesController');
 
 const {uploadS3} = require('../api/middleware/uploader');
@@ -249,12 +252,15 @@ const {addOfferHandler,
 
 const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHandler} = require('../api/controllers/wishlistController')
 const {signInHandler} = require('../auth/controllers/authController')
-
+const sendSMS = require('../api/middleware/infobip')
+const sendEmail = require('../api/middleware/sendEmail')
 // Global middleware
 // router.use(bearer);
 
 // end point for parent category 
 router.post('/payment', payment)
+router.post('/sendSMS', sendSMS)
+router.post('/sendEmail', sendEmail)
 router.post('/add/PG',bearer,checkAdmin,upload.none(),addParentCategory);
 router.delete('/remove/PG',bearer,upload.none(),checkAdmin,removeParentCategory);
 router.put('/update/PG',bearer,upload.none(),checkAuth,updateParentCategory);
@@ -305,7 +311,7 @@ if(req.body.email) {
 } 
 router.post('/store/signin', upload.none(), basic, checkStoreAuth, signInHandler )
 router.post('/store', bearer, uploadS3.single('image'), createStoreHandler,addStoreReview2);
-router.post('/store/email', email, uploadS3.single('image'), createStoreHandler,addStoreReview2);
+router.post('/store/email', uploadS3.single('image'),email, createStoreHandler,addStoreReview2,sendEmail);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
 router.get('/store',bearer,upload.none(), getStoreHandler);
@@ -316,12 +322,14 @@ router.put('/store/name',bearer,checkStoreAuth, upload.none(),updateStoreNameHan
 router.put('/store/status',bearer,checkAuth, upload.none(),updateStoreStatusHandler);
 router.put('/store/picture',bearer,checkStoreAuth,uploadS3.single('image'),updateStorePictureHandler);
 router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePictureHandler)
+router.post('/store/verifyEmail', upload.none(), checkVerificationCodeHandler)
+router.post('/store/updateCode', upload.none(), updateVerificationCodeHandler, sendEmail)
 
 
 // product 
 
 router.post('/product',bearer,checkStoreAuth,checkStoreStatus, uploadS3.array('image'), addProductHandler)
-router.get('/product',upload.none(), getAllProductHandler)
+router.get('/products',upload.none(), getAllProductHandler)
 router.get('/product/store', bearer, checkStoreAuth, upload.none(), getStoreProductsHandler)
 router.get('/product/store/:status', bearer, checkStoreAuth, upload.none(), getStoreProductsByStatusHandler)
 router.get('/product/:id',upload.none(), getProductHandler, getParentCategoryById,getChildCategoryById,getGrandChildCategoryById)
@@ -331,6 +339,9 @@ router.delete('/product',upload.none(), deleteProductHandler)
 router.put('/product/picture', bearer, uploadS3.array('image'), updateProductPictureHandler )
 router.delete('/product/picture',bearer,checkStoreAuth,upload.none(), deleteProductPictureHandler)
 router.post('/product/picture', bearer, uploadS3.single('image'), addProductPictureHandler)
+router.put('/product/quantityandsize', bearer, upload.none(), updateSizeAndQuantityHandler)
+router.put('/product/discount', bearer,upload.none(), updateDiscountHandler)
+router.get('/product/searchData/:status', bearer,upload.none(), checkStoreAuth, getSearchDataHandler)
 
 //tag
 router.post('/tag',bearer,checkAuth,upload.none(),addTagHandler)

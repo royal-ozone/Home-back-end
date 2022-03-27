@@ -5,9 +5,9 @@ const { deleteRemoteFile} = require('../middleware/uploader');
 
 const createStore = async data => {
     try {
-        let { profile_id, store_name, city, caption, about, store_picture } = data;
-        let SQL = 'INSERT INTO STORE (profile_id, store_name, city,caption, about,store_picture) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;';
-        let safeValues = [profile_id, store_name, city, caption, about, store_picture]
+        let { profile_id, store_name, city, caption, about, store_picture,mobile, verified_email,  verification_code } = data;
+        let SQL = 'INSERT INTO STORE (profile_id, store_name, city,caption, about,store_picture,mobile,verified_email,verification_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *;';
+        let safeValues = [profile_id, store_name, city, caption, about, store_picture,mobile,verified_email,  verification_code]
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -15,6 +15,28 @@ const createStore = async data => {
     }
 }
 
+const updateVerificationCode =  async data => {
+    try {
+        let {id, code } = data;
+        let SQL = `UPDATE store SET verification_code=$2 WHERE id=$1 RETURNING *;`
+        let safeValues = [id, code]
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+const updateVerifiedEmail = async data => {
+    try {
+        let {id, verified_email} = data;
+        let SQL = 'UPDATE store SET verified_email =$2 WHERE id=$1 RETURNING *;'
+        let safeValues = [id, verified_email]
+        let result = await client.query(SQL, safeValues);
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 const deleteStore = async id => {
     try {
@@ -29,9 +51,9 @@ const deleteStore = async id => {
 
 const updateStore = async (id, data) => {
     try {
-        let { city, caption, about } = data;
-        let SQL = 'UPDATE STORE SET city=$1,caption=$2,about=$3 WHERE profile_id=$4 RETURNING *;';
-        let safeValues = [city,caption, about, id];
+        let { city, caption, about,mobile } = data;
+        let SQL = 'UPDATE STORE SET city=$1,caption=$2,about=$3, mobile=$5 WHERE profile_id=$4 RETURNING *;';
+        let safeValues = [city,caption, about, id,mobile];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (error) {
@@ -428,5 +450,7 @@ module.exports = {
     addStoreReviewModel2,
     updateStoreReview2,
     getStoreReview2ByStoreId,
-    getAllStoreReview2
+    getAllStoreReview2,
+    updateVerificationCode,
+    updateVerifiedEmail
 };

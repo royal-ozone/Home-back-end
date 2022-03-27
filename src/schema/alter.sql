@@ -1,0 +1,7 @@
+ALTER TABLE store
+ADD mobile VARCHAR (15) UNIQUE;
+
+
+
+
+
