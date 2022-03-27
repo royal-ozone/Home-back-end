@@ -17,10 +17,11 @@ const addAddressHandler =async(req, res, next) => {
         }
         let data= await addAddressModel({profile_id: req.user.profile_id, country: req.user.country,store_id: req.user.store_id,...req.body})
         let response ={
+            status: 200,
             message:'Successfully added your address',
             data : data
         }
-        res.status(200).send(response)
+        res.send(response)
     } catch (error) {
         res.status(400).send(error.message)
     }
@@ -32,17 +33,18 @@ const removeAddressHandler= async (req, res,next) => {
                 let data = await removeAddressModel(req.body.id);
                 if(data){
                     let response ={
+                        status: 200,
                         message:'the address has been deleted',
                         data:data
                     }
-                    res.status(200).send(response)
+                    res.send(response)
                 } else {
-                    res.status(403).send('this address is not exist')
+                    res.send({status: 403, message:'this address is not exist'})
                 } 
-            } else res.status(403).send(result)
+            } else res.send({ status:403, message:result})
 
     } catch (error) {
-        res.status(403).send(error.message)
+        res.send({ status: 403, message:error.message})
     }
 }
 const updateAddressHandler = async (req, res,next ) => {
@@ -52,32 +54,36 @@ const updateAddressHandler = async (req, res,next ) => {
             let oldData = await getAddressById(req.body.id)
             let data = await updateAddressModel({...oldData,...req.body});
             let response = {
+            status: 200,
             message: 'successfully update address',
             data :data
         }
-        res.status(200).send(response)
+        res.send(response)
         } else res.status(403).send(result)
         
     } catch (error) {
         let response = {
+            status: 403,
             message: error.message,
         }
-        res.status(403).send(response)
+        res.send(response)
     }
 }
 const getAllAddressHandler =async (req, res, next)=>{
     try {
         let data = await getAllAddressModel();
         let response = {
+            status: 200,
             message: 'successfully get all the address',
             all_address: data
         }
-        res.status(200).send(response)
+        res.send(response)
     } catch (error) {
         let response = {
+            status: 403,
             message: error.message,
         }
-        res.status(400).send(response)
+        res.send(response)
         
     }
 }
@@ -85,7 +91,7 @@ const getAllAddressHandler =async (req, res, next)=>{
 const getAddressByProfileIdModelHandler =async (req, res, next)=>{
     try {
         let result = await getAddressByProfileIdModel(req.user.profile_id)
-        res.status(200).json(result)
+        res.json({status: 200,data:result})
     } catch (error) {
         res.status(400).send(error.message)
     }

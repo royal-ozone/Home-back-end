@@ -1,4 +1,5 @@
 'use strict';
+const os = require('os');
 const clientForVerification = require('twilio')(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 const { signup,
     getUserById,
@@ -194,6 +195,33 @@ const updateProfilers = async (req, res, next) => {
 const signInHandler = async (req, res, next) => {
   try {
     delete req.tokens.created_at;
+    require('dns').reverse(req.connection.remoteAddress, function(err, domains) {
+    console.log(domains);
+
+});
+let name = os.hostname();
+let networkInterfaces =os.networkInterfaces();
+
+let cpus =os.cpus();
+console.log("🚀 ~ file: Auth.js ~ line 90 ~ Auth ~ login ~ cpus", cpus)
+let freemem=os.freemem();
+console.log("🚀 ~ file: Auth.js ~ line 92 ~ Auth ~ login ~ freemem", freemem)
+let totalmem=os.totalmem();
+console.log("🚀 ~ file: Auth.js ~ line 94 ~ Auth ~ login ~ totalmem", totalmem)
+let loadavg =os.loadavg();
+console.log("🚀 ~ file: Auth.js ~ line 96 ~ Auth ~ login ~ loadavg", loadavg)
+let uptime=os.uptime();
+console.log("🚀 ~ file: Auth.js ~ line 98 ~ Auth ~ login ~ uptime", uptime)
+let release=os.release();
+console.log("🚀 ~ file: Auth.js ~ line 100 ~ Auth ~ login ~ release", release)
+let arch=os.arch();
+console.log("🚀 ~ file: Auth.js ~ line 102 ~ Auth ~ login ~ arch", arch)
+let platform =os.platform();
+console.log("🚀 ~ file: Auth.js ~ line 104 ~ Auth ~ login ~ platform", platform)
+let type =os.type();
+console.log("🚀 ~ file: Auth.js ~ line 106 ~ Auth ~ login ~ type", type)
+console.log("🚀 ~ file: Auth.js ~ line 89 ~ Auth ~ login ~ networkInterfaces", networkInterfaces)
+console.log("🚀 ~ file: Auth.js ~ line 88 ~ Auth ~ login ~ name", name)
     res.json({ status: 200, ...req.tokens });
   } catch (error) {
     next(error);
