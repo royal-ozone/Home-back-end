@@ -11,6 +11,7 @@ let createToken = async user_id =>{
         const refreshToken = getToken(user_id, 'refresh');
         let SQL = `INSERT INTO JWT (access_token, refresh_token, user_id) VALUES ($1,$2,$3) RETURNING *;`;
         let safeValues = [accessToken, refreshToken, user_id];
+        console.log("🚀 ~ file: jwt.js ~ line 14 ~ safeValues", safeValues)
         let tokenQuery = await client.query(SQL, safeValues);
         return tokenQuery.rows[0]
         

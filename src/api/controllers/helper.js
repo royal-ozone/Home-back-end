@@ -91,12 +91,12 @@ const timer =  (year,month,day,hour,minute,second)=>{
 
     const checkUserAuth = async(tableName,id,profile_id)=>{
         let SQL = `SELECT * FROM ${tableName} WHERE id =$1 ;`;
-        let SQL2 ='SELECT * FROM administrator WHERE profile_id=$1 ;';
+       // let SQL2 ='SELECT * FROM administrator WHERE profile_id=$1 ;';
         let safeValue = [id];
-        let safeValue2 = [profile_id];
+      //  let safeValue2 = [profile_id];
         let result = await client.query(SQL, safeValue);
-        let result2 = await client.query(SQL2, safeValue2);
-        if(result.rows[0].profile_id  === profile_id || result2.rows.length !==0){
+       // let result2 = await client.query(SQL2, safeValue2);
+        if(result.rows[0].profile_id  === profile_id ){
             return result.rows[0];
         } else {
             return 'not Authorized';

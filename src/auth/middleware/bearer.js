@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
             })
         }catch(err){
             tokenRecord = await getTokenRecord(token, session_id)
-           
+            
         }
         
         if (tokenRecord) {
