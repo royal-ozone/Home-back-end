@@ -15,27 +15,28 @@ const addChildCategory = async (req, res, next) => {
     const { entitle, artitle } = req.body;
     if (!entitle && !artitle) {
       res
-        .status(401)
-        .send(
-          "you can not add a child category without entitle or artitle for it "
+        .json(
+          {status:403,message:"you can not add a child category without entitle or artitle for it "}
         );
     } else {
       let oldData = await getChildCategoryByTitleModel(req.body);
       if (!oldData) {
         let data = await addChildCategoryModel(req.body);
         let response = {
+          status:200,
           message: "successfully added child category",
           data: data,
         };
-        return res.status(200).json(response);
+        return res.json(response);
       }
-      res.status(403).json("the child category is exist");
+      res.json({status:403,message:"the child category is not exist"});
     }
   } catch (error) {
     let response = {
+      status:403,
       message: error.message,
     };
-    res.status(401).json(response);
+    res.json(response);
   }
 };
 
@@ -44,15 +45,17 @@ const removeChildCategory = async (req, res, next) => {
   try {
     let data = await removeChildCategoryModel(id);
     let response = {
+      status:200,
       message: "successfully remove child category",
       data: data,
     };
-    res.status(200).json(response);
+    res.json(response);
   } catch (error) {
     let response = {
+      status:403,
       message: error.message,
     };
-    res.status(401).json(response);
+    res.json(response);
   }
 };
 const updateChildCategory = async (req, res, next) => {
@@ -63,21 +66,22 @@ const updateChildCategory = async (req, res, next) => {
     if (oldData) {
       let data = await updateChildCategoryModel({ ...oldData, ...req.body });
       let response = {
+        status:200,
         message: "successfully update child category",
         data: data,
       };
-      res.status(200).json(response);
+      res.json(response);
     } else {
       let response = {
         message: "the child category is not exist in database",
       };
-      res.status(403).json(response);
+      res.json({status:403,response});
     }
   } catch (error) {
     let response = {
       message: error.message,
     };
-    res.status(401).json(response);
+    res.json({status:403,response});
   }
 };
 const getChildCategoryById = async (req, res, next) => {
@@ -92,28 +96,28 @@ const getChildCategoryById = async (req, res, next) => {
     } else {
       let id = req.params.idCG;
       let response = await getChildCategoryByIdModel(id);
-      res.status(200).json(response);
+      res.json({status: 200,response});
 
     }
   } catch (error) {
-    res.status(400).json(error.message);
+    res.json({status: 403,message:error.message});
   }
 };
 const getAllChildCategory = async (req, res, next) => {
   try {
     let response = await getAllChildCategoryModel();
-    res.status(200).json(response);
+    res.json({status: 200,response});
   } catch (error) {
-    res.status(400).json(error.message);
+    res.json({status:403,message:error.message});
   }
 };
 const getChildCategoryByTitle = async (req, res, next) => {
   try {
     const { title } = req.body;
     let result = await getChildCategoryByTitleModelTwo(title);
-    res.status(200).json(result);
+    res.json({status: 200,result});
   } catch (error) {
-    res.status(403).json(error.message);
+    res.json({status:403,message:error.message});
   }
 };
 

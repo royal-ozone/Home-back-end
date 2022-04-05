@@ -44,9 +44,9 @@ const getAllProductHandler = async (req, res) => {
       delete product.pictures.product_id
       return product;
     })
-    res.status(200).json({ result: await Promise.all(resultWithPics) })
+    res.json({ status:200,result: await Promise.all(resultWithPics) })
   } catch (error) {
-    res.send(error.message)
+    res.json({status:403,message:error.message})
   }
 }
 

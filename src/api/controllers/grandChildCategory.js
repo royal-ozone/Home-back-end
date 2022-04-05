@@ -7,27 +7,28 @@ const addGrandChildCategory = async(req,res,next)=>{
     try {
       let result = await getGrandChildCategoryByTitleModel2(req.body)
       if(result){
-        res.status(403).send('grand child category is already exist')
+        res.json({status: 403,message:'grand child category is already exist'})
       } else {
         let data = await addGrandChildCategoryModel(req.body);
         if (!data.id) {
           res
-            .status(401)
-            .send(data);
+            .json({status:403,data});
         } else {
           let response = {
+            status: 200,
             message: "successfully added  grand child category",
             data: data,
           };
-          res.status(200).json(response);
+          res.json(response);
         }
 
       }
       } catch (error) {
         let response = {
+          status:403,
           message: error.message,
         };
-        res.status(401).json(response);
+        res.json(response);
       }
 };
 
@@ -37,21 +38,24 @@ const removeGrandChildCategory= async (req, res, next) => {
     let data = await removeGrandChildCategoryModel(id);
     if (data.id) {
       let response = {
+        status:200,
         message: "successfully remove grand child category",
         data: data,
       };
-      res.status(200).json(response);
+      res.json(response);
     } else {
       let response = {
+        status:403,
         message: data
       };
-      res.status(403).json(response);
+      res.json(response);
     }
   } catch (error) {
     let response = {
+      status:403,
       message: error.message,
     };
-    res.status(401).json(response);
+    res.json(response);
   }
 }
 const updateGrandChildCategory = async (req, res, next) => {
@@ -61,24 +65,27 @@ const updateGrandChildCategory = async (req, res, next) => {
       if (oldData.id) {
         let data = await updateGrandChildCategoryModel({...oldData, ...req.body});
         let response = {
+          status:200,
           message: "successfully update grand child category",
           data: data,
         };
-        res.status(200).json(response);
+        res.json(response);
       } else {
         let response = {
+          status:403,
           message: oldData,
         };
   
-        res.status(403).json(response);
+        res.json(response);
       }
 
     } catch (error) {
       let response = {
+        status:403,
         message: error.message,
       };
     
-      res.status(401).json(response);
+      res.json(response);
     }
   };
 const getGrandChildCategoryById= async (req, res, next) => {
@@ -89,32 +96,32 @@ const getGrandChildCategoryById= async (req, res, next) => {
       delete product.grandchild_category_id
       product['grandChild_category'] = response
      
-      res.status(200).json(product);
+      res.json({status:200,product});
     } else {
 
       let id = req.params.idGCG;
       let response = await getGrandChildCategoryByIdModel(id);
-      res.status(200).json(response);
+      res.json({status:200,response});
     }
   } catch (error) {
-    res.status(400).json(error.message);
+    res.json({status:403,message:error.message});
   }
 }
 const getAllGrandChildCategory = async (req, res, next) => {
     try {
       let response = await getAllGrandChildCategoryModel();
-      res.status(200).json(response);
+      res.json({status:200,response});
     } catch (error) {
-      res.status(400).json(error.message);
+      res.json({status:403,message:error.message});
     }
   };
 const getGrandChildCategoryByTitle = async (req, res, next)=>{
     try {
         const { title } = req.body;
         let result = await getGrandChildCategoryByTitleModel(title);
-        res.status(200).json(result);
+        res.json({status:200,result});
       } catch (error) {
-        res.status(403).json(error.message);
+        res.json({status:403,message:error.message});
       }
 }
 
