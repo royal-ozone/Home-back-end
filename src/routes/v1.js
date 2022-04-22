@@ -16,7 +16,9 @@ const {addParentCategory,
   getParentCategoryById,
   getAllParentCategory,
   getParentCategoryByTitle,
-  updateDisplayParentCategory
+  updateDisplayParentCategory,
+  getAllItems,
+  getGrandItems,
 } = require('../api/controllers/parentCategory');
 
 const {addChildCategory,
@@ -254,8 +256,13 @@ const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHand
 const {signInHandler} = require('../auth/controllers/authController')
 const sendSMS = require('../api/middleware/infobip')
 const sendEmail = require('../api/middleware/sendEmail')
+
+ 
 // Global middleware
 // router.use(bearer);
+
+// all category
+//router.get('/getAll/items',getAllItems,getGrandItems);
 
 // end point for parent category 
 router.post('/payment', payment)

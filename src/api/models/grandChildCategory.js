@@ -71,6 +71,18 @@ const getGrandChildCategoryByIdModel = async (id) => {
       return error.message;
     }
   };
+  const getGrandChildCategoryByChildIdModel = async (id) => {
+
+    try {
+      let SQL = "SELECT * FROM grandchild_category WHERE parent_id=$1;";
+      let safeValue = [id];
+      let result = await client.query(SQL, safeValue);
+  
+      return result.rows;
+    } catch (error) {
+      return error.message;
+    }
+  };
 
   const getGrandChildCategoryByTitleModel2 = async (data)=>{
     try {
@@ -107,5 +119,6 @@ module.exports = {
     updateGrandChildCategoryModel,
     getAllGrandChildCategoryModel,
     getGrandChildCategoryByTitleModel,
-    getGrandChildCategoryByTitleModel2
+    getGrandChildCategoryByTitleModel2,
+    getGrandChildCategoryByChildIdModel
 };

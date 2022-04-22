@@ -62,6 +62,16 @@ const getChildCategoryByIdModel = async (id) => {
       return error.message;
     }
   };
+  const getChildCategoryByParentIdModel = async (id) => {
+    try {
+      let SQL = "SELECT * FROM child_category WHERE parent_id=$1;";
+      let safeValue = [id];
+      let result = await client.query(SQL, safeValue);
+      return result.rows;
+    } catch (error) {
+      return error.message;
+    }
+  };
 
 const getChildCategoryByTitleModel = async (data)=>{
     try {
@@ -98,5 +108,6 @@ module.exports = {
   updateChildCategoryModel,
   getAllChildCategoryModel,
   getChildCategoryByTitleModel,
-  getChildCategoryByTitleModelTwo
+  getChildCategoryByTitleModelTwo,
+  getChildCategoryByParentIdModel
 };

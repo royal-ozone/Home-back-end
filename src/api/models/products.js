@@ -39,6 +39,26 @@ const getProduct = async data => {
         throw new Error(error.message)
     }
 };
+const getProductByGrandChildIdModel = async (data,offset,limit) => {
+    try {
+        let SQL = `SELECT * FROM product WHERE grandchild_category_id =$1 LIMIT $3 OFFSET $2;`;
+        let result = await client.query(SQL,[data,offset,limit])
+        return result.rows[0];
+
+    } catch (error) {
+        throw new Error(error.message)
+    }
+};
+const getProductByChildIdModel = async (data,offset,limit) => {
+    try {
+        let SQL = `SELECT * FROM product WHERE child_category_id =$1;`;
+        let result = await client.query(SQL,[data])
+        return result.rows;
+
+    } catch (error) {
+        throw new Error(error.message)
+    }
+};
 
 const getStoreProducts = async (id,limit,offset) => {
     try {
@@ -203,4 +223,11 @@ const increaseSizeQuantity = async data => {
 
 
 
-module.exports = {addProduct,getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus,updateSizeAndQuantity,updateDiscount, getSearchData};
+module.exports = {addProduct,getAllProduct, getProduct, updateProduct,
+     updateProductStatus, deleteProduct,updateProductDisplay,getStoreProducts, 
+     decreaseSizeQuantity, increaseSizeQuantity,getStoreProductsByStatus,
+     updateSizeAndQuantity,updateDiscount, 
+     getSearchData,
+     getProductByGrandChildIdModel,
+     getProductByChildIdModel
+    };
