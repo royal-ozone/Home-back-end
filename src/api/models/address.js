@@ -69,7 +69,7 @@ const getAddressByProfileIdModel = async (id)=>{
 }
 const getStoreAddress = async (id)=>{
     try {
-        let SQL = 'SELECT * from address WHERE profile_id= $1 AND store_address=$2;'
+        let SQL = 'SELECT * from address WHERE profile_id=$1 AND store_address=$2 AND display=$2;'
         let safeValue = [id,true];
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
