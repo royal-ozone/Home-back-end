@@ -1,5 +1,5 @@
-ALTER TABLE store
-ADD mobile VARCHAR (15) UNIQUE;
+ALTER TABLE address
+ADD store_address BOOLEAN;
 
 
 
