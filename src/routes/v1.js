@@ -43,7 +43,7 @@ const {addAddressHandler,
   updateAddressHandler,
   getAllAddressHandler,
   getAddressByProfileIdModelHandler,
-  getAddressByIdHandler
+  getAddressByIdHandler,getStoreAddressHandler
 } = require('../api/controllers/addressControllers');
 
 const {addCartItemHandler
@@ -302,6 +302,7 @@ router.put('/remove/address',bearer,upload.none(),removeAddressHandler);
 router.put('/update/address',bearer,upload.none(),updateAddressHandler);
 router.get('/getAll/address',bearer,upload.none(),getAllAddressHandler);
 router.get('/get/address',bearer,upload.none(),getAddressByProfileIdModelHandler);
+router.get('/address/store',bearer,upload.none(),getStoreAddressHandler)
 
 // store 
 

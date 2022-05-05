@@ -1,6 +1,6 @@
 'use strict';
 
-const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById} =require('../models/address');
+const {addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById,getStoreAddress} =require('../models/address');
 const {checkUserAuth} = require('./helper')
 
 const addAddressHandler =async(req, res, next) => {
@@ -43,6 +43,18 @@ const removeAddressHandler= async (req, res,next) => {
                 } 
             } else res.send({ status:403, message:result})
 
+    } catch (error) {
+        res.send({ status: 403, message:error.message})
+    }
+}
+const getStoreAddressHandler = async (req, res)=>{
+    try {
+        let result = await getStoreAddress(req.user.profile_id)
+        if (result.id){
+            res.json({ result: result, status: 200 })
+        } else{
+            res.send({ status: 403, message: 'something went wrong'})
+        }
     } catch (error) {
         res.send({ status: 403, message:error.message})
     }
@@ -131,4 +143,4 @@ const getAddressByIdHandler =async (req, res, next)=>{
     }
 }
 
-module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler,getAddressByIdHandler}
+module.exports = {addAddressHandler,removeAddressHandler,updateAddressHandler,getAllAddressHandler,getAddressByProfileIdModelHandler,getAddressByIdHandler,getStoreAddressHandler}

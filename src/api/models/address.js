@@ -56,8 +56,8 @@ const getAllAddressModel = async ()=>{
 }
 const getAddressByProfileIdModel = async (id)=>{
     try {
-        let SQL ='SELECT * FROM address WHERE profile_id= $1;';
-        let safeValue = [id];
+        let SQL ='SELECT * FROM address WHERE profile_id= $1 AND display=$2;';
+        let safeValue = [id,true];
         let result = await client.query(SQL, safeValue)
         return result.rows;
     } catch (error) {
@@ -67,7 +67,19 @@ const getAddressByProfileIdModel = async (id)=>{
         return response;
     }
 }
-
+const getStoreAddress = async (id)=>{
+    try {
+        let SQL = 'SELECT * from address WHERE profile_id= $1 AND store_address=$2;'
+        let safeValue = [id,true];
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        let response = {
+            message: error.message,
+        }
+        return response;
+    }
+}
 const getAddressById = async (id)=>{
     try {
         let SQL ='SELECT * FROM address WHERE id= $1;';
@@ -79,5 +91,5 @@ const getAddressById = async (id)=>{
     }
 }
 module.exports = {
-    addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById
+    addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById,getStoreAddress
 }
