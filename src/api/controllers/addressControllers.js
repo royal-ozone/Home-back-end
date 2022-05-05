@@ -15,7 +15,7 @@ const addAddressHandler =async(req, res, next) => {
         } else {
             req.body.is_default = false
         }
-        let data= await addAddressModel({profile_id: req.user.profile_id, country: req.user.country,store_id: req.user.store_id,...req.body})
+        let data= await addAddressModel({profile_id: req.user.profile_id, country: req.user.country,store_id: req.user.store_id,...req.body, store_address: !!req.body.store_address})
         let response ={
             message:'Successfully added your address',
             data : data
