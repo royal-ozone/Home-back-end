@@ -1,5 +1,5 @@
 ALTER TABLE address
-ADD store_address BOOLEAN;
+ADD region VARCHAR (250) default NULL;
 
 
 
