@@ -73,9 +73,9 @@ const getStoreProducts = async (id,limit,offset) => {
 const getStoreProductsByStatus = async (id,limit,offset, status) => {
     try {
         let SQL = `SELECT * FROM product WHERE store_id=$1 AND status=$4 AND display=$5 LIMIT $2 OFFSET $3;`;
-        let SQL2 = 'SELECT COUNT(*) FROM product WHERE store_id=$1 AND status=$2;'
+        let SQL2 = 'SELECT COUNT(*) FROM product WHERE store_id=$1 AND status=$2 AND display=$3;'
         let result = await client.query(SQL,[id,limit,offset, status, true]);
-        let count = await client.query(SQL2, [id, status]);
+        let count = await client.query(SQL2, [id, status, true]);
         return {result: result.rows, ...count.rows[0]};
     } catch (error) {
         throw new Error(error.message)
