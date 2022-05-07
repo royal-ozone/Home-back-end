@@ -20,8 +20,8 @@ const addProduct = async data => {
 
 const getAllProduct = async (offset,limit) => {
 try {
-    let SQL = `SELECT * FROM product LIMIT $2 OFFSET $1;`
-    let result = await client.query(SQL,[offset,limit])
+    let SQL = `SELECT * FROM product WHERE AND display=$3 LIMIT $2 OFFSET $1;`
+    let result = await client.query(SQL,[offset,limit, true])
     return result.rows
 } catch (error) {
     throw new Error(error.message)
@@ -41,8 +41,8 @@ const getProduct = async data => {
 };
 const getProductByGrandChildIdModel = async (data,offset,limit) => {
     try {
-        let SQL = `SELECT * FROM product WHERE grandchild_category_id =$1 LIMIT $3 OFFSET $2;`;
-        let result = await client.query(SQL,[data,offset,limit])
+        let SQL = `SELECT * FROM product WHERE grandchild_category_id =$1 AND display=$4 LIMIT $3 OFFSET $2;`;
+        let result = await client.query(SQL,[data,offset,limit, true])
         return result.rows[0];
 
     } catch (error) {
@@ -51,8 +51,8 @@ const getProductByGrandChildIdModel = async (data,offset,limit) => {
 };
 const getProductByChildIdModel = async (data,offset,limit) => {
     try {
-        let SQL = `SELECT * FROM product WHERE child_category_id =$1;`;
-        let result = await client.query(SQL,[data])
+        let SQL = `SELECT * FROM product WHERE child_category_id =$1 AND display=$2;`;
+        let result = await client.query(SQL,[data, true])
         return result.rows;
 
     } catch (error) {
@@ -62,8 +62,8 @@ const getProductByChildIdModel = async (data,offset,limit) => {
 
 const getStoreProducts = async (id,limit,offset) => {
     try {
-        let SQL = `SELECT * FROM product WHERE store_id =$1 LIMIT $2 OFFSET $3;`;
-        let result = await client.query(SQL,[id,limit,offset]);
+        let SQL = `SELECT * FROM product WHERE store_id =$1 AND display$4 LIMIT $2 OFFSET $3;`;
+        let result = await client.query(SQL,[id,limit,offset, true]);
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
@@ -72,9 +72,9 @@ const getStoreProducts = async (id,limit,offset) => {
 
 const getStoreProductsByStatus = async (id,limit,offset, status) => {
     try {
-        let SQL = `SELECT * FROM product WHERE store_id=$1 AND status=$4 LIMIT $2 OFFSET $3;`;
+        let SQL = `SELECT * FROM product WHERE store_id=$1 AND status=$4 AND display=$5 LIMIT $2 OFFSET $3;`;
         let SQL2 = 'SELECT COUNT(*) FROM product WHERE store_id=$1 AND status=$2;'
-        let result = await client.query(SQL,[id,limit,offset, status]);
+        let result = await client.query(SQL,[id,limit,offset, status, true]);
         let count = await client.query(SQL2, [id, status]);
         return {result: result.rows, ...count.rows[0]};
     } catch (error) {
