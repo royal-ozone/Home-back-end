@@ -20,7 +20,7 @@ const addProduct = async data => {
 
 const getAllProduct = async (offset,limit) => {
 try {
-    let SQL = `SELECT * FROM product WHERE AND display=$3 LIMIT $2 OFFSET $1;`
+    let SQL = `SELECT * FROM product WHERE display=$3 LIMIT $2 OFFSET $1;`
     let result = await client.query(SQL,[offset,limit, true])
     return result.rows
 } catch (error) {
