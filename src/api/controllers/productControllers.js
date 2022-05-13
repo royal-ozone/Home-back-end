@@ -1,4 +1,4 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -130,6 +130,15 @@ const getStoreProductsByStatusHandler = async (req, res) => {
     } else {
       res.send({message:'something went wrong while fetching the data', status: 403})
     }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const getProductsByCategoriesHandler = async (req, res)=>{
+  try {
+    const result = await getProductsByCategories(req.query)
+    res.json({status: 200, result: result})
   } catch (error) {
     res.send(error.message)
   }
@@ -299,4 +308,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler }

@@ -27,6 +27,30 @@ try {
     throw new Error(error.message)
 }
 };
+const getProductsByCategories = async data =>{
+    try {
+        let {P,C,G} = data;
+        let SQL;
+        let safeValues = []
+        if(G){
+            SQL = 'SELECT * FROM product WHERE grandchild_category_id=$1 AND display=$2;'
+            safeValues =[G,true]
+        } else if(C){
+            SQL = 'SELECT * FROM product WHERE child_category_id=$1 AND display=$2;'
+            safeValues = [C,true]
+        } else if(P){
+            SQL = 'SELECT * FROM product WHERE parent_category_id=$1 AND display=$2;'
+            safeValues = [P,true]
+        } else{
+            SQL = 'SELECT * FROM product WHERE display=$1;'
+            safeValues = [true]
+        }
+        let result = await client.query(SQL, safeValues)
+        return result.rows
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
 
 const getProduct = async data => {
     try {
@@ -229,5 +253,6 @@ module.exports = {addProduct,getAllProduct, getProduct, updateProduct,
      updateSizeAndQuantity,updateDiscount, 
      getSearchData,
      getProductByGrandChildIdModel,
-     getProductByChildIdModel
+     getProductByChildIdModel,
+     getProductsByCategories
     };
