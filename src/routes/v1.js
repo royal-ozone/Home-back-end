@@ -91,7 +91,7 @@ const {addProductHandler,
    getStoreProductsHandler,
    getStoreProductsByStatusHandler,
    addProductPictureHandler
-   ,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler
+   ,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler
   } = require('../api/controllers/productControllers');
 
 const {addTagHandler,
@@ -350,6 +350,7 @@ router.post('/product/picture', bearer, uploadS3.single('image'), addProductPict
 router.put('/product/quantityandsize', bearer, upload.none(), updateSizeAndQuantityHandler)
 router.put('/product/discount', bearer,upload.none(), updateDiscountHandler)
 router.get('/product/searchData/:status', bearer,upload.none(), checkStoreAuth, getSearchDataHandler)
+router.get('/productsByCategories', upload.none(), getProductsByCategoriesHandler)
 
 //tag
 router.post('/tag',bearer,checkAuth,upload.none(),addTagHandler)
