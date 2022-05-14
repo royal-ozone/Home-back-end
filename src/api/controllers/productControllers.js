@@ -10,6 +10,7 @@ const {
 } = require('../models/productPicture');
 
 const { deleteRemoteFile } = require('../middleware/uploader');
+const { getStore } = require('../models/stores');
 
 
 
@@ -138,7 +139,15 @@ const getStoreProductsByStatusHandler = async (req, res) => {
 const getProductsByCategoriesHandler = async (req, res)=>{
   try {
     const result = await getProductsByCategories(req.query)
-    res.json({status: 200, result: result})
+    let resultWithPics = await result.map(async (product) => {
+      let pictures = await getProductPicturesById(product.id)
+      let store = await getStore(product.store_id)
+      product['pictures'] = pictures;
+      product['store_name'] = store.store_name
+      delete product.pictures.product_id
+      return product;
+    })
+    res.json({status: 200, result: await Promise.all(resultWithPics)})
   } catch (error) {
     res.send(error.message)
   }
