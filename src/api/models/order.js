@@ -120,9 +120,9 @@ const getPendingOrderItemsByOrderId = async id => {
 }
 const getOrdersByPendingOrderItems = async data => {
   try {
-    let {id,status,limit,offset} = data
+    let {id,limit,offset} = data
     let SQL = 'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status=$2 LIMIT $3 OFFSET $4;';
-    let result = await client.query(SQL, [id,status,limit,offset]);
+    let result = await client.query(SQL, [id,'pending',limit,offset]);
     return result.rows;
   } catch (error) {
     throw new Error(error.message)
