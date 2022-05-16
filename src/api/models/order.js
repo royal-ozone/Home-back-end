@@ -100,6 +100,45 @@ const getOrderItemsByOrderId = async id => {
     throw new Error(error.message)
   }
 }
+const getNotOrderItemsByOrderId = async id => {
+  try {
+    let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status!=$2;';
+    let result = await client.query(SQL, [id,'pending']);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+const getPendingOrderItemsByOrderId = async id => {
+  try {
+    let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status=$2;';
+    let result = await client.query(SQL, [id,'pending']);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+const getOrdersByPendingOrderItems = async data => {
+  try {
+    let {id,status,limit,offset} = data
+    let SQL = 'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status=$2 LIMIT $3 OFFSET $4;';
+    let result = await client.query(SQL, [id,status,limit,offset]);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+const getOrdersByNotPendingOrderItems = async data => {
+  try {
+    let {id,status,limit,offset} = data
+    let SQL = status? 'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status=$2 LIMIT $3 OFFSET $4;':  'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status!=$2 LIMIT $3 OFFSET $4;';
+    let result = await client.query(SQL, [id, status??'pending',limit,offset]);
+    return result.rows;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 
 const getOrderItemByProductId = async id => {
   try {
@@ -129,5 +168,7 @@ module.exports = {
   updateOrderItemStatusModel,
   getOrderItemsByOrderId,
   getOrderItemByProductId,
-  getAllOrderItemByStoreId
+  getAllOrderItemByStoreId,
+  getOrdersByPendingOrderItems,getPendingOrderItemsByOrderId,
+  getNotOrderItemsByOrderId,getOrdersByNotPendingOrderItems
 };

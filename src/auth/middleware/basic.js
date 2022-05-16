@@ -15,10 +15,8 @@ module.exports = async (req, res, next) => {
 
   try {
     let userData = await authenticateBasic(email, password);
-    console.log("🚀 ~ file: basic.js ~ line 18 ~ module.exports= ~ userData", userData)
     // await deleteToken(userData.id);
     const userTokens = await createToken(userData.id);
-    console.log("🚀 ~ file: basic.js ~ line 21 ~ module.exports= ~ userTokens", userTokens)
     let userProfile = await getProfileByUserId(userData.id);
     let store = await getStoreIdByProfileId(userProfile.id) || {} ;
     let company = await getCompanyByProfileId(userProfile.id) || {} ;
