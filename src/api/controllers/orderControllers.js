@@ -24,7 +24,10 @@ const {
   updateOrderItemStatusModel,
   getOrderItemsByOrderId,
   getOrderItemByProductId,
-  getAllOrderItemByStoreId
+  getAllOrderItemByStoreId,
+  getOrdersByPendingOrderItems,getPendingOrderItemsByOrderId,
+  getNotOrderItemsByOrderId,
+  getOrdersByNotPendingOrderItems
 } = require("../models/order");
 const {
   getAddressById
@@ -280,7 +283,45 @@ const getOrderByStoreIdHandlerTwo = async (req, res) => {
     let filtered = final.filter(items => items);
     res.status(200).json({orders:await Promise.all(filtered)})    
   } catch (error) {
-    res.status(400).json({error:error.message});
+    res.json({status: 403,message:error.message});
+  }
+}
+
+const getSellerOrdersByPendingStatus = async (req, res) => {
+  try {
+    let limit = req.query.limit || 5;
+    let offset = req.query.offset || 0;
+    let orders = await getOrdersByPendingOrderItems({id: req.user.store_id, status:req.body.status, limit: limit, offset: offset})
+    let sellerOrders = orders.map( async ({order_id}) =>{
+        let detailedOrder = await getOrderByIdModel(order_id)
+        let items = await getPendingOrderItemsByOrderId(order_id)
+        let address = await getAddressById(detailedOrder.address_id);
+        detailedOrder['items'] = items
+        detailedOrder['full name'] = `${address.first_name} ${address.last_name}`
+        return detailedOrder
+    })
+    res.status(200).json({orders:await Promise.all(sellerOrders)})   
+  } catch (error) {
+    res.json({status: 403,message:error.message});
+  }
+}
+
+const getSellerOrdersByNotPendingStatus = async (req, res) => {
+  try {
+    let limit = req.query.limit || 5;
+    let offset = req.query.offset || 0;
+    let orders = await getOrdersByNotPendingOrderItems({id: req.user.store_id, status:req.query.status, limit: limit, offset: offset})
+    let sellerOrders = orders.map( async ({order_id}) =>{
+        let detailedOrder = await getOrderByIdModel(order_id)
+        let items = await getNotOrderItemsByOrderId(order_id)
+        let address = await getAddressById(detailedOrder.address_id);
+        detailedOrder['items'] = items
+        detailedOrder['full name'] = `${address.first_name} ${address.last_name}`
+        return detailedOrder
+    })
+    res.status(200).json({orders:await Promise.all(sellerOrders)})   
+  } catch (error) {
+    res.json({status: 403,message:error.message});
   }
 }
 
@@ -291,5 +332,7 @@ module.exports = {
   getAllOrderProfileIdHandler,
   updateOrderItemStatusHandler,
   getOrderByStoreIdHandler,
-  getOrderByStoreIdHandlerTwo
+  getOrderByStoreIdHandlerTwo,
+  getSellerOrdersByPendingStatus,
+  getSellerOrdersByNotPendingStatus
 };

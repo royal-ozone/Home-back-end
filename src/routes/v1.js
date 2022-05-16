@@ -61,7 +61,9 @@ const {addOrderHandler,
   updateOrderStatusHandler,
   getAllOrderHandler,
   getAllOrderProfileIdHandler,
-  updateOrderItemStatusHandler
+  updateOrderItemStatusHandler,
+  getSellerOrdersByPendingStatus,
+  getSellerOrdersByNotPendingStatus
 } = require('../api/controllers/orderControllers');
 
 const {checkAdmin,
@@ -394,6 +396,8 @@ router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdH
 router.put('/update/order_item',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
 //router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
+router.get('/order/pending', bearer, upload.none(), getSellerOrdersByPendingStatus)
+router.get('/order/notPending',bearer,upload.none(), getSellerOrdersByNotPendingStatus )
 
 // store review 
 router.post('/store/review',bearer,upload.none(),createStoreReviewHandler);
