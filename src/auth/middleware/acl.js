@@ -105,7 +105,7 @@ let checkAuth = async (req, res, next) => {
         // let result2 = await client.query(SQL2, safeValue);
         let auth = ['admin', 'supervisor', 'moderator', 'advisor']
 
-        if (auth.includes(req.employee.role)) {
+        if (auth.includes(req.employee?.role)) {
             next();
         } else {
             res.status(403).json({
