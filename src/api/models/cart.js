@@ -27,10 +27,10 @@ const updateCart = async data =>{
 }
 const addCartItemModel =async (id,data)=> {
     try {
-        const {price,discount,quantity,product_id,store_id, size}= data;
+        const {price,discount,quantity,product_id,store_id, size, color}= data;
         const price_after = (price * quantity)-( price * discount * quantity) ;
-        let SQL ='INSERT INTO cart_item(cart_id,product_id,store_id,price,discount,quantity,price_after,size) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *;';
-        let safeValue = [id,product_id,store_id,price,discount,quantity,price_after,size];
+        let SQL ='INSERT INTO cart_item(cart_id,product_id,store_id,price,discount,quantity,price_after,size,color) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *;';
+        let safeValue = [id,product_id,store_id,price,discount,quantity,price_after,size,color];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
     } catch (error) {

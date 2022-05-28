@@ -271,16 +271,16 @@ const deleteProductPictureHandler = async (req, res) => {
 
 const decreaseSizeQuantity = async (req, res) => {
   try {
-    const { id, size, quantity } = req.body
+    const { id, SCId, quantity } = req.body
     let product = await getProduct(id);
-    let newSize = product.size.map(val => {
-      if (val.size === size) {
-        return { size: val.size, quantity: val.quantity - Number(quantity) }
+    let newSize = product.size_and_color.map(val => {
+      if (val['id'] === SCId) {
+        return { ...val, quantity: val.quantity - Number(quantity) }
       }
       return val
     })
 
-    let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size: newSize }
+    let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: newSize }
 
     let result = await updateProduct(newProduct)
     res.json({
@@ -304,7 +304,7 @@ const increaseSizeQuantity = async (req, res) => {
       return val
     })
 
-    let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size: newSize }
+    let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: newSize }
 
     let result = await updateProduct(newProduct)
     res.json({

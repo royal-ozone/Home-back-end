@@ -390,7 +390,7 @@ router.post('/checkCode',bearer,upload.none(),checkCodeHandler); // for people
 // order 
 
 router.post('/addOrder',bearer,upload.none(),addOrderHandler);
-router.put('/update/order/status',bearer,checkAuth,upload.none(),updateOrderStatusHandler);
+router.put('/update/order/status',bearer,checkStoreAuth,upload.none(),updateOrderStatusHandler);
 router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler,getAddressByIdHandler);
 router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
 router.put('/update/order_item',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
