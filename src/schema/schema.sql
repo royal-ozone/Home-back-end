@@ -74,6 +74,8 @@ CREATE TABLE client(
   facebook_id VARCHAR(200) UNIQUE,
   verified BOOLEAN DEFAULT false,
   status VARCHAR(15) DEFAULT 'active',
+  password_reset_token uuid,
+  reset_token_date TIMESTAMP,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 

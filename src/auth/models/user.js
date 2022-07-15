@@ -174,9 +174,9 @@ const updateUserVerification = async id => {
 async function updateUserPassword(user_id, password) {
     try {
         const user_password = await bcrypt.hash(password, 10);
-        const SQL = `UPDATE CLIENT SET user_password = $1 WHERE id = $2 RETURNING *;`;
+        const SQL = `UPDATE CLIENT SET user_password = $1, password_reset_token=$3 WHERE id = $2 RETURNING *;`;
 
-        const safeValues = [user_password, user_id];
+        const safeValues = [user_password, user_id, null];
         const result = await client.query(SQL, safeValues);
         return result.rows[0];
     } catch (e) {
@@ -519,6 +519,27 @@ const updateNotification_city =async (data) => {
         throw new Error(error.message);
     }
 }
+
+const updateResetToken = async (data)=>{
+    try {
+        let {reference , token} = data;
+        let SQL = "UPDATE client SET password_reset_token=$1, reset_token_date=$2 where email=$3 or mobile=$3 RETURNING *;"
+        let safeValue = [token, new Date().toLocaleString(), reference]
+        let result = await client.query(SQL,safeValue)
+        return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+const getUserByResetToken = async (resetToken) =>{
+    try {
+        let SQL = "SELECT * FROM client WHERE password_reset_token=$1;"
+       let result = await client.query(SQL, [resetToken]);
+       return result.rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 module.exports = {
     signup,
     signupGoogle,
@@ -561,5 +582,7 @@ module.exports = {
     updateNotification_all,
     updateNotification_store,
     updateNotification_city,
+    updateResetToken,
+    getUserByResetToken
 }
 
