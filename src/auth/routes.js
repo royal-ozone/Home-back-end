@@ -30,6 +30,9 @@ const {
     getAllBannedUsersHandler,
     updateNotification_cityHandler,
     refreshAccessToken,
+    updateResetTokenHandler,
+    resetPasswordByTokenHandler,
+    validateResetToken
     } = require('./controllers/authController')
     
 const { sendVerificationCodeHandler, verifyUserHandler, sendMessageHandler } = require('./controllers/verification')
@@ -40,7 +43,8 @@ const {
 
 const googleAuth = require('./oauth/google-oauth');
 const facebookAuth = require('./oauth/facebook/facebook-oauth')
-const {uploadS3} = require('../api/middleware/uploader')
+const {uploadS3} = require('../api/middleware/uploader');
+const sendEmail = require('../api/middleware/sendEmail');
 authRouter.use(googleAuth); // calling google oauth
 authRouter.use(facebookAuth);
 
@@ -54,8 +58,11 @@ authRouter.post('/user/send/message',upload.none(),sendMessageHandler);
 authRouter.post('/refresh', upload.none(),refreshHandler);
 authRouter.put('/deactivate', bearer,upload.none(), deactivateAccountHandler);
 
-authRouter.put('/user/password', bearer, upload.none(),updateUserPasswordHandler);
 
+authRouter.put('/user/password', bearer, upload.none(),updateUserPasswordHandler);
+authRouter.post('/user/password/generateToken', upload.none(), updateResetTokenHandler, sendEmail)
+authRouter.post('/user/password/resetByToken', upload.none(), resetPasswordByTokenHandler)
+authRouter.post('/user/password/validateToken', upload.none(), validateResetToken)
 authRouter.post('/user/password/reset/mobile/55555',upload.none(),resetPasswordHandler);
 authRouter.post('/user/password/reset/code',upload.none(),codePasswordHandler);
 authRouter.put('/user/password/change',upload.none(), updateUserResetPasswordHandler);

@@ -27,6 +27,7 @@
     "dns": "^0.2.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-handlebars": "^6.0.6",
     "fcm-node": "^1.6.1",
     "http": "^0.0.1-security",
     "infobip-nodejs": "^0.1.0",
@@ -37,6 +38,7 @@
     "multer": "^1.4.3",
     "multer-s3": "^2.10.0",
     "nodemailer": "^6.7.3",
+    "nodemailer-express-handlebars": "^5.0.0",
     "order-id": "^2.1.2",
     "os": "^0.1.2",
     "passport": "^0.5.0",
@@ -45,6 +47,7 @@
     "path": "^0.12.7",
     "pg": "^8.7.1",
     "socket.io": "^4.3.2",
-    "twilio": "^3.69.0"
+    "twilio": "^3.69.0",
+    "uuid": "^8.3.2"
   }
 }

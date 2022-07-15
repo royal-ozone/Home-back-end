@@ -1,5 +1,6 @@
 'use strict';
 const os = require('os');
+const { v4: uuidv4 } = require('uuid');
 const clientForVerification = require('twilio')(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 const { signup,
     getUserById,
@@ -28,6 +29,8 @@ const { signup,
     updateNotification_store,
     updateNotification_all,
     updateNotification_city,
+    updateResetToken,
+    getUserByResetToken
 } = require('../models/user');
 const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -318,6 +321,8 @@ const updateUserResetPasswordHandler = async (req, res, next) => {
     next(e);
   }
 };
+
+
 
 const updateUserEmailHandler = async (req, res, next) => {
   try {
@@ -659,6 +664,68 @@ const refreshAccessToken = async (req, res, next) => {
         res.send(error.message)
     }
 }
+const updateResetTokenHandler = async (req, res, next) => {
+  try {
+    const result = await updateResetToken({reference: req.body.reference, token:uuidv4()})
+    if (result?.id){
+      req.emailDetails = ({ message:'token has been updated successfully' , email: result.email,template: 'resetPassword', context: {token:`${process.env.UI_URL}/resetPassword/${result.password_reset_token}`}})
+      next()
+    } else {
+      res.send({status: 403, message: 'no account with provided reference'})
+    }
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
+}
+const validateResetToken= async (req, res) =>{
+  try {
+    const result = await getUserByResetToken(req.body.token)
+    if ((new Date() - new Date(result.reset_token_date) )/(1000*60*60)/24 > 1 || !result) {
+      res.send({message: 'expired token', status: 403})
+    } else {
+      res.send({message: 'valid token', status: 200})
+    }
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
+}
+
+const resetPasswordByTokenHandler = async (req, res, next) => {
+  try {
+    const {token, password} = req.body
+    const result = await getUserByResetToken(token)
+    if(result?.id && (new Date() - new Date(result?.reset_token_date) )/(1000*60*60)/24 <= 1 && validatePassword(password) ){
+      let user = await updateUserPassword(result.id, password);
+      const response = {
+        status: 200,
+        message: "Password reset successfully",
+      };
+      res.json(response);
+    } 
+    else if ((new Date() - new Date(result?.reset_token_date) )/(1000*60*60)/24 > 1 || !result) {
+    res.send({message: 'expired token', status: 403})
+    }
+    else if (!validatePassword(password)) {
+      res.json({
+        status: 403,
+        message:{ 
+          title: `Invalid password format, password should have at least:`, details :[
+          `One capital letter.`,
+          `One small letter.`,
+          `One special character.`,
+          `One number.`,
+          `Characters between 6-16.`,
+          `ex:Ax@123`]}
+        
+      });
+    } else {
+      res.send({message: 'something went wrong', status: 403})
+    }
+
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
+}
 module.exports = {
     signupHandler,
     signInHandler,
@@ -683,5 +750,8 @@ module.exports = {
     updateNotification_storeHandler,
     updateNotification_allHandler,
     updateNotification_cityHandler,
-    refreshAccessToken
+    refreshAccessToken,
+    updateResetTokenHandler,
+    resetPasswordByTokenHandler,
+    validateResetToken
 }

@@ -17,6 +17,8 @@ let upload = multer()
 const events =require('./socket/event')
 const server = http.createServer(app);
 const socket =require('socket.io');
+const expressHbs = require("express-handlebars");
+const {engine} = require('express-handlebars');
 const io =  socket(server ,{
    
     cors: {
@@ -26,7 +28,18 @@ const io =  socket(server ,{
 });
 //   io.listen(server)
 /// server ///
-
+// app.engine(
+//     'handlebars',
+//     expressHbs.engine({
+//        extname: "hbs",
+//        defaultLayout: "main-layout",
+//        layoutsDir: "views/"
+      
+//     })
+//  );
+// app.engine('handlebars', engine({extname: '.hbs'}));
+// app.set('view engine', '.hbs');
+// app.set('views', './views');
 app.use(cors());
 // app.use(upload.none())
 app.use(express.json()); ///
