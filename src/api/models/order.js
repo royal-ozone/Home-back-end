@@ -93,7 +93,7 @@ const updateOrderItemStatusModel = async (data,dateTimeNow) => {
 
 const getOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'SELECT * FROM order_item WHERE order_id=$1;';
+    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price from order_item oi where oi.order_id =$1 inner join product p on p.id =oi.product_id;';
     let result = await client.query(SQL, [id]);
     return result.rows;
   } catch (error) {
@@ -102,7 +102,8 @@ const getOrderItemsByOrderId = async id => {
 }
 const getNotOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status!=$2;';
+    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price, pp.product_picture from order_item oi inner join product p on p.id =oi.product_id inner join product_picture pp on p.id = pp.product_id where oi.order_id =$1 and oi.status!=$2 ;'
+    // let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status!=$2;';
     let result = await client.query(SQL, [id,'pending']);
     return result.rows;
   } catch (error) {
