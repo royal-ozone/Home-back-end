@@ -1,4 +1,5 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories,
+  productSearch } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -13,7 +14,14 @@ const { deleteRemoteFile } = require('../middleware/uploader');
 const { getStore } = require('../models/stores');
 
 
-
+const productSearchHandler = async (req, res) => {
+  try {
+    const result = await productSearch(req.query)
+    res.send(result)
+  } catch (error) {
+    res.send({status: 403, message: error.message});
+  }
+}
 const addProductHandler = async (req, res) => {
   try {
     let result = await addProduct({ store_id: req.user.store_id, ...req.body })
@@ -317,4 +325,4 @@ const increaseSizeQuantity = async (req, res) => {
   }
 }
 
-module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler }
+module.exports = { getStoreProductsByStatusHandler,addProductHandler, updateProductStatusHandler, deleteProductHandler, updateProductHandler, getProductHandler, getAllProductHandler, updateProductPictureHandler, deleteProductPictureHandler, getStoreProductsHandler, increaseSizeQuantity, decreaseSizeQuantity,addProductPictureHandler,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler,productSearchHandler }

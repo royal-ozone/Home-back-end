@@ -93,7 +93,8 @@ const {addProductHandler,
    getStoreProductsHandler,
    getStoreProductsByStatusHandler,
    addProductPictureHandler
-   ,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler
+   ,updateSizeAndQuantityHandler,updateDiscountHandler, getSearchDataHandler,getProductsByCategoriesHandler,
+   productSearchHandler
   } = require('../api/controllers/productControllers');
 
 const {addTagHandler,
@@ -353,7 +354,7 @@ router.put('/product/quantityandsize', bearer, upload.none(), updateSizeAndQuant
 router.put('/product/discount', bearer,upload.none(), updateDiscountHandler)
 router.get('/product/searchData/:status', bearer,upload.none(), checkStoreAuth, getSearchDataHandler)
 router.get('/productsByCategories', upload.none(), getProductsByCategoriesHandler)
-
+router.get('/products/search', upload.none(), productSearchHandler)
 //tag
 router.post('/tag',bearer,checkAuth,upload.none(),addTagHandler)
 router.get('/tag/:id',bearer,upload.none(),getTagHandler)

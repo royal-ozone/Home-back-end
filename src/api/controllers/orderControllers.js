@@ -27,7 +27,8 @@ const {
   getAllOrderItemByStoreId,
   getOrdersByPendingOrderItems, getPendingOrderItemsByOrderId,
   getNotOrderItemsByOrderId,
-  getOrdersByNotPendingOrderItems
+  getOrdersByNotPendingOrderItems,
+  getProductPictureByProductId
 } = require("../models/order");
 const {
   getAddressById
@@ -292,15 +293,17 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
     let orders = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
-    let sellerOrders = orders.map(async ({ order_id }) => {
+    let sellerOrders = await orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getPendingOrderItemsByOrderId(order_id)
-      let address = await getAddressById(detailedOrder.address_id);
-      detailedOrder['items'] = items
-      detailedOrder['full name'] = `${address.first_name} ${address.last_name}`
+      let itemsWithPicture = await items.map(async value => {
+        let pic = await getProductPictureByProductId(value.product_id)
+        return { ...value, picture: pic?.product_picture }
+      })
+      detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.status(200).json({ orders: await Promise.all(sellerOrders) })
+    res.json({ orders: await Promise.all(sellerOrders) })
   } catch (error) {
     res.json({ status: 403, message: error.message });
   }
@@ -314,12 +317,14 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
     let sellerOrders = orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getNotOrderItemsByOrderId(order_id)
-      let address = await getAddressById(detailedOrder.address_id);
-      detailedOrder['items'] = items
-      detailedOrder['full name'] = `${address.first_name} ${address.last_name}`
+      let itemsWithPicture = await items.map(async value => {
+        let pic = await getProductPictureByProductId(value.product_id)
+        return { ...value, picture: pic?.product_picture }
+      })
+      detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.status(200).json({ orders: await Promise.all(sellerOrders) })
+    res.json({ orders: await Promise.all(sellerOrders) })
   } catch (error) {
     res.json({ status: 403, message: error.message });
   }

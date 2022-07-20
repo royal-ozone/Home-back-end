@@ -23,7 +23,7 @@ const addOrderModel = async (data) => {
 };
 const getOrderByIdModel = async (id) => {
   try {
-    let SQL = "SELECT * FROM new_order WHERE id =$1;";
+    let SQL = "SELECT neo.*, a.first_name, a.last_name FROM new_order neo inner join address a ON neo.address_id = a.id WHERE neo.id =$1;";
     let safeValue = [id];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
@@ -31,6 +31,16 @@ const getOrderByIdModel = async (id) => {
    throw new Error(error.message);
   }
 };
+
+const getProductPictureByProductId = async (id) =>{
+  try {
+    let SQL = "SELECT product_picture from product_picture where product_id=$1;"
+    let query = await client.query(SQL, [id])
+    return query.rows[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 const addOrderItemModel = async (data) => {
   try {
     const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id,date_after_day,last_update, size} = data;
@@ -93,7 +103,7 @@ const updateOrderItemStatusModel = async (data,dateTimeNow) => {
 
 const getOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'SELECT * FROM order_item WHERE order_id=$1;';
+    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price from order_item oi where oi.order_id =$1 inner join product p on p.id =oi.product_id;';
     let result = await client.query(SQL, [id]);
     return result.rows;
   } catch (error) {
@@ -102,7 +112,8 @@ const getOrderItemsByOrderId = async id => {
 }
 const getNotOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status!=$2;';
+    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price from order_item oi inner join product p on p.id =oi.product_id where oi.order_id =$1 and oi.status!=$2 ;'
+    // let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status!=$2;';
     let result = await client.query(SQL, [id,'pending']);
     return result.rows;
   } catch (error) {
@@ -111,7 +122,7 @@ const getNotOrderItemsByOrderId = async id => {
 }
 const getPendingOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status=$2;';
+    let SQL = 'select oi.*, p.entitle ,p.artitle, p.price as p_price from order_item oi inner join product p on p.id =oi.product_id where oi.order_id =$1 and oi.status=$2 ;';
     let result = await client.query(SQL, [id,'pending']);
     return result.rows;
   } catch (error) {
@@ -170,5 +181,6 @@ module.exports = {
   getOrderItemByProductId,
   getAllOrderItemByStoreId,
   getOrdersByPendingOrderItems,getPendingOrderItemsByOrderId,
-  getNotOrderItemsByOrderId,getOrdersByNotPendingOrderItems
+  getNotOrderItemsByOrderId,getOrdersByNotPendingOrderItems,
+  getProductPictureByProductId
 };

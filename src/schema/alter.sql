@@ -21,12 +21,13 @@
 -- ALTER TABLE store
 -- ADD COLUMN mobile VARCHAR(15) NOT NULL unique;
 
-ALTER table client 
-add column password_reset_token uuid;
+-- ALTER table client 
+-- add column password_reset_token uuid;
 
-ALTER table client 
-add column reset_token_date TIMESTAMP;
+-- ALTER table client 
+-- add column reset_token_date TIMESTAMP;
 
+-- ALTER TABLE product DROP COLUMN verification_code;
 
 
 
