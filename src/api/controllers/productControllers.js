@@ -20,7 +20,7 @@ const productSearchHandler = async (req, res) => {
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPictureByProductId(product.id)
       product['pictures'] = pictures;
-      delete product.pictures.product_id
+      
       return product;
     })
     res.send(await Promise.all(resultWithPics))
