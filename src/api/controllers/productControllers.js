@@ -1,4 +1,4 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories,
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories, getProductPictureByProductId,
   productSearch } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
@@ -17,7 +17,13 @@ const { getStore } = require('../models/stores');
 const productSearchHandler = async (req, res) => {
   try {
     const result = await productSearch(req.query)
-    res.send(result)
+    let resultWithPics = await result.map(async (product) => {
+      let pictures = await getProductPictureByProductId(product.id)
+      product['pictures'] = pictures;
+      delete product.pictures.product_id
+      return product;
+    })
+    res.send(await Promise.all(resultWithPics))
   } catch (error) {
     res.send({status: 403, message: error.message});
   }
