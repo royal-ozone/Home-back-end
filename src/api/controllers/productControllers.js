@@ -1,4 +1,4 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories, getProductPictureByProductId,
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories, 
   productSearch } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
@@ -9,7 +9,7 @@ const {
   deleteProductPictureById,
   deleteProductPictureByProductId,
 } = require('../models/productPicture');
-
+const {getProductPictureByProductId} = require('../models/order')
 const { deleteRemoteFile } = require('../middleware/uploader');
 const { getStore } = require('../models/stores');
 
