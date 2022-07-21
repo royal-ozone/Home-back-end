@@ -257,7 +257,7 @@ const productSearch = async data => {
         let sqlParameters = []
         let safeValues = [true, limit, offset, 'approved']
         let i = safeValues.length +1    
-        let baseQuery = `select p.* from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id  where (p.display=$1) and (p.status=$4) and`
+        let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
         key && sqlParameters.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or p.grandchild_category_id = any (select id from grandchild_category gc where gc.entitle like $${i} or gc.artitle like $${i++}))`) && safeValues.push(`%${key}%`)
         let storeQuery = []
         store_id && store_id.split(',').map(value => storeQuery.push(`(store_id = $${i++})`) && safeValues.push(value)) && sqlParameters.push(storeQuery.join(' or '))
