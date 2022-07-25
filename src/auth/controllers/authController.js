@@ -101,18 +101,18 @@ const signupHandler = async (req, res, next) => {
     } else {
       let result = await signup(req.body);
 
-      let result2 = await createProfile(result);
-      if (req.file) {
-        await addProfilePicture({
-          profile_id: result2.id,
-          profile_picture: req.file.location,
-        });
-      } else {
-        await addProfilePicture({
-          profile_id: result2.id,
-          profile_picture: process.env.DEFAULT_PROFILE_PICTURE,
-        });
-      }
+      let result2 = await createProfile({...result, profile_picture: req.file?.location ?? process.env.DEFAULT_PROFILE_PICTURE});
+      // if (req.file) {
+      //   await addProfilePicture({
+      //     profile_id: result2.id,
+      //     profile_picture: req.file.location,
+      //   });
+      // } else {
+      //   await addProfilePicture({
+      //     profile_id: result2.id,
+      //     profile_picture: process.env.DEFAULT_PROFILE_PICTURE,
+      //   });
+      // }
 
       await addCartModel(result2.id);
       let userTokens = await createToken(result.id);
@@ -133,15 +133,15 @@ const getProfileHandler = async (req, res, next) => {
     if (user) {
       delete user.id;
       delete user.user_id;
-      delete user.profile_picture;
+     delete user.created_at
     }
-    let picture = await getProfilePictureByProfileId(id);
-    if (picture) {
-      delete picture.id;
-      delete picture.profile_id;
-    }
+    // let picture = await getProfilePictureByProfileId(id);
+    // if (picture) {
+    //   delete picture.id;
+    //   delete picture.profile_id;
+    // }
     if (user) {
-      res.json({ status: 200, ...user, ...picture });
+      res.json({ status: 200, user: user });
     } else {
       res.json({
         status: 403,
@@ -162,34 +162,21 @@ const updateProfilers = async (req, res, next) => {
   try {
     let id = req.user.id;
     let profile_id = req.user.profile_id;
-    let dataProfile = await getUserById(req.user.id);
-    let result = await updateProfilersModel(
-      { ...dataProfile, ...req.body },
-      id
-    );
-    if(result){
-      delete result.id;
-      delete result.user_id;
-      delete result.profile_picture;
-    }
-    let resultFromProfile = await updateUserModel(
-      { ...dataProfile, ...req.body },
-      id
-    );
-    // let picture = await getProfilePictureByProfileId(profile_id);
-    // if (picture) {
-    //   delete picture.id;
-    //   delete picture.profile_id;
-    // }
-    let response = {
+    let result = await updateProfilersModel({...req.body},profile_id);
+    
+    if(result?.id){
+      let response = {
       status: 200,
-       ...result,
-      // picture: picture.profile_picture
-      // user: resultFromProfile,
-    };
-    res.send(response);
+      user: {...result},
+        
+      };
+      res.send(response);
+
+    } else{
+      res.send({status: 403, message: result});
+    }
   } catch (error) {
-    next(error);
+    res.send({status: 403, message: error.message});
   }
 };
 
@@ -229,29 +216,28 @@ const updateUserPasswordHandler = async (req, res, next) => {
     let user = await getUserById(req.user.id);
     const valid = await checkPassword(oldPassword, user.user_password);
 
-    if (!oldPassword || !newPassword || !newPassword2) {
+    if (!oldPassword || !newPassword ) {
       res.json({
         status: 403,
         message: "Missing parameters, please enter all required fields!",
       });
-    } else if (newPassword !== newPassword2) {
-      res.json({
+    } else if (!valid){
+      const response = {
         status: 403,
-        message:
-          "New password mismatch! please write the same new password in both fields!",
-      });
+        message: "Old password is incorrect!",
+      };
+      res.json(response);
     } else if (!validatePassword(newPassword)) {
       res.json({
         status: 403,
-        message: [
-          `Invalid password format, password should have at least:`,
-          `1- One capital letter.`,
-          `2- One small letter.`,
-          `3- One special character.`,
-          `4- One number.`,
-          `5- Characters between 6-16.`,
-          `ex:Ax@123`,
-        ],
+        message:{ 
+          title: `Invalid password format, password should have at least:`, details :[
+          `One capital letter.`,
+          `One small letter.`,
+          `One special character.`,
+          `One number.`,
+          `Characters between 6-16.`,
+          `ex:Ax@123`]}
       });
     } else if (valid) {
       user = await updateUserPassword(user.id, newPassword);
@@ -260,12 +246,8 @@ const updateUserPasswordHandler = async (req, res, next) => {
         message: "Password updated successfully",
       };
       res.json(response);
-    } else {
-      const response = {
-        status: 403,
-        message: "Old password is incorrect!",
-      };
-      res.json(response);
+    }  else {
+      res.send({status: 403, message:'something went wrong, please try again'})
     }
   } catch (e) {
     next(e);
@@ -336,21 +318,16 @@ const updateUserEmailHandler = async (req, res, next) => {
         message: "Missing parameters, email",
       });
     } else {
-      let user = await updateUserEmail(id, email);
-      let profile = await updateProfileEmail(id, email);
-      if(profile){
-        delete profile.id;
-        delete profile.user_id;
-        delete profile.profile_picture;
-      }
+      let {email, mobile} = await updateUserEmail(id, req.body);
+     
       const response = {
         status: 200,
-        profile,
+        user: {email:email, mobile: mobile}
       };
       res.json(response);
     }
   } catch (e) {
-    res.send(e.message);
+    res.send(e);
   }
 };
 
