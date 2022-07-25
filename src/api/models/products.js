@@ -266,7 +266,7 @@ const productSearch = async data => {
         price && sqlParameters.push(`(price between $${i++} and $${i++})`) && safeValues.push(price.split('-')[0]) && safeValues.push(price.split('-')[1])
         gc && sqlParameters.push(`(grandchild_category_id=$${i})`) && safeValues.push(gc) || cc && sqlParameters.push(`(child_category_id=$${i})`) && safeValues.push(cc) || pc && sqlParameters.push(`(parent_category_id=$${i})`) && safeValues.push(pc)
         // console.log("🚀 ~ file: products.js ~ line 259 ~ safeValues", safeValues)
-        let SQL = `${baseQuery} ${sqlParameters.join(' and ')} limit $2 offset $3`
+        let SQL = `${baseQuery} ${sqlParameters.length >0 && sqlParameters.join(' and ')} limit $2 offset $3`
         // console.log("🚀 ~ file: products.js ~ line 270 ~ SQL", SQL)
         let result = await client.query(SQL, safeValues)
         
