@@ -22,7 +22,7 @@ const addItemToWishList = async data => {
 }
 
 const getWishListItems = async (id,limit,offset) => {
-    let SQL = "SELECT * FROM wishlist WHERE profile_id=$1 LIMIT $2 OFFSET $3;"
+    let SQL = "SELECT w.*, p.entitle, p.artitle, p.price, p.currency FROM wishlist w inner join product p on w.product_id =p.id WHERE w.profile_id=$1 LIMIT $2 OFFSET $3;"
     return request([id,limit,offset], SQL, false)
 }
 

@@ -369,13 +369,13 @@ router.delete('/product/tag',bearer,checkStoreAuth,upload.none(), deleteProductT
 
 //cart & cart item
 
-router.post('/add/cart_item',bearer,upload.none(),addCartItemHandler);
-router.delete('/remove/cart_item',bearer,upload.none(),removeCartItemByCartIdHandler);
-router.delete('/remove/cart_item/id',bearer,upload.none(),removeCartItemByIdHandler);
-router.get('/getAll/cart_item',bearer,upload.none(),getAllCartItemHandler);
-router.get('/getAll/cart',bearer,checkAuth,upload.none(),getAllCartHandler); 
-router.put('/update/cart_item',bearer,upload.none(),updateCartItemQuantityHandler);
-router.put('/update/cart',bearer,upload.none(),updateCartHandler);
+router.post('/cart_item/add',bearer,upload.none(),addCartItemHandler);
+router.delete('/cart_item/remove',bearer,upload.none(),removeCartItemByIdHandler);
+// router.delete('/remove/cart_item/id',bearer,upload.none(),removeCartItemByIdHandler);
+router.get('/cart_item/getAll',bearer,upload.none(),getAllCartItemHandler);
+router.get('/cart/getAll',bearer,checkAuth,upload.none(),getAllCartHandler); 
+router.put('/cart_item/update',bearer,upload.none(),updateCartItemQuantityHandler);
+router.put('/cart/update',bearer,upload.none(),updateCartHandler);
 
 // discount code 
 
@@ -516,9 +516,9 @@ router.put('/update/courier/feedback/:id',bearer,upload.none(),updateCourierFeed
 router.get('/get/courier/feedback/:id',bearer,upload.none(),getCourierFeedback);
 router.get('/getAll/courier/feedback',bearer,upload.none(),getAllCouriersFeedback);
 
-router.post('/addWishlistItem', bearer,upload.none(), addItemToWishListHandler);
-router.get('/getWishlistItems', bearer,upload.none(), getWishListItemsHandler,getProductHandler )
-router.delete('/deleteWishlistItem', bearer,upload.none(), deleteFromWishListHandler)
+router.post('/wishlist/add', bearer,upload.none(), addItemToWishListHandler);
+router.get('/wishlist/get', bearer,upload.none(), getWishListItemsHandler,getProductHandler )
+router.delete('/wishlist/delete', bearer,upload.none(), deleteFromWishListHandler)
 // Test route
 router.get('/test', (req, res) => {
   res.send('working well');
