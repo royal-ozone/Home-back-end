@@ -27,10 +27,10 @@ const updateCart = async data =>{
 }
 const addCartItemModel =async (id,data)=> {
     try {
-        const {price,discount,quantity,product_id,store_id, size, color}= data;
+        const {price,discount,discount_rate,quantity,id: product_id,store_id, size, color}= data;
         const price_after = (price * quantity)-( price * discount * quantity) ;
         let SQL ='INSERT INTO cart_item(cart_id,product_id,store_id,price,discount,quantity,price_after,size,color) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *;';
-        let safeValue = [id,product_id,store_id,price,discount,quantity,price_after,size,color];
+        let safeValue = [id,product_id,store_id,price,discount?discount_rate :0,quantity,price_after,size,color];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
     } catch (error) {
@@ -51,7 +51,7 @@ try {
 }
 const removeCartItemModelByCartId = async(id) =>{
 try {
-    let SQL = 'DELETE from cart_item WHERE cart_id=$1';
+    let SQL = 'DELETE from cart_item WHERE cart_id=$1 RETURNING *';
     let safeValue = [id];
     let result = await client.query(SQL, safeValue);
     return result.rows;
@@ -62,7 +62,7 @@ try {
 
 const removeCartItemById = async(id) =>{
     try {
-        let SQL = 'DELETE from cart_item where id=$1 or product_id=$1 RETURNING *;';
+        let SQL = 'DELETE from cart_item where id=$1 or product_id=$1 or cart_id=$1 RETURNING *;';
         let result = await client.query(SQL, [id]);
         return result.rows[0];
     } catch (error) {
@@ -73,7 +73,7 @@ const removeCartItemById = async(id) =>{
 
 const getCartItemByIdModel =async id => {
     try {
-        let SQL = 'SELECT * FROM cart_item WHERE id=$1 ;';
+        let SQL = 'SELECT ci.*, p.entitle, p.artitle, p.currency, s.store_name FROM cart_item ci inner join product p on p.id= ci.product_id inner join store s on s.id = p.store_id WHERE ci.id=$1 ;';
         let safeValue = [id];
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
@@ -83,7 +83,7 @@ const getCartItemByIdModel =async id => {
 }
 const getAllCartItemModel = async id => {
     try {
-        let SQL = 'SELECT * FROM cart_item WHERE cart_id=$1;';
+        let SQL = 'SELECT ci.*, p.entitle, p.artitle, p.currency, s.store_name FROM cart_item ci inner join product p on p.id= ci.product_id inner join store s on s.id = p.store_id WHERE cart_id=$1;';
         let result = await client.query(SQL,[id])
         return result.rows;
     } catch (error) {
