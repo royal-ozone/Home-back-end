@@ -2,9 +2,9 @@
 const client = require('../../db')
 const createDiscountCodeModel =async (data)=>{
 try {
-    let {discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time} = data;
-    let SQL ='INSERT INTO discount_code(discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *;';
-    let safeValue = [discount_code,year,month,day,hour,minute,second,max_counter,discount,max_discount,number_of_time];
+    let {discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time} = data;
+    let SQL ='INSERT INTO discount_code(discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;';
+    let safeValue = [discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time];
     let result = await client.query(SQL,safeValue);
     return result.rows[0];
 } catch (error) {
@@ -34,10 +34,10 @@ const updateActiveDiscountCodeByIdModel =async (bool,id) => {
 }
 const updateDisconnectModel = async (data) =>{
     try {
-        let SQL ='UPDATE discount_code SET discount_code=$1,year=$2,month=$3,day=$4,hour=$5,minute=$6,second=$7,max_counter=$8,discount=$9,max_discount=$13,active=$10,number_of_time=$11 WHERE id=$12 RETURNING *;';
+        let SQL ='UPDATE discount_code SET discount_code=$1,expiry_date=$2, min_order_amount=$3,max_counter=$4,discount=$5,max_discount=$9,active=$6,number_of_time=$7 WHERE id=$8 RETURNING *;';
         
-        const {discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id,max_discount} = data;
-        let safeValues = [discount_code,year,month,day,hour,minute,second,max_counter,discount,active,number_of_time,id,max_discount];
+        const {discount_code,expiry_date, min_order_amount,max_counter,discount,active,number_of_time,id,max_discount} = data;
+        let safeValues = [discount_code,expiry_date, min_order_amount,max_counter,discount,active,number_of_time,id,max_discount];
         let result = await client.query(SQL,safeValues);
         return result.rows[0];
     } catch (error) {
@@ -64,6 +64,7 @@ const getAllDiscountModel = async ()=>{
     }
 }
 const checkCodeModel = async (data) => {
+console.log("🚀 ~ file: discountCode.js ~ line 67 ~ checkCodeModel ~ data", data)
     try {
         let {discount_code,id}= data;
         let SQL = 'SELECT * FROM discount_code WHERE discount_code=$1 OR id =$2;';
@@ -88,9 +89,9 @@ const updateCounterDiscountCode = async (data) => {
 }
 const addPromoModel =async (profile_id, data) => {
     try {
-        let {id,discount_code} = data;
-        let SQL = 'INSERT INTO promo(profile_id,discount_id,discount_name) VALUES($1,$2,$3) RETURNING *;';
-        let safeValue = [profile_id,id,discount_code];
+        let {id, order_id} = data;
+        let SQL = 'INSERT INTO promo(profile_id,discount_id, order_id) VALUES($1,$2,$3) RETURNING *;';
+        let safeValue = [profile_id,id,order_id];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
     } catch (error) {
@@ -130,7 +131,7 @@ const getPromoByProfileIdModel = async (id)=>{
 }
 const getPromoByDiscountId = async (id,profile_id)=> {
     try {
-        let SQL = 'SELECT * FROM promo WHERE profile_id =$2 AND discount_id = $1;';
+        let SQL = 'SELECT count(*) FROM promo WHERE profile_id =$2 AND discount_id = $1;';
         let response = await client.query(SQL,[id,profile_id]);
         return response.rows[0];
     } catch (error) {

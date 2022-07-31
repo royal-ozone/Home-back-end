@@ -44,8 +44,8 @@ const updateAddressModel = async (data) => {
 }
 const getAllAddressModel = async ()=>{
     try {
-        let SQL ='SELECT * FROM address ;';
-        let result = await client.query(SQL);
+        let SQL ='SELECT * FROM address where display=$1 ;';
+        let result = await client.query(SQL,[true]);
         return result.rows
     } catch (error) {
         let response = {
