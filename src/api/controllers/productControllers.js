@@ -17,6 +17,7 @@ const { getStore } = require('../models/stores');
 const productSearchHandler = async (req, res) => {
   try {
     const result = await productSearch(req.query)
+    console.log("🚀 ~ file: productControllers.js ~ line 20 ~ productSearchHandler ~ result", result)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPictureByProductId(product.id)
       product['pictures'] = pictures;

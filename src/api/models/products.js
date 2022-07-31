@@ -119,6 +119,20 @@ const updateProduct = async (data) => {
     }
 };
 
+const updateSizeAndColorWithQuantity = async (data) => {
+    try {
+        let { quantity, size_and_color, id } = data
+        let SQL = "UPDATE product SET size_and_color=$1, quantity=$2 WHERE id=$3 RETURNING *;"
+        let safeValue = [size_and_color, quantity, id]
+        let result = await client.query(SQL, safeValue)
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error.message)
+    }
+
+}
+
+
 const updateSizeAndQuantity = async (data) => {
     try {
         let { id, quantity, size, color } = data;
@@ -211,11 +225,11 @@ const decreaseSizeQuantity = async data => {
 
             let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: JSON.stringify(newSize) }
 
-            let result = await updateProduct(newProduct)
+            let result = await updateSizeAndColorWithQuantity(newProduct)
             return result
 
         } else {
-            let result = await updateProduct({ ...product, quantity: Number(product.quantity) - Number(quantity) })
+            let result = await updateSizeAndColorWithQuantity({ ...product, quantity: Number(product.quantity) - Number(quantity) })
             return result
         }
 
@@ -239,11 +253,11 @@ const increaseSizeQuantity = async data => {
 
             let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: JSON.stringify(newSize) }
 
-            let result = await updateProduct(newProduct)
+            let result = await updateSizeAndColorWithQuantity(newProduct)
             return result
 
         } else {
-            let result = await updateProduct({ ...product, quantity: product.quantity + Number(quantity) })
+            let result = await updateSizeAndColorWithQuantity({ ...product, quantity: product.quantity + Number(quantity) })
             return result
         }
     } catch (error) {
@@ -253,10 +267,10 @@ const increaseSizeQuantity = async data => {
 
 const productSearch = async data => {
     try {
-        let { key, store_id, parent_category_id: pc, child_category_id: cc, grandchild_category_id: gc, brand, price, limit = 20,offset = 0 } = data
+        let { key, store_id, parent_category_id: pc, child_category_id: cc, grandchild_category_id: gc, brand, price, limit = 20, offset = 0 } = data
         let sqlParameters = []
         let safeValues = [true, limit, offset, 'approved']
-        let i = safeValues.length + 1    
+        let i = safeValues.length + 1
         let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
         key && sqlParameters.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or p.grandchild_category_id = any (select id from grandchild_category gc where gc.entitle like $${i} or gc.artitle like $${i++}))`) && safeValues.push(`%${key}%`)
         let storeQuery = []
@@ -266,10 +280,10 @@ const productSearch = async data => {
         price && sqlParameters.push(`(price between $${i++} and $${i++})`) && safeValues.push(price.split('-')[0]) && safeValues.push(price.split('-')[1])
         gc && sqlParameters.push(`(grandchild_category_id=$${i})`) && safeValues.push(gc) || cc && sqlParameters.push(`(child_category_id=$${i})`) && safeValues.push(cc) || pc && sqlParameters.push(`(parent_category_id=$${i})`) && safeValues.push(pc)
         // console.log("🚀 ~ file: products.js ~ line 259 ~ safeValues", safeValues)
-        let SQL = `${baseQuery} ${sqlParameters.length >0 && sqlParameters.join(' and ')} limit $2 offset $3`
+        let SQL = `${baseQuery} ${sqlParameters.length > 0 && sqlParameters.join(' and ')} limit $2 offset $3`
         // console.log("🚀 ~ file: products.js ~ line 270 ~ SQL", SQL)
         let result = await client.query(SQL, safeValues)
-        
+
         return result.rows
     } catch (error) {
         throw new Error(error.message)

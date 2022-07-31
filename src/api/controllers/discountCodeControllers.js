@@ -113,56 +113,74 @@ const checkCodeHandler = async (req, res, next) => {
   try {
     let profileId = req.user.profile_id;
     let result = await checkCodeModel(req.body);
+    let {count} = await getPromoByDiscountId(result?.id,profileId);
+    console.log("🚀 ~ file: discountCodeControllers.js ~ line 117 ~ checkCodeHandler ~ promoByDiscountId", count)
     if (result) {
-      if ( result.active == true && Number(result.counter) < Number(result.max_counter)) {
+      if(new Date() > new Date(result.expiry_date)){
+        res.send({status: 403, message:" code is expired"});
+      } else if (Number(count) === result.number_of_time){
+          res.send({status: 403, message:" you reached the maximum usage limit"})
+      } else if (Number(result.counter) >= Number(result.max_counter)){
+        res.send({status: 403, message:'maximum uses reached'})
+      } else if (req.body.order_amount < result.min_order_amount){
+        res.send({status: 403, message:'your order is not eligible for the discount'})
+      } else {
+        // let updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
+        let cart = await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
+        res.send({status: 200, message : 'discount applied', result :result})
+      } 
 
-        let promoByDiscountId = await getPromoByDiscountId(result.id,profileId);
+      // if ( result.active === true && Number(result.counter) < Number(result.max_counter)) {
+
+      //   let promoByDiscountId = await getPromoByDiscountId(result.id,profileId);
        
          
-          if(promoByDiscountId){
-            if (
-              Number(promoByDiscountId.counter) < Number(result.number_of_time)
-              ) {
-              // let updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
-              // let updateData = await updateCounterDiscountCode(result);
-              let cart = await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
-              let response = {
-                message: " the discount code is activate ",
-                data: result,
-                promoData:promoByDiscountId,
-                cart:cart
-              };
-              return res.status(200).send(response);
-            }
-          }
+      //     if(promoByDiscountId){
+      //       if (
+      //         Number(promoByDiscountId) < Number(result.number_of_time)
+      //         ) {
+      //         // let updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
+      //         // let updateData = await updateCounterDiscountCode(result);
+      //         let cart = await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
+      //         let response = {
+      //           message: " the discount code is active ",
+      //           data: result,
+      //           promoData:promoByDiscountId,
+      //           cart:cart
+      //         };
+      //         return res.send(response);
+      //       }
+      //     }
         
-       else{
-          let promoResult = await addPromoModel(profileId, result);
-          if (promoResult) {
-            if (
-              Number(promoResult.counter) < Number(result.number_of_time)
-              ) {
-              // let updateCounterPromo = await updateCounterPromoModel({id:promoResult.id,counter:promoResult.counter});
-              // let updateData = await updateCounterDiscountCode(result);
-            let cart=  await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
-              let response = {
-                message: "Successfully use discount code ",
-                data: result,
-                promoData:promoResult,
-                cart :cart
-              };
-              return res.status(200).send(response);
-            }
-          }
-        }
+      //  else{
+      //     let promoResult = await addPromoModel(profileId, result);
+      //     if (promoResult) {
+      //       if (
+      //         Number(promoResult.counter) < Number(result.number_of_time)
+      //         ) {
+      //         // let updateCounterPromo = await updateCounterPromoModel({id:promoResult.id,counter:promoResult.counter});
+      //         // let updateData = await updateCounterDiscountCode(result);
+      //       let cart=  await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
+      //         let response = {
+      //           message: "Successfully use discount code ",
+      //           data: result,
+      //           promoData:promoResult,
+      //           cart :cart
+      //         };
+      //         return res.send(response);
+      //       }
+      //     }
+      //   }
         
        
-      }
-      res.status(200).send("Unfortunately expired discount code");
+      // }
+      // res.send("Unfortunately expired discount code");
+    } else {
+      res.send({message:"promo code not found", status: 403});
+
     }
-    res.status(403).send("Unfortunately the discount code is wrong!")
   } catch (error) {
-    res.status(403).send(error.message)
+    res.send(error.message)
     // next(error);
     
   }
