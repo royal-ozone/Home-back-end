@@ -109,12 +109,13 @@ const getProductHandler = async (req, res, next) => {
 
 const getStoreProductsHandler = async (req, res) => {
   try {
-    let id = req.user.store_id;
+    let id = req.params?.id ?? req.user?.store_id ;
     let offset = req.query.offset || 0;
     let limit = req.query.limit || 24;
     let result = await getStoreProducts(id,limit,offset)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPicturesById(product.id)
+      
       product['pictures'] = pictures;
       delete product.pictures.product_id
       return product;

@@ -342,6 +342,7 @@ router.post('/store/updateCode', upload.none(), updateVerificationCodeHandler, s
 
 router.post('/product',bearer,checkStoreAuth,checkStoreStatus, uploadS3.array('image'), addProductHandler)
 router.get('/products',upload.none(), getAllProductHandler)
+router.get('/product/store/id/:id',upload.none(), getStoreProductsHandler)
 router.get('/product/store', bearer, checkStoreAuth, upload.none(), getStoreProductsHandler)
 router.get('/product/store/:status', bearer, checkStoreAuth, upload.none(), getStoreProductsByStatusHandler)
 router.get('/product/:id',upload.none(), getProductHandler, getParentCategoryById,getChildCategoryById,getGrandChildCategoryById)

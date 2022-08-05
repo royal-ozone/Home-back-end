@@ -15,7 +15,7 @@ const addProductPicture = async data  => {
 
 const getProductPicturesById = async id => {
     try {
-        let SQL = 'SELECT * FROM product_picture WHERE product_id=$1;';
+        let SQL = 'SELECT product_picture FROM product_picture WHERE product_id=$1;';
         let result = await client.query(SQL, [id])
         return result.rows
     } catch (error) {
