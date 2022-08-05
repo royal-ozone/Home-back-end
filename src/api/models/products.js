@@ -86,7 +86,7 @@ const getProductByChildIdModel = async (data, offset, limit) => {
 
 const getStoreProducts = async (id, limit, offset) => {
     try {
-        let SQL = `SELECT * FROM product WHERE store_id =$1 AND display$4 LIMIT $2 OFFSET $3;`;
+        let SQL = `SELECT * FROM product WHERE store_id =$1 AND display=$4 LIMIT $2 OFFSET $3;`;
         let result = await client.query(SQL, [id, limit, offset, true]);
         return result.rows;
     } catch (error) {
