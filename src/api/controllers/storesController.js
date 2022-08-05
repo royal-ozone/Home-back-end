@@ -116,9 +116,13 @@ const addStoreReview2 = async (req, res, next) => {
 
 const getStoreHandler = async (req, res) => {
     try {
-        let result = await getStore(req.user.profile_id);
+        let result = await getStore(req.params?.id?? req.user?.profile_id);
         if (result) {
-            res.status(200).json({
+            delete result.verification_code
+            delete result.rejected_reason
+            delete result.verified_email
+            res.json({
+                status: 200,
                 data: result,
             });
         }

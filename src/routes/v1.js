@@ -325,6 +325,7 @@ router.post('/store', bearer, uploadS3.single('image'), createStoreHandler,addSt
 router.post('/store/email', uploadS3.single('image'),email, createStoreHandler,addStoreReview2,sendEmail);
 router.put('/store',bearer,checkStoreAuth,upload.none(),updateStoreHandler);
 router.delete('/store',bearer,checkStoreAuth,upload.none(), deleteStoreHandler);
+router.get('/store/id/:id',upload.none(), getStoreHandler);
 router.get('/store',bearer,upload.none(), getStoreHandler);
 router.get('/store/name/:name', upload.none(),getStoreByNameHandler)
 router.get('/store/all',upload.none(), getAllStoresHandler)

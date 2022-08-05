@@ -61,7 +61,7 @@ const updateDisconnectHandler = async (req, res, next) => {
     let id = req.body.id;
     let oldData = await getDiscountCodeById(id);
     if (oldData) {
-      let result = await updateDisconnectModel({...oldData,...req.body});
+      let result = await updateDisconnectModel({ ...oldData, ...req.body });
       let response = {
         message: `Successfully update discount code who called (${result.discount_code})`,
         updateData: result,
@@ -113,28 +113,27 @@ const checkCodeHandler = async (req, res, next) => {
   try {
     let profileId = req.user.profile_id;
     let result = await checkCodeModel(req.body);
-    let {count} = await getPromoByDiscountId(result?.id,profileId);
-    console.log("🚀 ~ file: discountCodeControllers.js ~ line 117 ~ checkCodeHandler ~ promoByDiscountId", count)
+    let { count } = await getPromoByDiscountId(result?.id, profileId);
     if (result) {
-      if(new Date() > new Date(result.expiry_date)){
-        res.send({status: 403, message:" code is expired"});
-      } else if (Number(count) === result.number_of_time){
-          res.send({status: 403, message:" you reached the maximum usage limit"})
-      } else if (Number(result.counter) >= Number(result.max_counter)){
-        res.send({status: 403, message:'maximum uses reached'})
-      } else if (req.body.order_amount < result.min_order_amount){
-        res.send({status: 403, message:'your order is not eligible for the discount'})
+      if (new Date() > new Date(result.expiry_date)) {
+        res.send({ status: 403, message: " code is expired" });
+      } else if (Number(count) === result.number_of_time) {
+        res.send({ status: 403, message: " you reached the maximum usage limit" })
+      } else if (Number(result.counter) >= Number(result.max_counter)) {
+        res.send({ status: 403, message: 'maximum uses reached' })
+      } else if (req.body.order_amount < result.min_order_amount) {
+        res.send({ status: 403, message: 'your order is not eligible for the discount' })
       } else {
         // let updateCounterPromo = await updateCounterPromoModel({id:promoByDiscountId.id,counter:promoByDiscountId.counter});
-        let cart = await updateDiscountCart({cart_id:req.user.cart_id,discount_id:result.id});
-        res.send({status: 200, message : 'discount applied', result :result})
-      } 
+        let cart = await updateDiscountCart({ cart_id: req.user.cart_id, discount_id: result.id });
+        res.send({ status: 200, message: 'discount applied', result: result })
+      }
 
       // if ( result.active === true && Number(result.counter) < Number(result.max_counter)) {
 
       //   let promoByDiscountId = await getPromoByDiscountId(result.id,profileId);
-       
-         
+
+
       //     if(promoByDiscountId){
       //       if (
       //         Number(promoByDiscountId) < Number(result.number_of_time)
@@ -151,7 +150,7 @@ const checkCodeHandler = async (req, res, next) => {
       //         return res.send(response);
       //       }
       //     }
-        
+
       //  else{
       //     let promoResult = await addPromoModel(profileId, result);
       //     if (promoResult) {
@@ -171,39 +170,39 @@ const checkCodeHandler = async (req, res, next) => {
       //       }
       //     }
       //   }
-        
-       
+
+
       // }
       // res.send("Unfortunately expired discount code");
     } else {
-      res.send({message:"promo code not found", status: 403});
+      res.send({ message: "promo code not found", status: 403 });
 
     }
   } catch (error) {
     res.send(error.message)
     // next(error);
-    
+
   }
 };
-const getAllPromoHandler =async (req, res, next) => {
+const getAllPromoHandler = async (req, res, next) => {
   try {
     let result = await getAllPromoModel();
     let response = {
-      message:"SUCCESSFULLY get all promo",
-      data_all:result
+      message: "SUCCESSFULLY get all promo",
+      data_all: result
     }
     res.status(200).send(response);
   } catch (error) {
     next(error);
   }
 }
-const getPromoHandler =async (req, res, next) => {
+const getPromoHandler = async (req, res, next) => {
   try {
     let id = req.params.id;
     let result = await getPromoByProfileIdModel(id);
     let response = {
-      message:"SUCCESSFULLY get all promo",
-      data_all:result,
+      message: "SUCCESSFULLY get all promo",
+      data_all: result,
     }
     res.status(200).send(response);
   } catch (error) {
