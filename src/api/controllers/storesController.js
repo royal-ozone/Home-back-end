@@ -116,7 +116,7 @@ const addStoreReview2 = async (req, res, next) => {
 
 const getStoreHandler = async (req, res) => {
     try {
-        let result = await getStore(req.user.profile_id);
+        let result = await getStore(req.body.store_id?? req.user.profile_id);
         if (result) {
             res.status(200).json({
                 data: result,
