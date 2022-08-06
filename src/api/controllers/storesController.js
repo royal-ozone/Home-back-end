@@ -118,9 +118,9 @@ const getStoreHandler = async (req, res) => {
     try {
         let result = await getStore(req.params?.id?? req.user?.profile_id);
         if (result) {
-            delete result.verification_code
-            delete result.rejected_reason
-            delete result.verified_email
+            // delete result.verification_code
+            // delete result.rejected_reason
+            // delete result.verified_email
             res.json({
                 status: 200,
                 data: result,
