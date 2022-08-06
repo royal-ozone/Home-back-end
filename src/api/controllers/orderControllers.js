@@ -57,12 +57,12 @@ const {
 const { decreaseSizeQuantity, increaseSizeQuantity } = require("../models/products")
 const addOrderHandler = async (req, res, next) => {
   try {
-    const {address_id, discount_id } = req.body
+    const { address_id, discount_id } = req.body
     let profile_id = req.user.profile_id;
     // let cartData = await getCartByProfileIdModel(profile_id);
     let cartItems = await getALLCartItemByCartId(req.user.cart_id)
     if (cartItems.length > 0) {
-      let data = await addOrderModel({  profile_id: profile_id, ...req.body });
+      let data = await addOrderModel({ profile_id: profile_id, ...req.body });
       if (data.id) {
 
         let productArray = await cartItems.map(async (cartItem) => {
@@ -79,7 +79,7 @@ const addOrderHandler = async (req, res, next) => {
           if (discount_id) {
             let result = await checkCodeModel({ id: discount_id });
             // let promoByDiscountId = await getPromoByDiscountId(discount_id, profile_id);
-            updateCounterPromo = await addPromoModel(req.user.profile_id,{ id: discount_id, order_id: data.id });
+            updateCounterPromo = await addPromoModel(req.user.profile_id, { id: discount_id, order_id: data.id });
             updateData = await updateCounterDiscountCode(result);
           }
           let obj = {
@@ -88,7 +88,7 @@ const addOrderHandler = async (req, res, next) => {
             order_items: await Promise.all(productArray),
             updateCounterPromo: updateCounterPromo,
             updateData: updateData,
-            status : 200,
+            status: 200,
           }
           await removeCartItemModelByCartId(req.user.cart_id);
           await updateCart({ id: req.user.cart_id });
@@ -238,9 +238,9 @@ const updateOrderItemStatusHandler = async (req, res) => {
     } else if (pending.length === 0 && accepted.length === 0 && canceled.length !== 0) {
       await updateOrderStatusModel(data.order_id, { status: 'canceled' })
     }
-    res.status(200).json({ message: 'Successfully update status order item', data });
+    res.json({ status: 200, message: 'Successfully update status order item', result: data });
   } catch (error) {
-    res.status(403).send('something went wrong');
+    res.send({ status: 403, message: error.message });
   }
 }
 
