@@ -51,7 +51,7 @@ module.exports = async (req, res, next) => {
             next();
         }
         else { 
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'Invalid token!',
             });
@@ -61,7 +61,7 @@ module.exports = async (req, res, next) => {
         next(error);
     }
     function _authError() {
-        res.status(403).send('Header authorization is not provided');
+        res.send('Header authorization is not provided');
     }
 
 }

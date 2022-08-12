@@ -2,7 +2,6 @@ const client = require('../../db')
 
 
 const addProductRating = async data => {
-console.log("🚀 ~ file: productRating.js ~ line 5 ~ data", data)
     try {
         let {product_id,votes,rating} = data;
         let SQL = 'INSERT INTO product_rating (product_id, votes, rating) VALUES($1,$2,$3) RETURNING *;';

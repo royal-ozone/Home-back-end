@@ -44,7 +44,9 @@ const {
 const {
   dateTimeNow,
   dateTimeTomorrow,
-  differentBetweenDate
+  differentBetweenDate,
+  currentDateDiffByDay,
+  twoDatesDiffByDay
 } = require("./helper");
 
 const {
@@ -107,7 +109,6 @@ const updateOrderStatusHandler = async (req, res, next) => {
   try {
     let id = req.body.id || req.body;
     let data = await updateOrderStatusModel(req.body);
-    // console.log("🚀 ~ file: orderControllers.js ~ line 103 ~ updateOrderStatusHandler ~ data", data)
     let notificationObj;
 
     if (data.status === 'accepted') {
@@ -140,7 +141,6 @@ const updateOrderStatusHandler = async (req, res, next) => {
 
     if (data.status === 'canceled') {
       let a = await getOrderItemsByOrderId(data.id)
-      // console.log("🚀 ~ file: orderControllers.js ~ line 136 ~ updateOrderStatusHandler ~ a", a)
       let pendingOrderItems = a.filter(val => val.status !== 'canceled')
       await pendingOrderItems.map(async item => {
         await updateOrderItemStatusModel({ ...item, status: 'canceled' }, dateTimeNow());
@@ -201,10 +201,9 @@ const updateOrderItemStatusHandler = async (req, res) => {
     let { fulfilled_orders, ontime_orders, overall_orders } = await getStoreReview2ByStoreId(data.store_id);
 
 
-
-
     if (data.status === 'accepted') {
-      let day = differentBetweenDate(data.last_update, data.date_after_day);
+      // let day = differentBetweenDate(data.last_update, data.date_after_day);
+      let day =  currentDateDiffByDay(data.created_at)
 
       if (day > 1) {
         fulfilled_orders++;
@@ -221,7 +220,7 @@ const updateOrderItemStatusHandler = async (req, res) => {
       }
     }
     if (data.status === 'canceled') {
-      await increaseSizeQuantity({ id: data.id, size: data.size, quantity: data.quantity })
+      await increaseSizeQuantity({ id: data.product_id, size: data.size, color:data.color, quantity: data.quantity })
       overall_orders++;
       let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
     }
@@ -231,14 +230,13 @@ const updateOrderItemStatusHandler = async (req, res) => {
     let accepted = orderItems.filter(item => item.status === 'accepted');
     let canceled = orderItems.filter(item => item.status === 'canceled');
 
-
-
     if (pending.length === 0 && accepted.length !== 0) {
-      await updateOrderStatusModel(data.order_id, { status: 'accepted' })
+     
+     await updateOrderStatusModel({ id: data.order_id, status: 'accepted' })
     } else if (pending.length === 0 && accepted.length === 0 && canceled.length !== 0) {
-      await updateOrderStatusModel(data.order_id, { status: 'canceled' })
+      await updateOrderStatusModel( {id: data.order_id, status: 'canceled' })
     }
-    res.json({ status: 200, message: 'Successfully update status order item', result: data });
+    res.json({ status: 200, message: 'Successfully update status order item', result: {...req.body,...data} });
   } catch (error) {
     res.send({ status: 403, message: error.message });
   }
@@ -295,7 +293,7 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
   try {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
-    let orders = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
+    let {orders, count} = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
     let sellerOrders = await orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getPendingOrderItemsByOrderId(order_id)
@@ -306,7 +304,7 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
       detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.json({ orders: await Promise.all(sellerOrders) })
+    res.json({ orders: await Promise.all(sellerOrders), count: count })
   } catch (error) {
     res.json({ status: 403, message: error.message });
   }
@@ -316,7 +314,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   try {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
-    let orders = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset })
+    let {orders, count} = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset })
     let sellerOrders = orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getNotOrderItemsByOrderId(order_id)
@@ -327,7 +325,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
       detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.json({ orders: await Promise.all(sellerOrders) })
+    res.json({ orders: await Promise.all(sellerOrders), count: count })
   } catch (error) {
     res.json({ status: 403, message: error.message });
   }

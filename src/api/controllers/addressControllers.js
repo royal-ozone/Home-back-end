@@ -49,8 +49,8 @@ const removeAddressHandler= async (req, res,next) => {
 }
 const getStoreAddressHandler = async (req, res)=>{
     try {
-        let result = await getStoreAddress(req.user.profile_id)
-        if (result.id){
+        let result = await getStoreAddress(req.user?.profile_id)
+        if (result?.id){
             res.json({ result: result, status: 200 })
         } else{
             res.send({ status: 403, message: 'something went wrong'})
@@ -62,13 +62,10 @@ const getStoreAddressHandler = async (req, res)=>{
 const updateAddressHandler = async (req, res,next ) => {
     try {
         let result = await checkUserAuth('address',req.body.id, req.user.profile_id);
-        console.log("🚀 ~ file: addressControllers.js ~ line 53 ~ updateAddressHandler ~ result", result)
-        console.log("🚀 ~ file: addressControllers.js ~ line 53 ~ updateAddressHandler ~ req.user.profile_id", req.user.profile_id)
-        console.log("🚀 ~ file: addressControllers.js ~ line 53 ~ updateAddressHandler ~ req.body.id", req.body.id)
+    
         if(result !== 'not Authorized'){
             let oldData = await getAddressById(req.body.id)
             let data = await updateAddressModel({...oldData,...req.body});
-            console.log("🚀 ~ file: addressControllers.js ~ line 58 ~ updateAddressHandler ~ data", data)
             let response = {
             status: 200,
             message: 'successfully update address',
