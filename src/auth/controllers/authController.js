@@ -616,7 +616,6 @@ const updateNotification_allHandler = async (req, res) => {
 const updateNotification_storeHandler = async (req, res) => {
     try {
         let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
-        console.log("🚀 ~ file: authController.js ~ line 584 ~ constupdateNotification_storeHandler=async ~ data", data)
         res.send({ status: 200, data });
     } catch (error) {
         res.send({ status: 403, error: error.message })

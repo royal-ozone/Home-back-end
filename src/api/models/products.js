@@ -137,6 +137,7 @@ const updateSizeAndQuantity = async (data) => {
     try {
         let { id, quantity, size, color } = data;
         let array = await getProduct(id).size_and_color
+        
         let newSizeAndColor = JSON.parse(array).map(val => {
             if (val.size === size && color === val.color) {
                 return { ...val, quantity: val.quantity - Number(quantity) }
@@ -241,15 +242,22 @@ const decreaseSizeQuantity = async data => {
 const increaseSizeQuantity = async data => {
     try {
         const { id, size, color, quantity } = data
+       
+       
         let product = await getProduct(id);
         if (size || color) {
 
             let newSize = JSON.parse(product.size_and_color).map(val => {
                 if (val.size === size && val.color === color) {
                     return { ...val, quantity: val.quantity + Number(quantity) }
+                } else if (val.size === size){
+                    return { ...val, quantity: val.quantity + Number(quantity) }
+                } else if (val.color === color){
+                    return { ...val, quantity: val.quantity + Number(quantity) }
                 }
                 return val
             })
+            console.log("🚀 ~ file: products.js ~ line 259 ~ newSize ~ newSize", newSize)
 
             let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: JSON.stringify(newSize) }
 
@@ -271,17 +279,15 @@ const productSearch = async data => {
         let sqlParameters = []
         let safeValues = [true, limit, offset, 'approved']
         let i = safeValues.length + 1
-        let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
-        key && sqlParameters.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or p.grandchild_category_id = any (select id from grandchild_category gc where gc.entitle like $${i} or gc.artitle like $${i++}))`) && safeValues.push(`%${key}%`)
+        let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id left join grandchild_category gc on gc.id = p.grandchild_category_id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
+        key && sqlParameters.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i++})`) && safeValues.push(`%${key}%`)
         let storeQuery = []
         store_id && store_id.split(',').map(value => storeQuery.push(`(store_id = $${i++})`) && safeValues.push(value)) && sqlParameters.push(`(${storeQuery.join(' or ')})`)
         let brandQuery = []
         brand && brand.split(',').map(value => brandQuery.push(`(brand_name = $${i++})`) && safeValues.push(value)) && sqlParameters.push(brandQuery.join(' or '))
         price && sqlParameters.push(`(price between $${i++} and $${i++})`) && safeValues.push(price.split('-')[0]) && safeValues.push(price.split('-')[1])
         gc && sqlParameters.push(`(grandchild_category_id=$${i})`) && safeValues.push(gc) || cc && sqlParameters.push(`(child_category_id=$${i})`) && safeValues.push(cc) || pc && sqlParameters.push(`(parent_category_id=$${i})`) && safeValues.push(pc)
-        // console.log("🚀 ~ file: products.js ~ line 259 ~ safeValues", safeValues)
         let SQL = `${baseQuery} ${sqlParameters.length > 0 && sqlParameters.join(' and ')} limit $2 offset $3`
-        // console.log("🚀 ~ file: products.js ~ line 270 ~ SQL", SQL)
         let result = await client.query(SQL, safeValues)
 
         return result.rows
@@ -302,5 +308,6 @@ module.exports = {
     getProductByGrandChildIdModel,
     getProductByChildIdModel,
     getProductsByCategories,
-    productSearch
+    productSearch,
+    updateSizeAndColorWithQuantity
 };

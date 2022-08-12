@@ -43,11 +43,11 @@ const getProductPictureByProductId = async (id) =>{
 }
 const addOrderItemModel = async (data) => {
   try {
-    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id,date_after_day,last_update, size} = data;
+    const {order_id, product_id, store_id,price, quantity, discount ,price_after, profile_id,date_after_day,last_update, size, color} = data;
 
     let SQL =
-      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id,date_after_day,last_update, size) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING * ;";
-    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id,date_after_day,last_update,size];
+      "INSERT INTO order_item(order_id,product_id,store_id,price,quantity,discount,price_after, profile_id,date_after_day,last_update, size, color) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING * ;";
+    let safeValue = [order_id, product_id,store_id, price, quantity, discount,price_after, profile_id,date_after_day,last_update,size,color];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
@@ -103,7 +103,7 @@ const updateOrderItemStatusModel = async (data,dateTimeNow) => {
 
 const getOrderItemsByOrderId = async id => {
   try {
-    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price from order_item oi where oi.order_id =$1 inner join product p on p.id =oi.product_id;';
+    let SQL = 'select oi.*, p.entitle , p.artitle, p.price as p_price from order_item oi inner join product p on p.id =oi.product_id where oi.order_id =$1 ;';
     let result = await client.query(SQL, [id]);
     return result.rows;
   } catch (error) {
@@ -133,8 +133,10 @@ const getOrdersByPendingOrderItems = async data => {
   try {
     let {id,limit,offset} = data
     let SQL = 'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status=$2 LIMIT $3 OFFSET $4;';
+    let SQL2 = 'SELECT count(DISTINCT order_id) FROM order_item WHERE store_id=$1 AND status=$2;';
     let result = await client.query(SQL, [id,'pending',limit,offset]);
-    return result.rows;
+    let result2 = await client.query(SQL2, [id,'pending']);
+    return{ orders: result.rows, count: result2.rows[0].count};
   } catch (error) {
     throw new Error(error.message)
   }
@@ -143,9 +145,13 @@ const getOrdersByPendingOrderItems = async data => {
 const getOrdersByNotPendingOrderItems = async data => {
   try {
     let {id,status,limit,offset} = data
-    let SQL = status? 'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status=$2 LIMIT $3 OFFSET $4;':  'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status!=$2 LIMIT $3 OFFSET $4;';
+    let SQL = status? 'SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 AND neo.status=$2 LIMIT $3 OFFSET $4;':  'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status!=$2 LIMIT $3 OFFSET $4;';
+    let SQL2 = status? 'SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1 AND neo.status=$2;':  'SELECT count(DISTINCT order_id) FROM order_item WHERE store_id=$1 AND status!=$2;';
+ 
     let result = await client.query(SQL, [id, status??'pending',limit,offset]);
-    return result.rows;
+    let result2 = await client.query(SQL2, [id, status??'pending']);
+    
+    return {orders:result.rows, count:result2.rows[0].count};
   } catch (error) {
     throw new Error(error.message)
   }

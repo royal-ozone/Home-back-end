@@ -1,5 +1,5 @@
-const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories, 
-  productSearch } = require('../models/products');
+const { getStoreProductsByStatus,addProduct, getAllProduct, getProduct, updateProduct, updateProductStatus, deleteProduct, updateProductDisplay, getStoreProducts,updateSizeAndQuantity,updateDiscount, getSearchData,getProductsByCategories, updateSizeAndColorWithQuantity
+  ,productSearch } = require('../models/products');
 const { deleteProductReviewByProductId } = require('../models/productReview')
 const { deleteProductTagByProductId } = require('../models/productTag')
 const { deleteProductRatingByProductId } = require('../models/productRating')
@@ -17,7 +17,6 @@ const { getStore } = require('../models/stores');
 const productSearchHandler = async (req, res) => {
   try {
     const result = await productSearch(req.query)
-    console.log("🚀 ~ file: productControllers.js ~ line 20 ~ productSearchHandler ~ result", result)
     let resultWithPics = await result.map(async (product) => {
       let pictures = await getProductPictureByProductId(product.id)
       product['pictures'] = pictures;
@@ -186,14 +185,14 @@ const updateProductHandler = async (req, res) => {
 
 const updateSizeAndQuantityHandler = async (req, res) =>{
   try {
-    let result = await updateSizeAndQuantity(req.body)
-    if (result.id) {
-      res.json({ message: 'product has been updated successfully', result, status: 200 });
+    let result = await updateSizeAndColorWithQuantity(req.body)
+    if (result?.id) {
+      res.json({ message: 'product has been updated successfully', result: result, status: 200 });
     } else {
-      res.send('something went wrong while updating the product')
+      res.send({status: 403, message: 'something went wrong ' + result})
     }
   } catch (error) {
-    res.send(error.message)
+    res.send({ status: 403, message: error})
   }
 }
 
@@ -279,9 +278,9 @@ const deleteProductPictureHandler = async (req, res) => {
   try {
     let result = await deleteProductPictureById(req.body.picture_id);
     await deleteRemoteFile(result.product_picture)
-    res.status(200).send('picture has been deleted successfully')
+    res.send({message: 'picture has been deleted successfully', status:200})
   } catch (error) {
-    res.status(403).send(error.message)
+    res.send({message:error, status:403})
   }
 }
 

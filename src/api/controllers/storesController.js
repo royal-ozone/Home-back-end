@@ -35,7 +35,8 @@ const {
     getStoreReview2ByStoreId,
     getAllStoreReview2,
     updateVerificationCode,
-    updateVerifiedEmail
+    updateVerifiedEmail,
+    getFollowedStores
 } = require('../models/stores');
 
 const { getProfileByEmail, getProfileById } = require('../../auth/models/user')
@@ -116,7 +117,7 @@ const addStoreReview2 = async (req, res, next) => {
 
 const getStoreHandler = async (req, res) => {
     try {
-        let result = await getStore(req.params?.id?? req.user?.profile_id);
+        let result = await getStore(req.params?.id ?? req.user?.profile_id);
         if (result) {
             // delete result.verification_code
             // delete result.rejected_reason
@@ -404,37 +405,36 @@ const createStorefollowerHandler = async (req, res) => {
         let { store_id } = req.body;
         let storeFollower = await createStoreFollower(req.user.profile_id, store_id)
 
-        if (storeFollower.number === 0) {
-            delete storeFollower.number;
-            res.status(200).json({
-                message: 'You have followed this store before!',
-                storeFollower: storeFollower
-            });
-        }
-        else if (storeFollower !== 0) {
-            let numberOfFollower;
-            let inputData;
-            let check = await getNumberOfFollower(store_id);
-            if (check) {
-                numberOfFollower = await updateNumberOfFollowersPlus(store_id);
-            } else {
-                inputData = await createNumberOfStoreFollower(store_id);
-                numberOfFollower = await updateNumberOfFollowersPlus(store_id);
+        // if (storeFollower.number === 0) {
+        //     delete storeFollower.number;
+        //     res.json({
+        //         message: 'You have followed this store before!',
+        //         storeFollower: storeFollower
+        //     });
+        // }
+        // else if (storeFollower !== 0) {
+        //     let numberOfFollower;
+        //     let inputData;
+        //     let check = await getNumberOfFollower(store_id);
+        //     if (check) {
+        //         numberOfFollower = await updateNumberOfFollowersPlus(store_id);
+        //     } else {
+        //         inputData = await createNumberOfStoreFollower(store_id);
+        //         numberOfFollower = await updateNumberOfFollowersPlus(store_id);
 
-            }
+        //     }
 
-            res.status(200).json({
-                message: 'Store has been followed successfully!',
-                storeFollower: storeFollower,
-                inputData: inputData,
-                numberOfFollower: numberOfFollower
-            });
-        }
-        else {
-            res.status(403).json({ message: 'Something went wrong while following a store!' });
-        }
+        // }
+        // else {
+        //     res.status(403).json({ message: 'Something went wrong while following a store!' });
+        // }
+        res.json({
+            status: 200,
+            message: 'Store has been followed successfully!',
+            result: storeFollower
+        });
     } catch (error) {
-        res.status(403).send(error.message)
+        res.send(error.message)
     }
 }
 
@@ -442,19 +442,21 @@ const deleteStorefollowerHandler = async (req, res) => {
     try {
 
         let unFollow = await deleteStoreFollower(req.user.profile_id, req.body.store_id)
-        console.log("🚀 ~ file: storesController.js ~ line 345 ~ deleteStorefollowerHandler ~ unFollow", unFollow)
         if (unFollow) {
-            let numberOfFollower = await updateNumberOfFollowersMinus(req.body.store_id);
-            res.status(200).json({
+            // let numberOfFollower = await updateNumberOfFollowersMinus(req.body.store_id);
+            res.json({
                 message: 'Your have unfollowed this store!',
-                data: unFollow,
-                numberOfFollower: numberOfFollower
+                result: unFollow,
+                status: 200
+                // numberOfFollower: numberOfFollower
             });
+        } else {
+            res.send({message:'you not follow this store', status: 403});
+
         }
-        res.status(403).send('you not follow this store');
 
     } catch (error) {
-        res.status(403).send(error.message)
+        res.send(error.message)
     }
 }
 
@@ -468,10 +470,10 @@ const updateStorePictureHandler = async (req, res) => {
                 result: result
             })
         }
-        res.status(403).send('yon do not have any store')
+        res.send('yon do not have any store')
 
     } catch (error) {
-        res.status(403).send(error.message)
+        res.send(error.message)
     }
 }
 
@@ -484,7 +486,20 @@ const deleteStorePictureHandler = async (req, res) => {
             result: result
         })
     } catch (error) {
-        res.status(403).send(error.message)
+        res.send(error.message)
+    }
+}
+
+const getFollowedStoresHandler = async (req, res) => {
+    try {
+        let result = await getFollowedStores(req.user.profile_id)
+        if (result){
+            res.send({ status: 200, result: result })
+        } else {
+            res.send({ status: 403, message: result })
+        }
+    } catch (error) {
+        res.send(error.message)
     }
 }
 
@@ -516,6 +531,7 @@ module.exports = {
     getAllStoreReview2Handler,
     getStoreReview2Handler,
     updateVerificationCodeHandler,
-    checkVerificationCodeHandler
+    checkVerificationCodeHandler,
+    getFollowedStoresHandler
 
 }

@@ -158,7 +158,8 @@ const  {createStoreHandler,
   getAllStoreReview2Handler,
   getStoreReview2Handler,
   updateVerificationCodeHandler,
-    checkVerificationCodeHandler
+    checkVerificationCodeHandler,
+    getFollowedStoresHandler
 } = require('../api/controllers/storesController');
 
 const {uploadS3} = require('../api/middleware/uploader');
@@ -419,6 +420,7 @@ router.post('/store/follower',bearer,upload.none(),createStorefollowerHandler);
 router.delete('/store/follower',bearer,upload.none(),deleteStorefollowerHandler);
 router.get('/store/follower',bearer,upload.none(), getAllStorefollowersHandler);
 router.get('/store/follower/:store_id',bearer,upload.none(), getStorefollowersHandler);
+router.get('/store/following/', bearer,upload.none(),getFollowedStoresHandler )
 router.get('/store/number/follower',bearer,upload.none(), getALLNumbersOFFollowersHandler);
 
 

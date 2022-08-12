@@ -78,7 +78,7 @@ storeReview.on('connection',()=>{
 
 
 events.on('offerNotification',(data)=>{
-    console.log('offerNotification add : : :',data)
+  
     notificationsOffers.emit('offerNotification',data)
 })
 

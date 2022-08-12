@@ -64,7 +64,6 @@ const getAllDiscountModel = async ()=>{
     }
 }
 const checkCodeModel = async (data) => {
-console.log("🚀 ~ file: discountCode.js ~ line 67 ~ checkCodeModel ~ data", data)
     try {
         let {discount_code,id}= data;
         let SQL = 'SELECT * FROM discount_code WHERE discount_code=$1 OR id =$2;';
