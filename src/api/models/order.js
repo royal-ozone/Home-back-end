@@ -144,12 +144,16 @@ const getOrdersByPendingOrderItems = async data => {
 
 const getOrdersByNotPendingOrderItems = async data => {
   try {
-    let {id,status,limit,offset} = data
-    let SQL = status? 'SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 AND neo.status=$2 LIMIT $3 OFFSET $4;':  'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status!=$2 LIMIT $3 OFFSET $4;';
-    let SQL2 = status? 'SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1 AND neo.status=$2;':  'SELECT count(DISTINCT order_id) FROM order_item WHERE store_id=$1 AND status!=$2;';
- 
-    let result = await client.query(SQL, [id, status??'pending',limit,offset]);
-    let result2 = await client.query(SQL2, [id, status??'pending']);
+    let {id,status,limit,offset,order_id} = data
+    let SQL = status || order_id? `SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 ${status ? ` AND neo.status=$4`: ''} ${order_id ? ` and neo.customer_order_id like $4`: ''} LIMIT $2 OFFSET $3;`:  'SELECT DISTINCT order_id FROM order_item WHERE store_id=$1 AND status!=$4 LIMIT $2 OFFSET $3;';
+    let SQL2 = status || order_id? `SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1  ${status ? ` AND neo.status=$2`: ''} ${order_id ? ` and neo.customer_order_id like $2`: ''}`:  'SELECT count(DISTINCT order_id) FROM order_item WHERE store_id=$1 AND status!=$2;';
+    let safeValues = [id, limit,offset]
+    let safeValues2 = [id]
+    order_id && safeValues.push(`%${order_id}%`) && safeValues2.push(`%${order_id}%`)
+    status && safeValues.push(status) && safeValues2.push(status)
+    !status && !order_id && safeValues.push('pending') && safeValues2.push('pending')
+    let result = await client.query(SQL, safeValues);
+    let result2 = await client.query(SQL2, safeValues2);
     
     return {orders:result.rows, count:result2.rows[0].count};
   } catch (error) {

@@ -314,7 +314,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   try {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
-    let {orders, count} = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset })
+    let {orders, count} = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset, order_id: req.query.order_id })
     let sellerOrders = orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getNotOrderItemsByOrderId(order_id)
