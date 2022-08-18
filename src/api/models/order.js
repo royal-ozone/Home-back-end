@@ -145,8 +145,8 @@ const getOrdersByPendingOrderItems = async data => {
 const getOrdersByNotPendingOrderItems = async data => {
   try {
     let {id,status,limit,offset,order_id} = data
-     let SQL = `SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 ${status ? ` AND neo.status=$4`: ` AND status!=$4`} ${order_id ? ` and neo.customer_order_id like $4`: ''} LIMIT $2 OFFSET $3;`
-    let SQL2 = `SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1  ${status ? ` AND neo.status=$2`: ` AND status!=$2`} ${order_id ? ` and neo.customer_order_id like $2`: ''}`
+     let SQL = `SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 ${status ? ` AND neo.status=$4`: ` AND neo.status!=$4`} ${order_id ? ` and neo.customer_order_id like $4`: ''} LIMIT $2 OFFSET $3;`
+    let SQL2 = `SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1  ${status ? ` AND neo.status=$2`: ` AND neo.status!=$2`} ${order_id ? ` and neo.customer_order_id like $2`: ''}`
     let safeValues = [id, limit,offset]
     let safeValues2 = [id]
     order_id && safeValues.push(`%${order_id}%`) && safeValues2.push(`%${order_id}%`)

@@ -327,7 +327,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
     })
     res.json({ orders: await Promise.all(sellerOrders), count: count })
   } catch (error) {
-    res.json({ status: 403, message: error.message });
+    res.json({ status: 403, message: error });
   }
 }
 
