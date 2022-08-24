@@ -5,7 +5,7 @@ const { addDeliveryTask } = require('../models/deliveryTask');
 const { getStoreProducts } = require('../models/products');
 const { addOrderNotificationHandler } = require('./orderNotificationController');
 const { getOrderNotificationByOrderId } = require('../models/orderNotifications');
-
+const {addBTransaction} = require('../models/storeAmounts')
 const {
   getCartByProfileIdModel,
   getCartItemByProductId,
@@ -28,7 +28,9 @@ const {
   getOrdersByPendingOrderItems, getPendingOrderItemsByOrderId,
   getNotOrderItemsByOrderId,
   getOrdersByNotPendingOrderItems,
-  getProductPictureByProductId
+  getProductPictureByProductId,
+  getOrdersByStatus,
+  getOrderItemsByOrderIdAndStatus
 } = require("../models/order");
 const {
   getAddressById
@@ -73,6 +75,7 @@ const addOrderHandler = async (req, res, next) => {
           // if(cartItem.size){
 
           // }
+          await addBTransaction({...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price})
           return result;
         });
         if (productArray) {
@@ -98,11 +101,11 @@ const addOrderHandler = async (req, res, next) => {
           return res.status(200).json(obj);
         }
       }
-      res.status(403).send(data)
+      res.send(data)
     }
-    res.status(403).send('there`s no item in your cart')
+    res.send('there`s no item in your cart')
   } catch (error) {
-    res.status(403).send(error.message);
+    res.send(error.message);
   }
 };
 const updateOrderStatusHandler = async (req, res, next) => {
@@ -218,10 +221,12 @@ const updateOrderItemStatusHandler = async (req, res) => {
         let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
 
       }
+     
     }
     if (data.status === 'canceled') {
       await increaseSizeQuantity({ id: data.product_id, size: data.size, color:data.color, quantity: data.quantity })
       overall_orders++;
+      await addBTransaction({...data, type: 'credit', status: 'canceled', amount: data.price, order_item_id: data.id})
       let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
     }
     let orderItems = await getOrderItemsByOrderId(data.order_id);
@@ -331,6 +336,27 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   }
 }
 
+const automatedUpdateOrder = async({from, to}) => {
+    let result = await getOrdersByStatus(from)
+    result.map(async(order) => {
+     await updateOrderStatusModel({id: order.id, status: to})
+    })
+
+}
+const addTransactions = async (s1,s2,s3) =>{
+  let result = await getOrdersByStatus(s1)
+  result.forEach(async(order) => {
+    let items = await getOrderItemsByOrderIdAndStatus({id: order.id, status :s2})
+    items.forEach(async(item) => {
+      await addBTransaction({...item, status: s3, type: 'credit', amount: item.price * item.quantity, order_item_id: item.id})
+    })
+    
+  })
+}
+
+// setTimeout( () => {addTransactions('delivered', 'accepted', 'released'); addTransactions('delivered', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'pending'); addTransactions('delivered', 'canceled', 'pending');addTransactions('delivered', 'accepted', 'pending')}, 100000 )
+ setInterval(()=>automatedUpdateOrder({from:'accepted', to:'ready to be shipped'}), 5000)
+ setInterval(()=>automatedUpdateOrder({from:'ready to be shipped', to:'delivered'}), 10000 )
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,

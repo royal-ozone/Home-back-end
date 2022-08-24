@@ -110,6 +110,14 @@ const twoDatesDiffByDay = (date1, date2) => {
     return (new Date(date1) -  new Date(date2)/ (1000 * 60*60 * 24))
 }
 
+const daysToMs = days =>{
+    return days * 24 * 60 * 60 * 1000
+}
+
+const msToDays = ms => {
+    return ms / (1000 * 60*60 * 24)
+}
+
 
 module.exports = {
     calculation,
@@ -120,5 +128,7 @@ module.exports = {
     dateTimeTomorrow,
     differentBetweenDate,
     currentDateDiffByDay,
-    twoDatesDiffByDay
+    twoDatesDiffByDay,
+    daysToMs,
+    msToDays
 }
