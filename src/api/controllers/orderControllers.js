@@ -354,7 +354,15 @@ const addTransactions = async (s1, s2, s3) => {
   })
 }
 
-setTimeout(() => { addTransactions('delivered', 'accepted', 'released'); addTransactions('delivered', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'pending'); addTransactions('delivered', 'canceled', 'pending'); addTransactions('delivered', 'accepted', 'pending') }, 1000)
+setTimeout(() => {
+  //  addTransactions('delivered', 'accepted', 'released'); 
+addTransactions('delivered', 'canceled', 'canceled'); 
+addTransactions('canceled', 'canceled', 'canceled'); 
+addTransactions('canceled', 'canceled', 'pending'); 
+addTransactions('delivered', 'canceled', 'pending');
+//  addTransactions('delivered', 'accepted', 'pending') 
+}
+ , 1000)
 setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
 setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 10000)
 module.exports = {
