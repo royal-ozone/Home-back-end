@@ -5,7 +5,7 @@ const { addDeliveryTask } = require('../models/deliveryTask');
 const { getStoreProducts } = require('../models/products');
 const { addOrderNotificationHandler } = require('./orderNotificationController');
 const { getOrderNotificationByOrderId } = require('../models/orderNotifications');
-const {addBTransaction} = require('../models/storeAmounts')
+const { addBTransaction } = require('../models/storeAmounts')
 const {
   getCartByProfileIdModel,
   getCartItemByProductId,
@@ -75,7 +75,7 @@ const addOrderHandler = async (req, res, next) => {
           // if(cartItem.size){
 
           // }
-          await addBTransaction({...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price})
+          await addBTransaction({ ...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price })
           return result;
         });
         if (productArray) {
@@ -206,7 +206,7 @@ const updateOrderItemStatusHandler = async (req, res) => {
 
     if (data.status === 'accepted') {
       // let day = differentBetweenDate(data.last_update, data.date_after_day);
-      let day =  currentDateDiffByDay(data.created_at)
+      let day = currentDateDiffByDay(data.created_at)
 
       if (day > 1) {
         fulfilled_orders++;
@@ -221,12 +221,12 @@ const updateOrderItemStatusHandler = async (req, res) => {
         let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
 
       }
-     
+
     }
     if (data.status === 'canceled') {
-      await increaseSizeQuantity({ id: data.product_id, size: data.size, color:data.color, quantity: data.quantity })
+      await increaseSizeQuantity({ id: data.product_id, size: data.size, color: data.color, quantity: data.quantity })
       overall_orders++;
-      await addBTransaction({...data, type: 'credit', status: 'canceled', amount: data.price, order_item_id: data.id})
+      await addBTransaction({ ...data, type: 'credit', status: 'canceled', amount: data.price, order_item_id: data.id })
       let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
     }
     let orderItems = await getOrderItemsByOrderId(data.order_id);
@@ -236,12 +236,12 @@ const updateOrderItemStatusHandler = async (req, res) => {
     let canceled = orderItems.filter(item => item.status === 'canceled');
 
     if (pending.length === 0 && accepted.length !== 0) {
-     
-     await updateOrderStatusModel({ id: data.order_id, status: 'accepted' })
+
+      await updateOrderStatusModel({ id: data.order_id, status: 'accepted' })
     } else if (pending.length === 0 && accepted.length === 0 && canceled.length !== 0) {
-      await updateOrderStatusModel( {id: data.order_id, status: 'canceled' })
+      await updateOrderStatusModel({ id: data.order_id, status: 'canceled' })
     }
-    res.json({ status: 200, message: 'Successfully update status order item', result: {...req.body,...data} });
+    res.json({ status: 200, message: 'Successfully update status order item', result: { ...req.body, ...data } });
   } catch (error) {
     res.send({ status: 403, message: error.message });
   }
@@ -298,7 +298,7 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
   try {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
-    let {orders, count} = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
+    let { orders, count } = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
     let sellerOrders = await orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getPendingOrderItemsByOrderId(order_id)
@@ -319,7 +319,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   try {
     let limit = req.query.limit || 5;
     let offset = req.query.offset || 0;
-    let {orders, count} = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset, order_id: req.query.order_id })
+    let { orders, count } = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset, order_id: req.query.order_id })
     let sellerOrders = orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
       let items = await getNotOrderItemsByOrderId(order_id)
@@ -336,27 +336,27 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   }
 }
 
-const automatedUpdateOrder = async({from, to}) => {
-    let result = await getOrdersByStatus(from)
-    result.map(async(order) => {
-     await updateOrderStatusModel({id: order.id, status: to})
-    })
+const automatedUpdateOrder = async ({ from, to }) => {
+  let result = await getOrdersByStatus(from)
+  result.map(async (order) => {
+    await updateOrderStatusModel({ id: order.id, status: to })
+  })
 
 }
-const addTransactions = async (s1,s2,s3) =>{
+const addTransactions = async (s1, s2, s3) => {
   let result = await getOrdersByStatus(s1)
-  result.forEach(async(order) => {
-    let items = await getOrderItemsByOrderIdAndStatus({id: order.id, status :s2})
-    items.forEach(async(item) => {
-      await addBTransaction({...item, status: s3, type: 'credit', amount: item.price * item.quantity, order_item_id: item.id})
+  result.forEach(async (order) => {
+    let items = await getOrderItemsByOrderIdAndStatus({ id: order.id, status: s2 })
+    items.forEach(async (item) => {
+      await addBTransaction({ ...item, status: s3, type: 'credit', amount: item.price * item.quantity, order_item_id: item.id })
     })
-    
+
   })
 }
 
-setTimeout( () => {addTransactions('delivered', 'accepted', 'released'); addTransactions('delivered', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'pending'); addTransactions('delivered', 'canceled', 'pending');addTransactions('delivered', 'accepted', 'pending')}, 10000 )
- setInterval(()=>automatedUpdateOrder({from:'accepted', to:'ready to be shipped'}), 5000)
- setInterval(()=>automatedUpdateOrder({from:'ready to be shipped', to:'delivered'}), 10000 )
+setTimeout(() => { addTransactions('delivered', 'accepted', 'released'); addTransactions('delivered', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'canceled'); addTransactions('canceled', 'canceled', 'pending'); addTransactions('delivered', 'canceled', 'pending'); addTransactions('delivered', 'accepted', 'pending') }, 1000)
+setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
+setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 10000)
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,
