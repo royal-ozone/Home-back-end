@@ -29,6 +29,57 @@
 
 -- ALTER TABLE product DROP COLUMN verification_code;
 
+-- CREATE TABLE business_transaction(
+--    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+--    courier_id uuid,
+--    store_id uuid,
+--    order_id uuid,
+--    order_item_id uuid,
+--    type VARCHAR(50),
+--    amount float NOT NULL,
+--    status VARCHAR (100),
+-- --    code VARCHAR(100),
+-- --    mode VARCHAR(50),
+--    created_at timestamp not null default current_timestamp,
+
+--   FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+--   FOREIGN KEY (store_id) REFERENCES store(id),
+--   FOREIGN KEY (order_id) REFERENCES new_order(id),
+--   FOREIGN KEY (order_item_id) REFERENCES order_item(id)
+
+-- );
+
+-- CREATE TABLE account (
+-- id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+-- title varchar(50) NOT NULL,
+-- profile_id uuid NOT NULL,
+-- type varchar(50) NOT NULL,
+--  courier_id uuid,
+--    store_id uuid,
+--    reference varchar(255) NOT NULL,
+
+--     FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+--   FOREIGN KEY (store_id) REFERENCES store(id),
+-- FOREIGN KEY (profile_id) REFERENCES profile(id)
+-- );
+
+-- CREATE TABLE withdrawal (
+-- id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+-- account_id uuid NOT NULL,
+-- profile_id uuid NOT NULL,
+-- account_type varchar(50),
+-- amount float not null,
+-- type VARCHAR(50),
+-- status VARCHAR(50) DEFAULT 'requested',
+-- updated timestamp,
+-- document text
+-- created_at timestamp not null default current_timestamp,
+-- FOREIGN KEY (account_id) REFERENCES account(id),
+-- FOREIGN KEY (profile_id) REFERENCES profile(id)
+
+
+-- )
+
 
 
 

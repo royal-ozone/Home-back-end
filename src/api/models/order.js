@@ -60,8 +60,8 @@ const addOrderItemModel = async (data) => {
 const updateOrderStatusModel = async (data) => {
   try {
     let {status ,id}= data
-    let SQL = "UPDATE new_order SET status=$1 WHERE id=$2 RETURNING *;";
-    let safeValue = [status, id];
+    let SQL = "UPDATE new_order SET status=$1, updated=$3 WHERE id=$2 RETURNING *;";
+    let safeValue = [status, id, new Date()];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
@@ -120,6 +120,17 @@ const getNotOrderItemsByOrderId = async id => {
     throw new Error(error.message)
   }
 }
+const getOrderItemsByOrderIdAndStatus = async ({status, id}) =>{
+  try {
+       let SQL = 'SELECT * FROM order_item WHERE order_id=$1 AND status=$2;';
+       let safeValues = [id, status];
+       let {rows} = await client.query(SQL, safeValues)
+       return rows
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
 const getPendingOrderItemsByOrderId = async id => {
   try {
     let SQL = 'select oi.*, p.entitle ,p.artitle, p.price as p_price from order_item oi inner join product p on p.id =oi.product_id where oi.order_id =$1 and oi.status=$2 ;';
@@ -179,6 +190,15 @@ const getAllOrderItemByStoreId = async storeId => {
     throw new Error(error.message)
   }
 }
+const getOrdersByStatus = async (status) => {
+  try {
+    let SQL = 'SELECT * FROM new_order WHERE status=$1';
+    let result = await client.query(SQL, [status]);
+    return result.rows
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 module.exports = {
   addOrderModel,
   addOrderItemModel,
@@ -192,5 +212,7 @@ module.exports = {
   getAllOrderItemByStoreId,
   getOrdersByPendingOrderItems,getPendingOrderItemsByOrderId,
   getNotOrderItemsByOrderId,getOrdersByNotPendingOrderItems,
-  getProductPictureByProductId
+  getProductPictureByProductId,
+  getOrdersByStatus,
+  getOrderItemsByOrderIdAndStatus
 };

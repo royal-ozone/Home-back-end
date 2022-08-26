@@ -260,7 +260,24 @@ const {addItemToWishListHandler, getWishListItemsHandler, deleteFromWishListHand
 const {signInHandler} = require('../auth/controllers/authController')
 const sendSMS = require('../api/middleware/infobip')
 const sendEmail = require('../api/middleware/sendEmail')
+const {getPendingAmountsHandler,
+  getReleasedAmountsHandler,
+  getRefundedAmountsHandler, 
+  getSellerBTransactionsHandler,
+  getStoreReleasedAmountHandler
+} = require('../api/controllers/storeAmountsController')
 
+const {
+  addCourierAccountHandler,
+  addAdminAccount,
+  addStoreAccountHandler,
+  updateAccountHandler,
+  deleteAccountHandler, 
+  getStoreAccounts,
+  getCourierAccounts,
+  getAdminAccounts,
+  getAccountHandler
+} = require('../api/controllers/accountContoller')
  
 // Global middleware
 // router.use(bearer);
@@ -338,6 +355,13 @@ router.delete('/store/picture',bearer,checkStoreAuth,upload.none(),deleteStorePi
 router.post('/store/verifyEmail', upload.none(), checkVerificationCodeHandler)
 router.post('/store/updateCode', upload.none(), updateVerificationCodeHandler, sendEmail)
 
+//amount
+
+router.get('/store/pendingAmount', bearer, upload.none(), checkStoreAuth, getPendingAmountsHandler)
+router.get('/store/releasedAmounts', bearer, upload.none(), checkStoreAuth, getReleasedAmountsHandler)
+router.get('/store/refundedAmounts', bearer, upload.none(), checkStoreAuth, getRefundedAmountsHandler)
+router.get('/store/transactions', bearer, upload.none(), checkStoreAuth, getSellerBTransactionsHandler)
+router.get('/store/released', bearer, upload.none(), checkStoreAuth, getStoreReleasedAmountHandler)
 
 // product 
 
@@ -527,6 +551,16 @@ router.delete('/wishlist/delete', bearer,upload.none(), deleteFromWishListHandle
 router.get('/test', (req, res) => {
   res.send('working well');
 });
+
+router.post('/account/courier', bearer, upload.none(),addCourierAccountHandler )
+router.post('/account/store', bearer, upload.none(),checkStoreAuth,addStoreAccountHandler )
+router.post('/account/admin', bearer, upload.none(), addAdminAccount)
+router.put('/account/update', bearer, upload.none(), updateAccountHandler)
+router.post('/account/delete', bearer, upload.none(), deleteAccountHandler)
+router.get('/account/store', bearer, upload.none(), checkStoreAuth,getStoreAccounts )
+router.get('/account/admin', bearer, upload.none(),getAdminAccounts)
+router.get('/account/courier', bearer, upload.none(), getCourierAccounts)
+router.get('/account/id/:id', bearer,upload.none(),getAccountHandler)
 
 
 module.exports = router;

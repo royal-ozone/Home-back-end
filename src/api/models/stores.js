@@ -76,7 +76,7 @@ const updateStoreName = async (id, data) => {
 
 const getStore = async (id) => {
     try {
-        let SQL = 'SELECT s.*, sr.fulfilled_orders, sr.ontime_orders, sr.overall_orders, count(sf.*) as followers  FROM STORE s inner join store_review_2 sr on s.id = sr.store_id left join store_follower sf on s.id=sf.store_id  WHERE s.id=$1 or s.profile_id=$1 group by sr.fulfilled_orders, s.id,sr.ontime_orders,sr.overall_orders ;';
+        let SQL = 'SELECT s.*, sr.fulfilled_orders, sr.ontime_orders, sr.overall_orders, count(sf.*) as followers  FROM STORE s left join store_review_2 sr on s.id = sr.store_id left join store_follower sf on s.id=sf.store_id  WHERE s.id=$1 or s.profile_id=$1 group by sr.fulfilled_orders, s.id,sr.ontime_orders,sr.overall_orders ;';
         let safeValues = [id];
         let result = await client.query(SQL, safeValues);
         return result.rows[0];
@@ -199,7 +199,11 @@ const getStoreReview2ByStoreId = async (store_id) => {
     try {
         let SQL = 'SELECT * FROM store_review_2 WHERE store_id =$1;';
         let safeValues = [store_id];
-        let result = await client.query(SQL, safeValues);
+        let result;
+        result = await client.query(SQL, safeValues);
+        if(!result.rows[0]){
+            result = await addStoreReviewModel2(store_id)
+        }
         return result.rows[0];
     } catch (error) {
         throw new Error(error.message)
