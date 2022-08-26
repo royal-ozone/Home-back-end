@@ -46,8 +46,10 @@ const addBTransaction = async ({store_id, courier_id, amount, order_id, order_it
 const getSellerBTransactions = async (id, limit, offset) => {
     try {
         let SQL = 'select bt.*, neo.customer_order_id, p.artitle, p.entitle from business_transaction bt inner join new_order neo on bt.order_id = neo.id inner join order_item oi on oi.id=bt.order_item_id inner join product p on p.id = oi.product_id where bt.store_id = $1 limit $2 offset $3;';
+        let SQL2 = 'select count(bt.*) from business_transaction bt inner join new_order neo on bt.order_id = neo.id inner join order_item oi on oi.id=bt.order_item_id inner join product p on p.id = oi.product_id where bt.store_id = $1 ;';
         let {rows} = await client.query(SQL, [id, limit,offset])
-        return rows
+        let {rows: rows2} = await client.query(SQL2, [id])
+        return {result: rows, count: rows2[0].count}
     } catch (error) {
         throw new Error(error.message)
     }
