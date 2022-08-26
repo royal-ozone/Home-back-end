@@ -322,7 +322,7 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
     let { orders, count } = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset, order_id: req.query.order_id })
     let sellerOrders = orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
-      let items = await getNotOrderItemsByOrderId(order_id)
+      let items = await getNotOrderItemsByOrderId({id:order_id, store_id: req.user.store_id})
       let itemsWithPicture = await items.map(async value => {
         let pic = await getProductPictureByProductId(value.product_id)
         return { ...value, picture: pic?.product_picture }
@@ -354,15 +354,15 @@ const addTransactions = async (s1, s2, s3) => {
   })
 }
 
-setTimeout(() => {
-  //  addTransactions('delivered', 'accepted', 'released'); 
-addTransactions('delivered', 'canceled', 'canceled'); 
-addTransactions('canceled', 'canceled', 'canceled'); 
-addTransactions('canceled', 'canceled', 'pending'); 
-addTransactions('delivered', 'canceled', 'pending');
-//  addTransactions('delivered', 'accepted', 'pending') 
-}
- , 1000)
+// setTimeout(() => {
+//   //  addTransactions('delivered', 'accepted', 'released'); 
+//   addTransactions('delivered', 'canceled', 'canceled');
+//   addTransactions('canceled', 'canceled', 'canceled');
+//   addTransactions('canceled', 'canceled', 'pending');
+//   addTransactions('delivered', 'canceled', 'pending');
+//   //  addTransactions('delivered', 'accepted', 'pending') 
+// }
+//   , 1000)
 setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
 setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 10000)
 module.exports = {
