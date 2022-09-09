@@ -62,21 +62,31 @@
 -- FOREIGN KEY (profile_id) REFERENCES profile(id)
 -- );
 
-CREATE TABLE withdrawal (
-id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-account_id uuid NOT NULL,
-profile_id uuid NOT NULL,
-account_type varchar(50),
-amount float not null,
-type VARCHAR(50),
-status VARCHAR(50) DEFAULT 'requested',
-updated timestamp,
-document text,
-created_at timestamp not null default current_timestamp,
-FOREIGN KEY (account_id) REFERENCES account(id),
-FOREIGN KEY (profile_id) REFERENCES profile(id)
+-- CREATE TABLE withdrawal (
+-- id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+-- account_id uuid NOT NULL,
+-- profile_id uuid NOT NULL,
+-- account_type varchar(50),
+-- amount float not null,
+-- type VARCHAR(50),
+-- status VARCHAR(50) DEFAULT 'requested',
+-- updated timestamp,
+-- document text,
+-- created_at timestamp not null default current_timestamp,
+-- FOREIGN KEY (account_id) REFERENCES account(id),
+-- FOREIGN KEY (profile_id) REFERENCES profile(id)
 
 
+-- )
+
+create table order_log(
+    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    order_id uuid not null,
+    status varchar(50) NOT NULL,
+    at timestamp NOT NULL,
+    created_at timestamp not null default current_timestamp,
+
+    FOREIGN KEY (order_id) REFERENCES new_order(id)
 )
 
 

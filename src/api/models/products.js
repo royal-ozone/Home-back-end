@@ -282,7 +282,7 @@ const productSearch = async data => {
         let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id left join grandchild_category gc on gc.id = p.grandchild_category_id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
         let keysSQL = []
        
-        new Set([key, ...key.split(' ')]).forEach(val => {
+        key && new Set([key, ...key?.split(' ')])?.forEach(val => {
             keysSQL.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i++})`) && safeValues.push(`%${val}%`)
         })
         keysSQL.length > 0 && sqlParameters.push( keysSQL.join(` or `))

@@ -2,8 +2,8 @@ const client = require('../../db')
 
 const getPendingAmounts = async (id) => {
     try {
-        let SQL = 'select sum(oi.price * oi.quantity) from order_item oi inner join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and (neo.status != $2 and neo.status != $3) and oi.status =$4 and oi.status = $5'
-        let safeValues = [id, 'canceled', 'delivered', 'accepted', 'returned']
+        let SQL = `select sum(oi.price * oi.quantity) from order_item oi inner join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and (not neo.status = $2 and neo.status != null or neo.status =$3 and neo.updated > now() - interval '1 day'  ) and ( oi.status =$4 or  oi.status = $5 or oi.status=$6)`
+        let safeValues = [id, 'canceled', 'delivered', 'accepted', 'returned', 'pending']
         let result = await client.query(SQL,safeValues)
         return result.rows[0].sum ?? 0
     } catch (error) {
