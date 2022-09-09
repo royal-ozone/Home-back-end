@@ -112,7 +112,7 @@ const getAddressByProfileIdModelHandler =async (req, res, next)=>{
 const getAddressByIdHandler =async (req, res, next)=>{
     try {
         if(req.orders){
-            let orders = await req.orders.map(async order=>{
+            let orders = await req.orders.orders.map(async order=>{
                 const result = await getAddressById(order.address_id);
                 let finalOrder = order
                 delete finalOrder.address_id
@@ -120,7 +120,7 @@ const getAddressByIdHandler =async (req, res, next)=>{
                 finalOrder['address'] = result
                 return finalOrder
             })
-            res.status(200).json(await Promise.all(orders))
+            res.status(200).json({data:await Promise.all(orders), count: req.orders.count})
         } else if(req.order){
             const result = await getAddressById(order.address_id);
             let order = req.order

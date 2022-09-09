@@ -30,7 +30,8 @@ const {
   getOrdersByNotPendingOrderItems,
   getProductPictureByProductId,
   getOrdersByStatus,
-  getOrderItemsByOrderIdAndStatus
+  getOrderItemsByOrderIdAndStatus,
+  toBeReleasedItems
 } = require("../models/order");
 const {
   getAddressById
@@ -48,7 +49,8 @@ const {
   dateTimeTomorrow,
   differentBetweenDate,
   currentDateDiffByDay,
-  twoDatesDiffByDay
+  twoDatesDiffByDay,
+  daysToMs
 } = require("./helper");
 
 const {
@@ -58,7 +60,9 @@ const {
   addStoreReview2
 } = require("../models/stores");
 
-const { decreaseSizeQuantity, increaseSizeQuantity } = require("../models/products")
+const {addOrderLog, getOrderLog } = require("../models/orderLog")
+
+const { decreaseSizeQuantity, increaseSizeQuantity } = require("../models/products");
 const addOrderHandler = async (req, res, next) => {
   try {
     const { address_id, discount_id } = req.body
@@ -87,6 +91,7 @@ const addOrderHandler = async (req, res, next) => {
             updateCounterPromo = await addPromoModel(req.user.profile_id, { id: discount_id, order_id: data.id });
             updateData = await updateCounterDiscountCode(result);
           }
+          await addOrderLog({id:data.id, status:data.status, at: new Date()})
           let obj = {
             message: 'Order has been placed successfully',
             order: data,
@@ -156,6 +161,7 @@ const updateOrderStatusHandler = async (req, res, next) => {
       dataOrder: data,
       notification: notificationObj,
     };
+    await addOrderLog({id:data, status:data.status, at: new Date()})
     res.status(200).json(response);
   } catch (error) {
     let response = {
@@ -184,13 +190,13 @@ const getAllOrderProfileIdHandler = async (req, res, next) => {
   try {
     let limit = req.query.limit || 10;
     let offset = req.query.offset || 0;
-    let data = await getAllOrderProfileIdModel(req.user.profile_id, limit, offset);
+    let {data, count} = await getAllOrderProfileIdModel(req.user.profile_id, limit, offset);
     let orderArray = data.map(async order => {
       let orderItems = await getOrderItemsByOrderId(order.id);
       order['items'] = orderItems
       return order
     })
-    req.orders = await Promise.all(orderArray)
+    req.orders = {orders: await Promise.all(orderArray), count: count}
     next()
     // res.status(200).json({orders: await Promise.all(orderArray)});
   } catch (error) {
@@ -301,7 +307,7 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
     let { orders, count } = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
     let sellerOrders = await orders.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
-      let items = await getPendingOrderItemsByOrderId(order_id)
+      let items = await getPendingOrderItemsByOrderId({id:order_id,store_id:req.user.store_id})
       let itemsWithPicture = await items.map(async value => {
         let pic = await getProductPictureByProductId(value.product_id)
         return { ...value, picture: pic?.product_picture }
@@ -336,12 +342,22 @@ const getSellerOrdersByNotPendingStatus = async (req, res) => {
   }
 }
 
+const getOrderLogHandler = async(req, res) =>{
+  try {
+      let result = await getOrderLog(req.params.id);
+      res.send({status: 200, result: result});
+  } catch (error) {
+    res.json({ status: 403, message: error });
+  }
+}
+
 const automatedUpdateOrder = async ({ from, to }) => {
   let result = await getOrdersByStatus(from)
   result.map(async (order) => {
     await updateOrderStatusModel({ id: order.id, status: to })
+    await addOrderLog({id: order.id, status: to, at: new Date()})
   })
-
+  
 }
 const addTransactions = async (s1, s2, s3) => {
   let result = await getOrdersByStatus(s1)
@@ -354,7 +370,18 @@ const addTransactions = async (s1, s2, s3) => {
   })
 }
 
-// setTimeout(() => {
+const toBeReleasedItemsHandler = async() => {
+  try {
+    let result = await toBeReleasedItems()
+    result.map(async (item) => {
+      await addBTransaction({ ...item, status: 'released', type: 'credit', amount: item.price * item.quantity, order_item_id: item.id })
+    })
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+ 
+// setTimeout(() => { 
 //   //  addTransactions('delivered', 'accepted', 'released'); 
 //   addTransactions('delivered', 'canceled', 'canceled');
 //   addTransactions('canceled', 'canceled', 'canceled');
@@ -363,8 +390,28 @@ const addTransactions = async (s1, s2, s3) => {
 //   //  addTransactions('delivered', 'accepted', 'pending') 
 // }
 //   , 1000)
+// const updateOrderLog= async ()=>{
+//   try {
+//     let response = await getAllOrderModel(10000000, 0)
+//     return response.map()
+
+//   } catch (error) {
+//     throw new Error(error.message)
+//   }
+// }
+console.log(daysToMs(1))
+setInterval(toBeReleasedItemsHandler, 10000 )
 setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
-setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 10000)
+setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
+
+const routes = [{
+  fn : getOrderLogHandler,
+  auth: true,
+  isUpload: false,
+  path: '/order/logs/:id',
+  method: 'get'
+
+}]
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,
@@ -374,5 +421,7 @@ module.exports = {
   getOrderByStoreIdHandler,
   getOrderByStoreIdHandlerTwo,
   getSellerOrdersByPendingStatus,
-  getSellerOrdersByNotPendingStatus
+  getSellerOrdersByNotPendingStatus,
+  getOrderLogHandler,
+  routes
 };

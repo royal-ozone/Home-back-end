@@ -63,7 +63,9 @@ const {addOrderHandler,
   getAllOrderProfileIdHandler,
   updateOrderItemStatusHandler,
   getSellerOrdersByPendingStatus,
-  getSellerOrdersByNotPendingStatus
+  getSellerOrdersByNotPendingStatus,
+  routes : orderRoutes,
+  getOrderLogHandler
 } = require('../api/controllers/orderControllers');
 
 const {checkAdmin,
@@ -279,6 +281,8 @@ const {
   getAccountHandler
 } = require('../api/controllers/accountContoller')
  
+
+const routes =[...orderRoutes]
 // Global middleware
 // router.use(bearer);
 
@@ -420,7 +424,7 @@ router.post('/checkCode',bearer,upload.none(),checkCodeHandler); // for people
 router.post('/addOrder',bearer,upload.none(),addOrderHandler);
 router.put('/update/order/status',bearer,checkStoreAuth,upload.none(),updateOrderStatusHandler);
 router.get('/getAll/order',bearer,checkAuth,upload.none(),getAllOrderHandler,getAddressByIdHandler);
-router.get('/getAll/order/profile_id',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
+router.get('/orders',bearer,upload.none(),getAllOrderProfileIdHandler,getAddressByIdHandler);
 router.put('/update/order_item',bearer,checkStoreAuth,upload.none(),updateOrderItemStatusHandler);
 //router.get('/getStoreOrder', bearer,getOrderByStoreIdHandler)
 router.get('/getStoreOrder', bearer,getOrderByStoreIdHandlerTwo)
@@ -562,5 +566,16 @@ router.get('/account/admin', bearer, upload.none(),getAdminAccounts)
 router.get('/account/courier', bearer, upload.none(), getCourierAccounts)
 router.get('/account/id/:id', bearer,upload.none(),getAccountHandler)
 
+routes.map(({method, path, auth, isUpload,uploadType, fn,uploadParams}) =>{
+  if(method === 'get') {
+    auth ? router.get(path, bearer, upload.none() ,fn) : router.get(path, upload.none(),fn)
+  } else if(method === 'post') {
+    router.post(path, bearer, !isUpload ? upload.none(): uploadType === 'single' ? uploadS3.single(uploadParams) : uploadS3.array(uploadParams),fn)
+  } else if(method === 'put') {
+    router.put(path, bearer, !isUpload ? upload.none(): uploadType === 'single' ? uploadS3.single(uploadParams) : uploadS3.array(uploadParams), fn)
+  } else if(method === 'delete') {
+    router.delete(path, bearer, upload.none(), fn)
+  }
+})
 
 module.exports = router;
