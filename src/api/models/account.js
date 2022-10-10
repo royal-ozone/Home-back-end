@@ -18,12 +18,24 @@ const updateAccount = async ({ id, reference, title }) => {
         let {rows} = await client.query(SQL, safeValues)
         return rows[0]
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error)
+    }
+}
+
+const updateAccountDisplay = async (id) => {
+    try {
+        let SQL = 'update account set display=$1 where id=$2 RETURNING *;'
+        let safeValues = [false,id]
+        let { rows} = await client.query(SQL, safeValues)
+        return rows[0]
+    } catch (error) {
+        throw new Error(error)
     }
 }
 
 const deleteAccount = async id => {
     try {
+        tr
         let SQL = ' delete from account where id =$1 returning *;'
         let { rows} = await client.query(SQL, [id])
         return rows[0]
@@ -44,13 +56,24 @@ const getAccount = async id => {
 
 const getAccounts = async id => {
     try {
-        let SQL = 'select * from account where profile_id =$1 or store_id = $1 or courier_id = $1;'
-        let {rows} = await client.query(SQL,[id])
+        let SQL = 'select * from account where (store_id = $1 or courier_id = $1) and display=$2;'
+        let {rows} = await client.query(SQL,[id,true]) 
         return rows
     } catch (error) {
         throw new Error(error.message)
     }
 }
+
+const getCashAccount = async () =>{
+    try {
+        let SQL = 'select * from account where profile_id isnull'
+        let { rows} = await client.query(SQL)
+        return rows[0] ??{}
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 
 
 module.exports = {
@@ -58,5 +81,7 @@ module.exports = {
     updateAccount,
     deleteAccount,
     getAccount,
-    getAccounts
+    getAccounts,
+    getCashAccount,
+    updateAccountDisplay
 }

@@ -91,16 +91,16 @@ const getProductHandler = async (req, res, next) => {
         delete wishlistItem.product_id
         return wishlistItem
       })
-      res.status(200).json(await Promise.all(wishlist))
+      res.json(await Promise.all(wishlist))
     } else {
       let id = req.params.id;
       let result = await getProduct(id);
       let pictures = await getProductPicturesById(id)
       result['pictures'] = pictures;
-      req.product = result;
-      next();
+      res.send({status:200, data: result});
+      // req.product = result;
+      // next();
     }
-    // res.status(200).json(result);
   } catch (error) {
     res.send(error.message)
   }

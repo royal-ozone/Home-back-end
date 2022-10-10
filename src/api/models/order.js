@@ -84,7 +84,7 @@ const getAllOrderModel = async (limit,offset) => {
 
 const getAllOrderProfileIdModel =async (id,limit,offset)=> {
   try {
-    let SQL ='SELECT * FROM new_order WHERE profile_id=$1 LIMIT $2 OFFSET $3;';
+    let SQL ='SELECT * FROM new_order WHERE profile_id=$1 Order by created_at DESC LIMIT $2 OFFSET $3;';
     let SQL2  ='SELECT count(*) FROM order_item WHERE profile_id=$1'
     let result = await client.query(SQL, [id,limit,offset]);
     let {rows} = await client.query(SQL2, [id])
@@ -159,7 +159,7 @@ const getOrdersByPendingOrderItems = async data => {
 const getOrdersByNotPendingOrderItems = async data => {
   try {
     let {id,status,limit,offset,order_id} = data
-     let SQL = `SELECT DISTINCT oi.order_id FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 ${status ? ` AND neo.status=$4`: ` AND neo.status!=$4`} ${order_id ? ` and neo.customer_order_id like $4`: ''} LIMIT $2 OFFSET $3;`
+     let SQL = `SELECT DISTINCT oi.order_id, neo.created_at FROM order_item oi inner join new_order neo on neo.id = oi.order_id WHERE oi.store_id=$1 ${status ? ` AND neo.status=$4`: ` AND neo.status!=$4`} ${order_id ? ` and neo.customer_order_id like $4`: ''} order by neo.created_at desc LIMIT $2 OFFSET $3;`
     let SQL2 = `SELECT count(DISTINCT order_id) FROM order_item oi inner join new_order neo on neo.id=oi.order_id WHERE oi .store_id=$1  ${status ? ` AND neo.status=$2`: ` AND neo.status!=$2`} ${order_id ? ` and neo.customer_order_id like $2`: ''}`
     let safeValues = [id, limit,offset]
     let safeValues2 = [id]
@@ -203,6 +203,16 @@ const getOrdersByStatus = async (status) => {
   }
 }
 
+const orderStatues =async (id) =>{
+  try {
+    let SQL = 'select distinct (no2.status) from new_order no2 inner join order_item oi on oi.order_id =no2.id where oi.store_id=$1'
+    let { rows} = await client.query(SQL, [id])
+    return rows.map(row => row.status)
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
 const toBeReleasedItems = async ()=>{
   try {
     let SQL = `select oi.*, bt.status as t_status   from order_item oi inner join new_order no2 on no2.id = oi.order_id left join business_transaction bt ON bt.order_item_id = oi.id where oi.status = $1 and no2.updated <  now() -  $2 * interval '1 day' and  no2.status = $3  and oi.id not in (select order_item_id from business_transaction bt2 where status = $4)`
@@ -235,7 +245,6 @@ const updateOrderLog2= async ()=>{
      let SQL = 'insert into order_log (order_id,status, at) values($1,$2,$3) returning *'
      let safeValues = [order.id, 'pending', order.created_at]
      let result = await client.query(SQL, safeValues)
-     console.log("🚀 ~ file: order.js ~ line 221 ~ updateOrderLog ~ result", result.rows[0])
     })
 
   } catch (error) {
@@ -243,9 +252,8 @@ const updateOrderLog2= async ()=>{
   }
 }
 // updateOrderLog()
-console.log("🚀 ~ file: order.js ~ line 246 ~ process.env.dev", process.env.dev)
 
-!process.env.dev && updateOrderLog() && updateOrderLog2()
+// !process.env.dev && updateOrderLog() && updateOrderLog2()
 module.exports = {
   addOrderModel,
   addOrderItemModel,
@@ -262,5 +270,6 @@ module.exports = {
   getProductPictureByProductId,
   getOrdersByStatus,
   getOrderItemsByOrderIdAndStatus,
-  toBeReleasedItems
+  toBeReleasedItems,
+  orderStatues
 };

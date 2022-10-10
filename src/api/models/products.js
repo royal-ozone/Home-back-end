@@ -20,7 +20,7 @@ const addProduct = async data => {
 
 const getAllProduct = async (offset, limit) => {
     try {
-        let SQL = `SELECT * FROM product WHERE display=$3 LIMIT $2 OFFSET $1;`
+        let SQL = `select p.*, pc.entitle as p_entitle, pc.artitle as p_artitle, cc.entitle as c_entitle, cc.artitle as c_artitle, gc.entitle as g_entitle, gc.artitle as g_artitle from product p inner join parent_category pc ON pc.id = p.parent_category_id inner join child_category cc on cc.id = p.child_category_id left join grandchild_category gc on gc.id = p.grandchild_category_id WHERE p.display=$3 LIMIT $2 OFFSET $1;`
         let result = await client.query(SQL, [offset, limit, true])
         return result.rows
     } catch (error) {
@@ -54,12 +54,13 @@ const getProductsByCategories = async data => {
 
 const getProduct = async data => {
     try {
-        let SQL = `SELECT * FROM product WHERE id =$1;`;
+        let SQL = `select p.*, pc.entitle as p_entitle, pc.artitle as p_artitle, cc.entitle as c_entitle, cc.artitle as c_artitle, gc.entitle as g_entitle, gc.artitle as g_artitle, avg(pr.rating) as rate from product p inner join parent_category pc ON pc.id = p.parent_category_id inner join child_category cc on cc.id = p.child_category_id left join grandchild_category gc on gc.id = p.grandchild_category_id left join product_rating pr on pr.product_id = p.id WHERE p.id =$1 group by p.id,pc.entitle,pc.artitle,cc.entitle,cc.artitle,gc.entitle,gc.artitle ;`;
         let safeValue = [data]
         let result = await client.query(SQL, safeValue)
         return result.rows[0];
 
     } catch (error) {
+        console.log("🚀 ~ file: products.js ~ line 64 ~ getProduct ~ error", error)
         throw new Error(error.message)
     }
 };

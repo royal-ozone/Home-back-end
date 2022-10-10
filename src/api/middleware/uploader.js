@@ -11,8 +11,7 @@ const s3 = new aws.S3({
 
 
 const filerFilter = (req, file, cb) => {
-    console.log("🚀 ~ file: uploader.js ~ line 20 ~ filerFilter ~ file", file)
-    if(file.mimetype === 'image.jpeg' || file.mimetype === 'image.png' ){
+    if(file.mimetype === 'image.jpeg' || file.mimetype === 'image.png' || file.mimetype === 'image.pdf'){
         cb(null,true);
     } else {
         cb(new Error('file type is not supported, only JPEG and PNG'), false)
