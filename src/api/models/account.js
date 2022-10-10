@@ -1,9 +1,9 @@
 const client = require('../../db')
 
-const addAccount = async ({ store_id, courier_id, profile_id, reference, title, type }) => {
+const addAccount = async ({ store_id, courier_id, reference, title, type }) => {
     try {
-        let SQL = 'insert into account (store_id, courier_id, profile_id, reference, title,type) values($1,$2,$3,$4,$5,$6) RETURNING *;';
-        let safeValues = [store_id, courier_id, profile_id, reference, title, type];
+        let SQL = 'insert into account (store_id, courier_id, reference, title,type) values($1,$2,$3,$4,$5) RETURNING *;';
+        let safeValues = [store_id, courier_id, reference, title, type];
         let { rows } = await client.query(SQL, safeValues)
         return rows[0]
     } catch (error) {
@@ -66,7 +66,7 @@ const getAccounts = async id => {
 
 const getCashAccount = async () =>{
     try {
-        let SQL = 'select * from account where profile_id isnull'
+        let SQL = 'select * from account where courier_id isnull and store_id isnull'
         let { rows} = await client.query(SQL)
         return rows[0] ??{}
     } catch (error) {
