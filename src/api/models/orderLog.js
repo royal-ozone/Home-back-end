@@ -13,7 +13,7 @@ const addOrderLog = async ({ id, status, at }) => {
 
 const getOrderLog = async (id) => {
     try {
-        let SQL = 'select * from order_log where id =$1 or order_id =$1;'
+        let SQL = 'select * from order_log where id =$1 or order_id =$1 order by created_at desc;'
         let result = await client.query(SQL, [id])
         return result.rows
     } catch (error) {

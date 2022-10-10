@@ -72,7 +72,7 @@ const getStoreAddress = async (id)=>{
         let SQL = 'SELECT * from address WHERE profile_id=$1 AND store_address=$2 AND display=$2;'
         let safeValue = [id,true];
         let result = await client.query(SQL, safeValue)
-        return result.rows[0];
+        return result.rows[0] ?? {};
     } catch (error) {
         let response = {
             message: error.message,
@@ -90,6 +90,7 @@ const getAddressById = async (id)=>{
         throw new Error(error.message)
     }
 }
+
 module.exports = {
     addAddressModel,removeAddressModel,updateAddressModel,getAllAddressModel,getAddressByProfileIdModel,getAddressById,getStoreAddress
 }

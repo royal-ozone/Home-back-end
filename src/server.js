@@ -19,6 +19,8 @@ const server = http.createServer(app);
 const socket =require('socket.io');
 const expressHbs = require("express-handlebars");
 const {engine} = require('express-handlebars');
+const storeRouter = require('./routes/store')
+const adminRouter = require('./routes/admin')
 const io =  socket(server ,{
    
     cors: {
@@ -48,6 +50,8 @@ app.use(express.static(path.join(__dirname,'../public')));
 
 app.use('/auth', authRouter);
 app.use('/api/v1', v1Router);
+app.use('/api/v1', storeRouter);
+app.use('/api/v1', adminRouter);
 
 /// routers /// 
 // const  HomePage = (req,res,next) =>{

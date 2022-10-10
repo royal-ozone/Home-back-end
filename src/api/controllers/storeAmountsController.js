@@ -2,49 +2,102 @@ const { getPendingAmounts,
     getReleasedAmounts,
     getRefundedAmounts,
     getSellerBTransactions,
-    getStoreReleasedAmount
+    getStoreReleasedAmount,
+    getWithdrawnAmount,
+    getTransferredAmount,
+    getCanceledWithdrawnAmount
 } = require('../models/storeAmounts')
 
- const body = async (req, res, action) => {
+const body = async (req, res, action) => {
     try {
         let result = await action(req.user.store_id)
         res.send({ status: 200, amount: Number(result).toFixed(2) })
     } catch (error) {
         res.send({ status: 403, message: error })
     }
- }
+}
 const getPendingAmountsHandler = async (req, res) => {
-    return body( req,res,getPendingAmounts )
-    
+    return body(req, res, getPendingAmounts)
+
 }
 
 const getReleasedAmountsHandler = async (req, res) => {
-    return body( req,res,getReleasedAmounts )
-   
+    return body(req, res, getReleasedAmounts)
+
 }
 
 const getRefundedAmountsHandler = async (req, res) => {
-    return body( req,res,getRefundedAmounts )
+    return body(req, res, getRefundedAmounts)
 }
 
-const getSellerBTransactionsHandler = async (req, res) => { 
+const getSellerBTransactionsHandler = async (req, res) => {
     try {
-        let {result, count} = await getSellerBTransactions(req.user.store_id, req.query.limit?? 20, req.query.offset?? 0)
-        res.send({status: 200, result: result, count: count})
+        let { result, count } = await getSellerBTransactions(req.user.store_id, req.query.limit ?? 20, req.query.offset ?? 0)
+        res.send({ status: 200, result: result, count: count })
     } catch (error) {
         res.send({ status: 403, message: error })
     }
 }
 
 const getStoreReleasedAmountHandler = async (req, res) => {
-    return body(req,res, getStoreReleasedAmount)
+    return body(req, res, getStoreReleasedAmount)
 }
+
+const getWithdrawnAmountHandler = async (req, res) => {
+    try {
+        let amount = await getWithdrawnAmount(req.user.store_id)
+        res.send({ status: 200,amount: amount })
+    } catch (error) {
+        res.send({ status: 403, message: error})
+    }
+}
+const getTransferredAmountHandler = async (req, res) => {
+    try {
+        let amount = await getTransferredAmount(req.user.store_id)
+        res.send({ status: 200,amount: amount })
+    } catch (error) {
+        res.send({ status: 403, message: error})
+    }
+}
+const getCanceledWithdrawnAmountHandler = async (req, res) => {
+    try {
+        let amount = await getCanceledWithdrawnAmount(req.user.store_id)
+        res.send({ status: 200,amount: amount })
+    } catch (error) {
+        res.send({ status: 403, message: error})
+    }
+}
+
+const routes = [
+    {
+        path: '/store/withdrawn',
+        fn:getWithdrawnAmountHandler,
+        auth: true,
+        type: 'store',
+        method: 'get'
+    },
+    {
+        path: '/store/transferred',
+        fn:getTransferredAmountHandler,
+        auth: true,
+        type: 'store',
+        method: 'get'
+    },
+    {
+        path: '/store/wCanceled',
+        fn:getCanceledWithdrawnAmountHandler,
+        auth: true,
+        type: 'store',
+        method: 'get'
+    }
+]
 
 
 module.exports = {
     getPendingAmountsHandler,
     getReleasedAmountsHandler,
-    getRefundedAmountsHandler ,
+    getRefundedAmountsHandler,
     getSellerBTransactionsHandler,
-    getStoreReleasedAmountHandler
+    getStoreReleasedAmountHandler,
+    routes
 }

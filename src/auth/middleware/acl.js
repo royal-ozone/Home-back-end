@@ -108,7 +108,7 @@ let checkAuth = async (req, res, next) => {
         if (auth.includes(req.employee?.role)) {
             next();
         } else {
-            res.status(403).json({
+            res.json({
                 status: 403,
                 message: 'User unauthorized, access denied!',
             });
