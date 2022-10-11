@@ -74,8 +74,10 @@ const getAmount = async ({id, status}) =>{
         let SQL = 'select sum(amount) from business_transaction where withdrawal_id is not null and status=$1 and store_id=$2 '
         let safeValues = [status, id]
         let {rows} = await client.query(SQL, safeValues)
-        return rows[0].sum ?? 0
+        console.log("🚀 ~ file: storeAmounts.js ~ line 77 ~ getAmount ~ rows", rows)
+        return rows[0]?.sum ?? 0
     } catch (error) {
+        console.log("🚀 ~ file: storeAmounts.js ~ line 80 ~ getAmount ~ error", error)
         throw new Error(error)
     }
 }
