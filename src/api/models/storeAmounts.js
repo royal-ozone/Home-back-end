@@ -56,9 +56,11 @@ const getSellerBTransactions = async (id, limit, offset) => {
 }
 
 const getStoreReleasedAmount = async id => {
+    console.log("🚀 ~ file: storeAmounts.js ~ line 59 ~ getStoreReleasedAmount ~ id", id)
     try {
         let SQL = 'select sum(amount) from business_transaction where store_id=$1 AND status=$2;'
         let {rows} = await client.query(SQL, [id, 'released'])
+        console.log("🚀 ~ file: storeAmounts.js ~ line 62 ~ getStoreReleasedAmount ~ rows", rows)
         let {rows: rows2} = await client.query(SQL, [id, 'transferred'])
         
         return rows[0].sum 
