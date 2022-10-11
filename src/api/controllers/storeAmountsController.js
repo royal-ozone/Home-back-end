@@ -46,7 +46,7 @@ const getStoreReleasedAmountHandler = async (req, res) => {
 const getWithdrawnAmountHandler = async (req, res) => {
     try {
         let amount = await getWithdrawnAmount(req.user.store_id)
-        res.send({ status: 200,amount: amount })
+        res.send({ status: 200,amount: Number(amount) })
     } catch (error) {
         res.send({ status: 403, message: error})
     }
