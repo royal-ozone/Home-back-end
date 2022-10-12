@@ -48,37 +48,37 @@
 
 -- );
 
-CREATE TABLE account (
-id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-title varchar(50) NOT NULL,
-type varchar(50) NOT NULL,
- courier_id uuid,
-   store_id uuid,
-   reference varchar(255) NOT NULL,
-display boolean DEFAULT TRUE,
-    FOREIGN KEY (courier_id) REFERENCES courier_company(id),
-  FOREIGN KEY (store_id) REFERENCES store(id)
-);
+-- CREATE TABLE account (
+-- id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+-- title varchar(50) NOT NULL,
+-- type varchar(50) NOT NULL,
+--  courier_id uuid,
+--    store_id uuid,
+--    reference varchar(255) NOT NULL,
+-- display boolean DEFAULT TRUE,
+--     FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+--   FOREIGN KEY (store_id) REFERENCES store(id)
+-- );
 
-CREATE TABLE withdrawal (
-id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-account_id uuid NOT NULL,
-courier_id uuid,
-store_id uuid,
-amount float not null,
-type VARCHAR(50),
-status VARCHAR(50) DEFAULT 'requested',
-updated timestamp,
-document text,
-created_at timestamp not null default current_timestamp,
-FOREIGN KEY (account_id) REFERENCES account(id),
-FOREIGN KEY (courier_id) REFERENCES courier_company(id),
-FOREIGN KEY (store_id) REFERENCES store(id)
-
-
+-- CREATE TABLE withdrawal (
+-- id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+-- account_id uuid NOT NULL,
+-- courier_id uuid,
+-- store_id uuid,
+-- amount float not null,
+-- type VARCHAR(50),
+-- status VARCHAR(50) DEFAULT 'requested',
+-- updated timestamp,
+-- document text,
+-- created_at timestamp not null default current_timestamp,
+-- FOREIGN KEY (account_id) REFERENCES account(id),
+-- FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+-- FOREIGN KEY (store_id) REFERENCES store(id)
 
 
-)
+
+
+-- )
 
 -- create table order_log(
 --     id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
