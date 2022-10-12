@@ -80,7 +80,7 @@ const addOrderHandler = async (req, res, next) => {
           // if(cartItem.size){
 
           // }
-          await addBTransaction({ ...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price })
+          await addBTransaction({ ...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price * result.quantity })
           return result;
         });
         if (productArray) {
@@ -233,7 +233,7 @@ const updateOrderItemStatusHandler = async (req, res) => {
     if (data.status === 'canceled') {
       await increaseSizeQuantity({ id: data.product_id, size: data.size, color: data.color, quantity: data.quantity })
       overall_orders++;
-      await addBTransaction({ ...data, type: 'credit', status: 'canceled', amount: data.price, order_item_id: data.id })
+      await addBTransaction({ ...data, type: 'credit', status: 'canceled', amount: data.price * data.quantity, order_item_id: data.id })
       let updateOnTimeShipmentRate = await updateStoreReview2(data.store_id, { fulfilled_orders, ontime_orders, overall_orders, last_update: dateTimeNow() });
     }
     let orderItems = await getOrderItemsByOrderId(data.order_id);

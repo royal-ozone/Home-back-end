@@ -2,10 +2,11 @@ const client = require('../../db')
 
 const getPendingAmounts = async (id) => {
     try {
-        let SQL = `select sum(oi.price * oi.quantity) from order_item oi inner join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and (not neo.status = $2 and neo.status != null or neo.status =$3 and neo.updated > now() - interval '1 day'  ) and oi.status  in ( $4 , $5 ,$6)`
-        let safeValues = [id, 'canceled', 'delivered', 'accepted', 'returned', 'pending']
-        let result = await client.query(SQL,safeValues)
-        return result.rows[0].sum ?? 0
+        return await getOrdersAmount({ id:id, status: 'pending'})- await getOrdersAmount({ id:id, status: 'canceled'}) - await getOrdersAmount({ id:id, status: 'released'}) - await getOrdersAmount({ id:id, status: 'refunded'})
+        // let SQL = `select sum(oi.price * oi.quantity) from order_item oi inner join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and (not neo.status = $2 and neo.status != null or neo.status =$3 and neo.updated > now() - interval '1 day'  ) and oi.status  in ( $4 , $5 ,$6)`
+        // let safeValues = [id, 'canceled', 'delivered', 'accepted', 'returned', 'pending']
+        // let result = await client.query(SQL,safeValues)
+        // return result.rows[0].sum ?? 0
     } catch (error) {
         throw new Error(error.message)
     }
@@ -13,10 +14,11 @@ const getPendingAmounts = async (id) => {
 
 const getReleasedAmounts = async id => {
     try {
-        let SQL = 'select sum(oi.price * oi.quantity) from order_item oi left join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and oi.status = $2 and neo.status = $3;';
-        let safeValues = [id, 'accepted', 'delivered']
-        let result = await client.query(SQL,safeValues)
-        return result.rows[0].sum ?? 0
+        // let SQL = 'select sum(oi.price * oi.quantity) from order_item oi left join new_order neo on oi.order_id = neo.id where oi.store_id =$1 and oi.status = $2 and neo.status = $3;';
+        // let safeValues = [id, 'accepted', 'delivered']
+        // let result = await client.query(SQL,safeValues)
+        // return result.rows[0].sum ?? 0
+        await getOrdersAmount({ id:id, status: 'released'}) - await getOrdersAmount({ id:id, status: 'refunded'})
     } catch (error) {
         throw new Error(error.message)
     }
@@ -56,11 +58,9 @@ const getSellerBTransactions = async (id, limit, offset) => {
 }
 
 const getStoreReleasedAmount = async id => {
-    console.log("🚀 ~ file: storeAmounts.js ~ line 59 ~ getStoreReleasedAmount ~ id", id)
     try {
         let SQL = 'select sum(amount) from business_transaction where store_id=$1 AND status=$2;'
         let {rows} = await client.query(SQL, [id, 'released'])
-        console.log("🚀 ~ file: storeAmounts.js ~ line 62 ~ getStoreReleasedAmount ~ rows", rows)
         let {rows: rows2} = await client.query(SQL, [id, 'transferred'])
         
         return rows[0].sum 
@@ -69,15 +69,23 @@ const getStoreReleasedAmount = async id => {
     }
 }
 
+const getOrdersAmount = async ({id, status}) =>{
+    try {
+        let SQL = 'select sum(amount) from business_transaction where status=$1 and store_id=$2 and withdrawal_id is null '
+        let safeValues = [status, id]
+        let {rows} = await client.query(SQL, safeValues)
+        return rows[0]?.sum ?? 0
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 const getAmount = async ({id, status}) =>{
     try {
         let SQL = 'select sum(amount) from business_transaction where withdrawal_id is not null and status=$1 and store_id=$2 '
         let safeValues = [status, id]
         let {rows} = await client.query(SQL, safeValues)
-        console.log("🚀 ~ file: storeAmounts.js ~ line 77 ~ getAmount ~ rows", rows)
         return rows[0]?.sum ?? 0
     } catch (error) {
-        console.log("🚀 ~ file: storeAmounts.js ~ line 80 ~ getAmount ~ error", error)
         throw new Error(error)
     }
 }
