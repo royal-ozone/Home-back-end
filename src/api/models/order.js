@@ -85,7 +85,7 @@ const getAllOrderModel = async (limit,offset) => {
 const getAllOrderProfileIdModel =async (id,limit,offset)=> {
   try {
     let SQL ='SELECT * FROM new_order WHERE profile_id=$1 Order by created_at DESC LIMIT $2 OFFSET $3;';
-    let SQL2  ='SELECT count(*) FROM order_item WHERE profile_id=$1'
+    let SQL2  ='SELECT count(*) FROM new_order WHERE profile_id=$1'
     let result = await client.query(SQL, [id,limit,offset]);
     let {rows} = await client.query(SQL2, [id])
     return {data: result.rows,count: rows[0].count}

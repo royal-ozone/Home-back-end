@@ -3,10 +3,10 @@ const router = express.Router();
 const multer = require('multer');
 let upload = multer()
 const { uploadS3 } = require('../api/middleware/uploader');
+const bearer = require('../auth/middleware/bearer');
 const next = (req, res, next) => next()
 const { routes: orderRoutes } = require('../api/controllers/orderControllers')
 const { routes: addressRoutes } = require('../api/controllers/addressControllers')
-const bearer = require('../auth/middleware/bearer');
 const withdrawRoutes = require('../api/controllers/withdrawController')
 const {routes: amountRoutes} = require('../api/controllers/storeAmountsController')
 let routes = [...orderRoutes, ...addressRoutes,...withdrawRoutes,...amountRoutes]

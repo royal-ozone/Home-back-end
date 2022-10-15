@@ -458,7 +458,7 @@ router.get('/store/number/follower', bearer, upload.none(), getALLNumbersOFFollo
 
 
 // product review 
-router.post('/product/review', bearer, upload.none(), productComment, addProductReviewHandler)
+// router.post('/product/review', bearer, upload.none(), addProductReviewHandler)
 router.get('/product/review/:id', upload.none(), getProductReviewHandler)
 router.delete('/product/review', bearer, upload.none(), deleteProductReviewHandler)
 router.put('/product/review', upload.none(), updateProductReviewHandler)
