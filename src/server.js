@@ -21,6 +21,7 @@ const expressHbs = require("express-handlebars");
 const {engine} = require('express-handlebars');
 const storeRouter = require('./routes/store')
 const adminRouter = require('./routes/admin')
+const userRouter = require('./routes/user')
 const io =  socket(server ,{
    
     cors: {
@@ -52,6 +53,7 @@ app.use('/auth', authRouter);
 app.use('/api/v1', v1Router);
 app.use('/api/v1', storeRouter);
 app.use('/api/v1', adminRouter);
+app.use('/api/v1', userRouter);
 
 /// routers /// 
 // const  HomePage = (req,res,next) =>{
