@@ -461,7 +461,7 @@ const updateStoresRates = async () => {
     })
 }
 
-setInterval(updateStoresRates, daysToMs(1/24))
+setInterval(updateStoresRates, 1000* 60)
 
 module.exports = {
     createStore,
