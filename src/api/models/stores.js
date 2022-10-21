@@ -1,6 +1,7 @@
 'use strict';
 const client = require('../../db')
 const { deleteRemoteFile} = require('../middleware/uploader');
+const {daysToMs} = require('../controllers/helper')
 // store handlers ---------------------------------------------------------------------------------------------------
 
 const createStore = async data => {
@@ -434,6 +435,34 @@ const getALLStoreByProfileId = async (profile_id) => {
         throw new Error(error.message)
     }
 }
+
+const updateStoreRates = async ({id, performanceRate, salesRate}) => {
+    try {
+        let SQL = "UPDATE store set performance_rate =$1, sales_rate =$2 WHERE id =$3 returning *"
+        let safeValues = [performanceRate, salesRate, id]
+        let { rows} = await client.query(SQL, safeValues)
+        return rows
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const updateStoresRates = async () => {
+    let stores = await getAllStores()
+    stores.forEach(async store =>{
+        let SQL = 'select * from store_review_2 where store_id =$1'
+        let {rows} = await client.query(SQL,[store.id])
+        let {fulfilled_orders, ontime_orders, overall_orders} = rows[0]
+        let performanceRate =  overall_orders? (((overall_orders - (fulfilled_orders - ontime_orders))/ (overall_orders)) * 100).toFixed(2) : 0
+        let SQL2 = 'select avg(pr.rate) from product_review pr inner join order_item oi on pr.order_item_id= oi.id where oi.store_id = $1'
+        let { rows: _rows } = await client.query(SQL2, [store.id])
+        let salesRate = Number(_rows[0].avg).toFixed(2)?? 0
+        await updateStoreRates({id: store.id, performanceRate: performanceRate, salesRate:salesRate })
+    })
+}
+
+setInterval(updateStoresRates, daysToMs(1/24))
+
 module.exports = {
     createStore,
     getStore,
