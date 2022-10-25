@@ -20,6 +20,7 @@ module.exports = async (req, res, next) => {
     let userProfile = await getProfileByUserId(userData.id);
     let store = await getStoreIdByProfileId(userProfile.id) || {} ;
     let company = await getCompanyByProfileId(userProfile.id) || {} ;
+    let courier = await getCourierByProfileId(userProfile.id);
     delete userTokens.id;
     delete userTokens.user_id;
     if (userData.verified === false) {
@@ -29,7 +30,7 @@ module.exports = async (req, res, next) => {
       });
     }
     else {
-      req.user = {...userData, store_id: store.id || null, courier_company_id: company.id || null};
+      req.user = {...userData, store_id: store.id || null, courier_company_id: company.id || null, courier_id: courier?.id};
       req.tokens = userTokens;
       next();
     }

@@ -43,7 +43,7 @@ const getAllCourierCompaniesHandler = async (req, res) =>{
 const getCourierCompanyByCompanyIdHandler = async (req, res) => {
     try {
         let result = await getCourierCompanyByCompanyId(req.user.courier_company_id)
-        res.status(200).json(result)
+        res.send(result)
     } catch (error) {
         res.send(error.message);
     }

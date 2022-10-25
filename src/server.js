@@ -22,6 +22,7 @@ const {engine} = require('express-handlebars');
 const storeRouter = require('./routes/store')
 const adminRouter = require('./routes/admin')
 const userRouter = require('./routes/user')
+const courierCompanyRouter = require('./routes/courierCompany')
 const io =  socket(server ,{
    
     cors: {
@@ -54,6 +55,7 @@ app.use('/api/v1', v1Router);
 app.use('/api/v1', storeRouter);
 app.use('/api/v1', adminRouter);
 app.use('/api/v1', userRouter);
+app.use('/api/v1', courierCompanyRouter);
 
 /// routers /// 
 // const  HomePage = (req,res,next) =>{
