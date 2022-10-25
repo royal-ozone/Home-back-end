@@ -521,11 +521,12 @@ router.get('/courierCompany', bearer, upload.none(), getCourierCompanyByCompanyI
 router.put('/courierCompany/name', bearer, upload.none(), updateCourierCompanyNameHandler)
 router.put('/courierCompany/status', bearer, upload.none(), checkAuth, updateCourierCompanyStatusHandler)
 
-router.post('/courier', bearer, upload.none(), checkCourierCompany, createCourierHandler)
+router.post('/courier/signin', basic, upload.none(), checkCourier, signInHandler);
+router.post('/courier', bearer, upload.none(), checkCourierCompany, createCourierHandler , sendEmail)
 router.put('/courier', bearer, upload.none(), checkCourier, updateCourierStatusHandler)
 router.delete('/courier', bearer, upload.none(), checkCourierCompany, deleteCourierHandler)
 router.get('/couriers', bearer, upload.none(), checkAuth, getAllCouriersHandler)
-router.get('/courier', bearer, upload.none(), checkCourierCompany, getCourierByIdHandler)
+router.get('/courier', bearer, upload.none(), checkCourier, getCourierByIdHandler)
 router.get('/companyCouriers', bearer, upload.none(), checkCourierCompany, getCouriersByCompanyIdHandler)
 router.get('/courier/:id', bearer, upload.none(), checkCourierCompany, getCourierByIdHandler)
 

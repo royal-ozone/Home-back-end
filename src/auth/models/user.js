@@ -104,7 +104,7 @@ const getUserByEmail = async email => {
 
 const getProfileByEmail = async email => {
     try {
-        let SQL = `SELECT * FROM profile WHERE email=$1;`;
+        let SQL = `SELECT p.* FROM profile p inner join client c on p.user_id = c.id WHERE c.email=$1;`;
         let safeValue = [email];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];

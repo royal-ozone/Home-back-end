@@ -190,10 +190,10 @@ const checkCourierCompany = async (req, res, next) =>{
         if(req.user.courier_company_id || auth.includes(req.employee?req.employee.role: false )){
             next();
         } else{
-            res.status(403).send('your are not a courier company')
+            res.send({message:'your are not a courier company', status: 403})
         }
     } catch (error) {
-        res.send(error.message);
+        res.send({message:error.message});
     }
 }
 
@@ -202,10 +202,10 @@ const checkCourier = async (req, res, next) =>{
         if(req.user.courier_id){
             next()
         } else {
-            res.status(403).send('your are not a courier')
+            res.send({message: 'your are not a courier'})
         }
     } catch (error) {
-        res.send(error.message);
+        res.send({message:error.message});
     }
 }
 

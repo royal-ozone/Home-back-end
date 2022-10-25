@@ -46,7 +46,7 @@ const getAllCouriers = async () => {
 
 const getCourierById = async (id) =>{
     try {
-        let SQL = 'SELECT * FROM courier WHERE id=$1 OR profile_id=$1;';
+        let SQL = 'SELECT c.*, p.first_name, p.last_name FROM courier c inner join profile p on p.id = c.profile_id WHERE c.id=$1 OR c.profile_id=$1;';
         let result = await client.query(SQL, [id]);
         return result.rows[0];
     } catch (error) {
@@ -54,14 +54,39 @@ const getCourierById = async (id) =>{
     }
 }
 
-const getCouriersByCompanyId = async (id) =>{
+const removeCourierByCompany = async id => {
     try {
-        let SQL = 'SELECT * FROM courier WHERE Company_id=$1;';
-        let result = await client.query(SQL, [id]);
-        return result.rows;
+        let SQL = 'update courier set company_id = null where id=$1 returning *'
+        let {rows} = await client.query(SQL,[id])
+        return rows[0]
     } catch (error) {
-        throw new Error(error.message)
+        console.log("🚀 ~ file: courier.js ~ line 63 ~ removeCourierByCompany ~ error", error)
+        throw new Error(error)
     }
 }
 
-module.exports = {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById,getCouriersByCompanyId}
+const getCouriersByCompanyId = async ({id,offset, limit}) =>{
+    try {
+        let SQL = 'SELECT c.*, p.first_name, p.last_name FROM courier c inner join profile p on p.id = c.profile_id WHERE Company_id=$1 limit $2 offset $3;';
+        let SQL2 = 'SELECT count(*) FROM courier WHERE Company_id=$1;';
+        let result = await client.query(SQL, [id,limit, offset]);
+        let {rows} = await client.query(SQL2, [id])
+        return {data: result.rows, count:Number(rows[0].count)};
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const resetCourier =async  ({company_id, id}) => {
+    try {
+        
+        let SQL = 'update courier set company_id = $1, status = $2 where id = $3 RETURNING *;'
+        let safeValues = [company_id, 'pending', id]
+        let { rows} = await client.query(SQL, safeValues)
+        return rows[0]
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+module.exports = {createCourier, updateCourierStatus, deleteCourier,getAllCouriers, getCourierById,getCouriersByCompanyId,removeCourierByCompany,resetCourier}

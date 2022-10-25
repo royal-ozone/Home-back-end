@@ -3,7 +3,7 @@ const hbs = require('nodemailer-express-handlebars')
 const path = require('path')
 // async..await is not allowed in global scope, must use a wrapper
 const sendEmail = async (req, res) => {
-  const {context, email, template, message, user} = req.emailDetails
+  const {context, email, template, message, user, title} = req.emailDetails
   // send mail with defined transport object
   try {
     let transporter = nodemailer.createTransport({
@@ -39,7 +39,7 @@ const sendEmail = async (req, res) => {
     let info = await transporter.sendMail({
       from: '"Horizon" <ae-horizon@outlook.com>', // sender address
       to: `${email}`, // list of receivers
-      subject: "Seller Account Verification", // Subject line
+      subject: title?? "Seller Account Verification", // Subject line
       text: "Your seller account verification code", // plain text body
       template: template, // html body
       context: context
@@ -51,7 +51,7 @@ const sendEmail = async (req, res) => {
     }
     // Preview only available when sending through an Ethereal account
   } catch (error) {
-    res.send(error)
+    res.send({message:error})
   }
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 
