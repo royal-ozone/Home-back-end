@@ -8,7 +8,7 @@ const createCourier = async data => {
         let result = await client.query(SQL, safeValue);
         return result.rows[0];
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error)
     }
 }
 
@@ -78,13 +78,13 @@ const getCouriersByCompanyId = async ({id,offset, limit}) =>{
 }
 
 const resetCourier =async  ({company_id, id}) => {
-    try {
-        
+    try { 
         let SQL = 'update courier set company_id = $1, status = $2 where id = $3 RETURNING *;'
         let safeValues = [company_id, 'pending', id]
         let { rows} = await client.query(SQL, safeValues)
         return rows[0]
     } catch (error) {
+        console.log("🚀 ~ file: courier.js ~ line 87 ~ resetCourier ~ error", error)
         throw new Error(error)
     }
 }
