@@ -5,22 +5,20 @@ const { getProfileByEmail } = require('../../auth/models/user')
 const createCourierHandler = async (req, res,next) => {
     try {
         let profileData = await getProfileByEmail(req.body.email)
-        console.log("🚀 ~ file: courierController.js ~ line 8 ~ createCourierHandler ~ profileData", profileData)
         if (profileData) {
             req.emailDetails = { email: req.body.email, message: 'courier has been added successfully', user: { email: req.body.email, ...profileData }, template: `courierInvitation-${req.headers.locale}`, context: { courierHost: process.env.COURIER_HOST, name: profileData.first_name, companyName:req.body.companyName }, title: 'Driver Invitation / دعوة سائق' }
             let courier = await getCourierById(profileData.id)
-            console.log("🚀 ~ file: courierController.js ~ line 12 ~ createCourierHandler ~ courier", courier)
-            if (courier && !courier.company_id) {
+            if (courier && !courier?.company_id) {
                 let result = await resetCourier({ company_id: req.user.courier_company_id, id: courier.id })
                 if (result) {
                     // res.send({ status: 200, data: result, message: 'courier has been added successfully' })
                     next()
                 }
             }
-            else if (courier.company_id === req.user.courier_company_id) {
+            else if (courier?.company_id === req.user.courier_company_id) {
                 res.send({ status: 403, message: 'duplicate' })
             }
-            else if (courier && courier.company_id) {
+            else if (courier && courier?.company_id) {
                 res.send({ status: 403, message: `you can't send invitation for this driver` })
             }
             else {
@@ -40,7 +38,6 @@ const createCourierHandler = async (req, res,next) => {
             res.send({ status: 403, message: `there's no account with this email address` })
         }
     } catch (error) {
-        console.log("🚀 ~ file: courierController.js ~ line 43 ~ createCourierHandler ~ error", error)
         res.send({ message: error, status: 403 })
     }
 }
