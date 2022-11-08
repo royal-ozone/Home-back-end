@@ -2,9 +2,9 @@
 const client = require('../../db')
 const addAddressModel = async(data)=>{
     try {
-        let SQL = 'INSERT INTO address(profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id,is_default,store_address,region) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING * ;';
-        const {profile_id, country, street_name,building_number,apartment_number,city,first_name,last_name,mobile,store_id, is_default, store_address,region} =data ;
-        let safeValue = [profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id,is_default,store_address,region];
+        let SQL = 'INSERT INTO address(profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id,is_default,store_address,region,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING * ;';
+        const {profile_id, country, street_name,building_number,apartment_number,city,first_name,last_name,mobile,store_id, is_default, store_address,region,lat,lng} =data ;
+        let safeValue = [profile_id,country,city,first_name,last_name,mobile,street_name,building_number,apartment_number,store_id,is_default,store_address,region,lat,lng];
         let result = await client.query(SQL,safeValue);
         return result.rows[0];
     } catch (error) {
