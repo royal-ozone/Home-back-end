@@ -11,10 +11,10 @@ const {
   checkCourierCompanyStatus,
 } = require('../auth/middleware/acl');
 const { routes: courierRoutes } = require('../api/controllers/courierController')
+const { routes: deliveryTaskRoutes } = require('../api/controllers/deliveryTaskController')
 
-const routes = [...courierRoutes]
+const routes = [...courierRoutes,...deliveryTaskRoutes]
 routes.map(({ method, path, auth, isUpload, uploadType, fn, uploadParams, type, courierCompanyStatus, emailSend }) => {
-console.log("🚀 ~ file: courierCompany.js ~ line 17 ~ routes.map ~ emailSend", emailSend)
 
   if (type === 'courierCompany') {
     if (method === 'get') {

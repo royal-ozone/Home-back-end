@@ -2,11 +2,11 @@ const { createCourier, updateCourierStatus, deleteCourier, getAllCouriers, getCo
 const { getProfileByEmail } = require('../../auth/models/user')
 
 
-const createCourierHandler = async (req, res,next) => {
+const createCourierHandler = async (req, res, next) => {
     try {
         let profileData = await getProfileByEmail(req.body.email)
         if (profileData) {
-            req.emailDetails = { email: req.body.email, message: 'courier has been added successfully', user: { email: req.body.email, ...profileData }, template: `courierInvitation-${req.headers.locale}`, context: { courierHost: process.env.COURIER_HOST, name: profileData.first_name, companyName:req.body.companyName }, title: 'Driver Invitation / دعوة سائق' }
+            req.emailDetails = { email: req.body.email, message: 'courier has been added successfully', user: { email: req.body.email, ...profileData }, template: `courierInvitation-${req.headers.locale}`, context: { courierHost: process.env.COURIER_HOST, name: profileData.first_name, companyName: req.body.companyName }, title: 'Driver Invitation / دعوة سائق' }
             let courier = await getCourierById(profileData.id)
             if (courier && !courier?.company_id) {
                 let result = await resetCourier({ company_id: req.user.courier_company_id, id: courier.id })
@@ -46,16 +46,16 @@ const updateCourierStatusHandler = async (req, res) => {
     try {
         let id = req.user.courier_id;
         let result = await updateCourierStatus(id, req.body)
-        if(result?.id){
+        if (result?.id) {
             res.json({
                 message: 'courier status has been updated successfully', data: result, status: 200
             })
 
         } else {
-            res.send({message: result, status: 403})
+            res.send({ message: result, status: 403 })
         }
     } catch (error) {
-        res.send({message:error, status: 403})
+        res.send({ message: error, status: 403 })
     }
 }
 
@@ -120,7 +120,17 @@ const routes = [
         type: 'courierCompany',
         fn: removeCourierByCompanyHandler,
         courierCompanyStatus: true,
-       
+
+    },
+    {
+        path: '/courier',
+        auth: true,
+        method: 'post',
+        type: 'courierCompany',
+        fn: createCourierHandler,
+        courierCompanyStatus: true,
+        emailSend: true
+
     }
 ];
 module.exports = {
