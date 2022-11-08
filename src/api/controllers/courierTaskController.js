@@ -25,7 +25,6 @@ const getAllCourierTasksHandler = async (req, res) => {
 const  getCourierTaskByIdHandler = async (req, res) => {
     try {
         let id = req.body.id || req.user.courier_id;
-        console.log("🚀 ~ file: courierTaskController.js ~ line 28 ~ getCourierTaskByIdHandler ~ id", id)
         let result = await getCourierTaskById(id);
         res.status(200).json(result)
     } catch (error) {

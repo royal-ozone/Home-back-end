@@ -358,6 +358,9 @@ const automatedUpdateOrder = async ({ from, to }) => {
   let result = await getOrdersByStatus(from)
   result.map(async (order) => {
     await updateOrderStatusModel({ id: order.id, status: to })
+    if (to === 'ready to be shipped') {
+      await addDeliveryTask({ order_id: order.id });
+    }
     await addOrderLog({ id: order.id, status: to, at: new Date() })
   })
 
@@ -406,15 +409,15 @@ const toBeReleasedItemsHandler = async () => {
 const orderStatuesHandler = async (req, res) => {
   try {
     let result = await orderStatues(req.user.store_id)
-     res.send({status:200,data:result})
+    res.send({ status: 200, data: result })
   } catch (error) {
-    res.send({status: 403, message: error})
+    res.send({ status: 403, message: error })
   }
 }
 
 setInterval(toBeReleasedItemsHandler, 10000)
 setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
-setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
+// setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
 
 const routes = [{
   fn: getOrderLogHandler,

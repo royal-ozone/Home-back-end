@@ -67,7 +67,7 @@ const removeCourierByCompany = async id => {
 
 const getCouriersByCompanyId = async ({id,offset, limit}) =>{
     try {
-        let SQL = 'SELECT c.*, p.first_name, p.last_name FROM courier c inner join profile p on p.id = c.profile_id WHERE Company_id=$1 limit $2 offset $3;';
+        let SQL = `SELECT c.*, concat(p.first_name,' ', p.last_name) as courier_name FROM courier c inner join profile p on p.id = c.profile_id WHERE Company_id=$1 limit $2 offset $3;`;
         let SQL2 = 'SELECT count(*) FROM courier WHERE Company_id=$1;';
         let result = await client.query(SQL, [id,limit, offset]);
         let {rows} = await client.query(SQL2, [id])
