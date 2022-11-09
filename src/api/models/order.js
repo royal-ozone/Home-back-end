@@ -2,7 +2,9 @@
 const client = require("../../db");
 const { calculation } = require("../controllers/helper");
 const orderId = require('order-id')('key');
+const {daysToMs} = require('../controllers/helper')
 var parse = require('postgres-interval')
+
 const addOrderModel = async (data) => {
   try {
 
@@ -10,7 +12,7 @@ const addOrderModel = async (data) => {
 
     let {profile_id, address_id, tax,shipping,discount_id,sub_total,grand_total} =data 
     let SQL =
-      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total,customer_order_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING * ;";
+      "INSERT INTO new_order(profile_id,address_id,tax,shipping,discount_id,sub_total,grand_total,customer_order_id, delivery_date) VALUES ($1,$2,$3,$4,$5,$6,$7,$8, (now()+ interval '3 Day')) RETURNING * ;";
     let safeValue = [
       profile_id,
       address_id,tax,shipping,discount_id,sub_total,grand_total,orderId.getTime(id)
@@ -19,6 +21,7 @@ const addOrderModel = async (data) => {
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
+    console.log("🚀 ~ file: order.js ~ line 22 ~ addOrderModel ~ error", error)
     throw new Error(error.message)
   }
 };
