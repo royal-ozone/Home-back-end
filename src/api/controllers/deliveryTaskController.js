@@ -4,7 +4,8 @@ const { addDeliveryTask,
     updateDeliveryTaskCourierId,
     getDeliveryTaskById,
     getUnassignedDeliveryTasks,
-    getCompanyUnassignedTasks
+    getCompanyUnassignedTasks,
+    getOverviewTasks
 } = require('../models/deliveryTask');
 
 const {addCourierTask} = require('../models/courierTask')
@@ -23,6 +24,7 @@ const addDeliveryTaskHandler = async (req, res) => {
 const getUnassignedDeliveryTasksHandler = async (req, res) => {
     try {
         let { data, count } = await getUnassignedDeliveryTasks(req.query)
+        console.log("🚀 ~ file: deliveryTaskController.js ~ line 26 ~ getUnassignedDeliveryTasksHandler ~ data", data)
         if (data) {
             res.send({ status: 200, data: data, count: count })
         } else {
@@ -98,6 +100,18 @@ const getCompanyUnassignedTasksHandler = async (req, res) => {
     }
 }
 
+const getOverviewTasksHandler = async (req, res) => {
+    try {
+        let result = await getOverviewTasks({id:req.user.courier_company_id, ...req.query})
+        if (result) {
+            res.send({ status: 200, data: result })
+        } else {
+            res.send({ message: result, status: 403 })
+        }
+    } catch (error) {
+        res.send({ message: error.message, status: 403 })
+    }
+}
 const routes = [
     {
         path: '/deliveryTask/unassigned',
@@ -121,6 +135,14 @@ const routes = [
         method: 'get',
         type: 'courierCompany',
         fn: getCompanyUnassignedTasksHandler,
+        courierCompanyStatus: true,
+    },
+    {
+        path: '/deliveryTask/overview',
+        auth: true,
+        method: 'get',
+        type: 'courierCompany',
+        fn: getOverviewTasksHandler,
         courierCompanyStatus: true,
     },
 
