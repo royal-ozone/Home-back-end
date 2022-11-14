@@ -21,7 +21,6 @@ const addOrderModel = async (data) => {
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
-    console.log("🚀 ~ file: order.js ~ line 22 ~ addOrderModel ~ error", error)
     throw new Error(error.message)
   }
 };

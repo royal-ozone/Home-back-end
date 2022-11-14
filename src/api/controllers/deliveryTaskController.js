@@ -5,16 +5,18 @@ const { addDeliveryTask,
     getDeliveryTaskById,
     getUnassignedDeliveryTasks,
     getCompanyUnassignedTasks,
-    getOverviewTasks
+    getOverviewTasks,
+    bulkReassignCourier,
+    bulkUpdateDeliveryTaskStatus
 } = require('../models/deliveryTask');
 
-const {addCourierTask} = require('../models/courierTask')
+const { addCourierTask } = require('../models/courierTask')
 const addDeliveryTaskHandler = async (req, res) => {
     try {
         let result = await addDeliveryTask(req.body);
-        res.status(200).json({
+        res.json({
             message: 'Delivery Task has been added successfully',
-            ...result
+           dat:result, status:200
         });
     } catch (error) {
         res.send({ message: error.message, status: 403 })
@@ -24,7 +26,6 @@ const addDeliveryTaskHandler = async (req, res) => {
 const getUnassignedDeliveryTasksHandler = async (req, res) => {
     try {
         let { data, count } = await getUnassignedDeliveryTasks(req.query)
-        console.log("🚀 ~ file: deliveryTaskController.js ~ line 26 ~ getUnassignedDeliveryTasksHandler ~ data", data)
         if (data) {
             res.send({ status: 200, data: data, count: count })
         } else {
@@ -64,11 +65,11 @@ const updateDeliveryTaskCourierIdHandler = async (req, res, next) => {
         //     message: 'Courier Id has been updated successfully',
         //     ...result
         // })
-        if(result) {
-            await addCourierTask({...result,courier_id:req.body.courier_id, task_id: result.id, })
-            res.send({status: 200, data: result })
+        if (result) {
+            await addCourierTask({ ...result, courier_id: req.body.courier_id, task_id: result.id, })
+            res.send({ status: 200, data: result })
         } else {
-            res.send({status:403, message:result})
+            res.send({ status: 403, message: result })
         }
         // req.body = { ...req.body, ...result };
         // next()
@@ -89,7 +90,7 @@ const getDeliveryTaskByIdHandler = async (req, res) => {
 
 const getCompanyUnassignedTasksHandler = async (req, res) => {
     try {
-        let result = await getCompanyUnassignedTasks({id:req.user.courier_company_id, ...req.query})
+        let result = await getCompanyUnassignedTasks({ id: req.user.courier_company_id, ...req.query })
         if (result) {
             res.send({ status: 200, data: result })
         } else {
@@ -102,7 +103,7 @@ const getCompanyUnassignedTasksHandler = async (req, res) => {
 
 const getOverviewTasksHandler = async (req, res) => {
     try {
-        let result = await getOverviewTasks({id:req.user.courier_company_id, ...req.query})
+        let result = await getOverviewTasks({ id: req.user.courier_company_id, ...req.query })
         if (result) {
             res.send({ status: 200, data: result })
         } else {
@@ -112,6 +113,33 @@ const getOverviewTasksHandler = async (req, res) => {
         res.send({ message: error.message, status: 403 })
     }
 }
+
+const bulkReassignCourierHandler = async (req, res) => {
+    try {
+        let result = await bulkReassignCourier(req.body)
+        if (result) {
+            res.send({ data: result, status: 200 })
+        }
+    } catch (error) {
+        res.send({ message: error.message, status: 403 })
+    }
+}
+
+const bulkUpdateDeliveryTaskStatusHandler = async (req, res) => {
+    try {
+        let result = await bulkUpdateDeliveryTaskStatus(req.body)
+        if (result) {
+            res.send({ status: 200, data: result })
+        } else {
+            res.send({ message: result, status: 403 })
+        }
+    } catch (error) {
+        res.send({ message: error.message, status: 403 })
+    }
+
+}
+
+
 const routes = [
     {
         path: '/deliveryTask/unassigned',
@@ -145,10 +173,23 @@ const routes = [
         fn: getOverviewTasksHandler,
         courierCompanyStatus: true,
     },
-
-
+    {
+        path: '/deliveryTask/bulkReassign',
+        auth: true,
+        method: 'put',
+        type: 'courierCompany',
+        fn: bulkReassignCourierHandler,
+        courierCompanyStatus: true,
+    },
+    {
+        path: '/deliveryTask/bulkStatus',
+        auth: true,
+        method: 'put',
+        type: 'courierCompany',
+        fn: bulkUpdateDeliveryTaskStatusHandler,
+        courierCompanyStatus: true,
+    },
 ]
-
 module.exports = {
     addDeliveryTaskHandler,
     getAllDeliveryTasksHandler,

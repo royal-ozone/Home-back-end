@@ -57,4 +57,7 @@ const updateCourierTaskCourierId = async (data) => {
     }
 }
 
+
+
+
 module.exports = {addCourierTask,getAllCourierTasks, getCourierTaskById, updateCourierTaskStatus, updateCourierTaskCourierId }
