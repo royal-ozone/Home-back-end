@@ -90,6 +90,42 @@
 --     FOREIGN KEY (order_id) REFERENCES new_order(id)
 -- )
 
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+
+alter table delivery_task_notification
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table discount_code
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table grandchild_category
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table new_order
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table offer
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table offer_notification
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table order_item
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table order_log
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+alter table order_notification
+alter column id set DEFAULT uuid_generate_v4 (),alter column created_at set default current_timestamp;
+
+
+
+
+
+
 
 
 
