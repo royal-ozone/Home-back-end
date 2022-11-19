@@ -66,10 +66,6 @@ CREATE TABLE client(
   user_password VARCHAR(250) NOT NULL,
   country_code VARCHAR(10) NOT NULL,
   mobile VARCHAR (15) NOT NULL UNIQUE,
-  country VARCHAR (250) NOT NULL,
-  city VARCHAR (250) NOT NULL,
-  first_name VARCHAR (250) NOT NULL,
-  last_name VARCHAR (250) NOT NULL,
   google_id VARCHAR(200) UNIQUE,
   facebook_id VARCHAR(200) UNIQUE,
   verified BOOLEAN DEFAULT false,
@@ -96,9 +92,7 @@ CREATE TABLE profile(
   first_name VARCHAR (250) NOT NULL,
   last_name VARCHAR (250) NOT NULL,
   city VARCHAR (250) NOT NULL,
-  email VARCHAR (250) NOT NULL,
   country VARCHAR (250) NOT NULL,
-  mobile VARCHAR (15) NOT NULL UNIQUE,
   profile_picture TEXT,
   notification_all BOOLEAN DEFAULT TRUE,
   notification_store BOOLEAN DEFAULT FALSE,
@@ -127,11 +121,12 @@ CREATE TABLE store(
   about VARCHAR(250),
   mobile VARCHAR (15) NOT NULL UNIQUE,
   store_picture TEXT,
-  store_rating REAL NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
   rejected_reason TEXT DEFAULT '',
   verified_email BOOLEAN,
   verification_code INT,
+  performance_rate float default 0,
+  sales_rate float default 0, 
   created_at timestamp not null default current_timestamp,
 
   FOREIGN KEY (profile_id) REFERENCES profile(id)
@@ -191,7 +186,7 @@ CREATE TABLE product(
   quantity INT NOT NULL DEFAULT 0,
   status VARCHAR(250) DEFAULT 'pending',
   age VARCHAR(250),
-  size VARCHAR(250),
+  size_and_color text,
   display BOOLEAN DEFAULT TRUE,
   FOREIGN KEY (store_id) REFERENCES store(id),
   FOREIGN KEY (parent_category_id) REFERENCES parent_category(id),
@@ -229,18 +224,7 @@ CREATE TABLE offer(
 );
 
 
-CREATE TABLE product_review(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  profile_id uuid NOT NULL,
-  product_id uuid NOT NULL,
-  review VARCHAR(250),
-  rate INT NOT NULL,
- 
-  created_at timestamp not null default current_timestamp,
 
-  FOREIGN KEY (profile_id) REFERENCES profile(id),
-  FOREIGN KEY (product_id) REFERENCES product(id)
-);
 
 CREATE TABLE tag(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -258,14 +242,6 @@ CREATE TABLE product_tag(
 
   FOREIGN KEY (product_id) REFERENCES product(id),
   FOREIGN KEY (tag_id) REFERENCES tag(id)
-);
-CREATE TABLE product_rating(
-  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-  product_id uuid NOT NULL,
-  rating REAL NOT NULL DEFAULT 0,
-  votes REAL DEFAULT 0,
-
-  FOREIGN KEY (product_id) REFERENCES product(id) 
 );
 
 
@@ -324,6 +300,8 @@ CREATE TABLE address(
    is_default BOOLEAN,
    store_address BOOLEAN default FALSE,
    region VARCHAR (250) default NULL,
+   lat float,
+   lng float, 
    FOREIGN KEY (profile_id) REFERENCES profile(id),
    FOREIGN KEY (store_id) REFERENCES store(id)
 );
@@ -331,26 +309,20 @@ CREATE TABLE address(
 CREATE TABLE discount_code(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   discount_code VARCHAR(250) UNIQUE NOT NULL,
-  year INT NOT NULL,
-  month INT NOT NULL,
-  day  INT NOT NULL,
-  hour INT NOT NULL,
-  minute INT NOT NULL,
-  second INT  NOT NULL,
   counter INT default 0,
   max_counter INT NOT NULL default 50,
   discount FLOAT DEFAULT 0,
   max_discount INT NOT NULL,
   active Boolean DEFAULT FALSE,
   number_of_time INT NOT NULL,
+  expiry_date timestamp not null,
+  min_order_amount INT,
   created_at timestamp not null default current_timestamp
 );
 CREATE TABLE promo(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   profile_id uuid NOT NULL,
   discount_id uuid NOT NULL,
-  discount_name VARCHAR(250) NOT NULL,
-  counter VARCHAR(15) NOT NULL default 0,
   FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (discount_id) REFERENCES discount_code(id),
   created_at timestamp not null default current_timestamp
@@ -368,6 +340,9 @@ CREATE TABLE new_order(
   sub_total FLOAT  DEFAULT 0,
   grand_total FLOAT  DEFAULT 0,
   created_at timestamp not null default current_timestamp,
+  payment_method varchar(50) default 'COD',
+  delivey_date date,
+
   FOREIGN KEY (discount_id) REFERENCES discount_code(id),
   FOREIGN KEY (profile_id) REFERENCES profile(id),
   FOREIGN KEY (address_id) REFERENCES address(id)
@@ -384,17 +359,38 @@ CREATE TABLE order_item (
   price FLOAT NOT NULL,
   discount FLOAT DEFAULT 0,
   quantity REAL DEFAULT 1,
-  price_after FLOAT,
+  price_after FLOAT,  
   status VARCHAR(50) DEFAULT 'pending',
   cancellation_reason TEXT,
   last_update timestamp ,
   date_after_day VARCHAR(255) NOT NULL,
+  rated boolean default false,
   created_at timestamp not null default current_timestamp,
   FOREIGN KEY (store_id) REFERENCES store(id), 
   FOREIGN KEY (order_id) REFERENCES new_order(id),
   FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
+CREATE TABLE product_review(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  review VARCHAR(250),
+  rate INT NOT NULL,
+  order_item_id uuid,
+  created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (order_item_id) REFERENCES order_item(id)
+);
+
+CREATE TABLE product_rating(
+  id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+  product_id uuid NOT NULL,
+  rating REAL NOT NULL DEFAULT 0,
+  votes REAL DEFAULT 0,
+  order_id uuid,
+
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (product_id) REFERENCES product(id) 
+);
 CREATE TABLE transaction(
    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
    profile_id uuid NOT NULL,
@@ -551,8 +547,8 @@ CREATE TABLE courier(
 CREATE TABLE delivery_task(
   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
   order_id uuid NOT NULL UNIQUE,
-  address_id uuid NOT NULL,
   status VARCHAR (50) DEFAULT 'not assigned',
+  updated_at timestamp,
   company_id uuid,
   courier_id uuid, 
 
@@ -606,6 +602,65 @@ CREATE TABLE wishlist(
 
  FOREIGN KEY (profile_id) REFERENCES profile(id),
  FOREIGN KEY (product_id) REFERENCES product(id)
+);
+CREATE TABLE account (
+id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+title varchar(50) NOT NULL,
+type varchar(50) NOT NULL,
+ courier_id uuid,
+   store_id uuid,
+   reference varchar(255) NOT NULL,
+display boolean DEFAULT TRUE,
+    FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+  FOREIGN KEY (store_id) REFERENCES store(id)
+);
+CREATE TABLE withdrawal (
+id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+account_id uuid NOT NULL,
+courier_id uuid,
+store_id uuid,
+amount float not null,
+type VARCHAR(50),
+status VARCHAR(50) DEFAULT 'requested',
+updated timestamp,
+document text,
+created_at timestamp not null default current_timestamp,
+FOREIGN KEY (account_id) REFERENCES account(id),
+FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+FOREIGN KEY (store_id) REFERENCES store(id)
+
+);
+
+CREATE TABLE business_transaction(
+   id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+   courier_id uuid,
+   store_id uuid,
+   order_id uuid,
+   order_item_id uuid,
+   type VARCHAR(50),
+   amount float NOT NULL,
+   status VARCHAR (100),
+   withdrawal_id uuid,
+   created_at timestamp not null default current_timestamp,
+
+  FOREIGN KEY (courier_id) REFERENCES courier_company(id),
+  FOREIGN KEY (store_id) REFERENCES store(id),
+  FOREIGN KEY (order_id) REFERENCES new_order(id),
+  FOREIGN KEY (order_item_id) REFERENCES order_item(id),
+  FOREIGN KEY (withdrawal_id) REFERENCES withdrawal(id)
+
+);
+
+
+
+create table order_log(
+    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    order_id uuid not null,
+    status varchar(50) NOT NULL,
+    at timestamp NOT NULL,
+    created_at timestamp not null default current_timestamp,
+
+    FOREIGN KEY (order_id) REFERENCES new_order(id)
 )
 
 

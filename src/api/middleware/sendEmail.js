@@ -51,6 +51,7 @@ const sendEmail = async (req, res) => {
     }
     // Preview only available when sending through an Ethereal account
   } catch (error) {
+    console.log("🚀 ~ file: sendEmail.js ~ line 54 ~ sendEmail ~ error", error)
     res.send({message:error})
   }
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...

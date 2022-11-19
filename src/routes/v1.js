@@ -532,12 +532,12 @@ router.get('/courier/:id', bearer, upload.none(), checkCourierCompany, getCourie
 router.post('/courierTask', bearer, upload.none(), addCourierTaskHandler)
 router.get('/courierTasks', bearer, upload.none(), checkAuth, getAllCourierTasksHandler)
 router.get('/courierTask', bearer, upload.none(), checkCourier, getCourierTaskByIdHandler)
-router.put('/courierTask/status', bearer, upload.none(), checkCourier, updateCourierTaskStatusHandler)
+// router.put('/courierTask/status', bearer, upload.none(), checkCourier, updateCourierTaskStatusHandler)
 router.put('/courierTask/courierId', bearer, upload.none(), checkCourierCompany, updateCourierTaskCourierIdHandler)
 
 router.post('/deliveryTask', bearer, upload.none(), addDeliveryTaskHandler)
 router.get('/deliveryTasks', bearer, upload.none(), checkCourierCompanyStatus, getAllDeliveryTasksHandler)
-// router.put('/deliveryTask/companyId', bearer, upload.none(), updateDeliveryTaskCompanyIdHandler)
+router.put('/deliveryTask/companyId', bearer, upload.none(), updateDeliveryTaskCompanyIdHandler)
 router.put('/deliveryTask/courierId', bearer, upload.none(), updateDeliveryTaskCourierIdHandler, addCourierTaskHandler)
 router.get('/deliveryTask', bearer, upload.none(), getDeliveryTaskByIdHandler)
 

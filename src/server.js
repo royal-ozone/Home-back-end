@@ -23,6 +23,7 @@ const storeRouter = require('./routes/store')
 const adminRouter = require('./routes/admin')
 const userRouter = require('./routes/user')
 const courierCompanyRouter = require('./routes/courierCompany')
+const courierRouter = require('./routes/courier')
 const io =  socket(server ,{
    
     cors: {
@@ -56,6 +57,7 @@ app.use('/api/v1', storeRouter);
 app.use('/api/v1', adminRouter);
 app.use('/api/v1', userRouter);
 app.use('/api/v1', courierCompanyRouter);
+app.use('/api/v1', courierRouter);
 
 /// routers /// 
 // const  HomePage = (req,res,next) =>{

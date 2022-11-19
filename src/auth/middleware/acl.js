@@ -175,7 +175,7 @@ const checkActive = async (req, res, next) =>{
             next();
         }
     } catch (error) {
-        res.send(error.message);
+       res.send({message:error.message});
     }
 }
 
@@ -222,7 +222,7 @@ const checkCourierCompanyStatus = async (req, res, next) =>{
             res.status(403).send('please check your account status')
         }
     } catch (error) {
-        res.send(error.message);
+       res.send({message:error.message});
     }
 }
 
@@ -230,14 +230,14 @@ const checkCourierStatus = async (req, res, next) =>{
     try {
         let result = await getCourierById(req.user.courier_id);
         if(result.status === 'approved'){
-            next()
+            return next()
         } if(result.status === 'pending'){
-            res.status(403).send('your account status still pending,please approve the courier company request' )
+            res.send({message:'your account status still pending,please approve the courier company request', status: 403} )
         } else {
-            res.status(403).send('please check your account status')
+            res.send({message:'please check your account status', status: 403})
         }
     } catch (error) {
-        res.send(error.message)
+        res.send({message:error.message});
     }
 }
 
@@ -254,7 +254,7 @@ const checkStoreStatus = async (req, res, next) =>{
             res.status(403).send('please check your account status')
         }
     } catch (error) {
-        res.send(error.message);
+       res.send({message:error.message});
     }
 }
 
@@ -271,7 +271,7 @@ const checkOrderStatusForReturn = async (req, res, next) =>{
             next();
         }
     } catch (error) {
-        res.send(error.message); 
+       res.send({message:error.message}); 
     }
 }
 
