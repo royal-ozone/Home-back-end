@@ -7,9 +7,11 @@ const {
   updateChildCategoryModel,
   getAllChildCategoryModel,
   getChildCategoryByTitleModel,
-  getChildCategoryByTitleModelTwo
+  getChildCategoryByTitleModelTwo,
+  getChildCategories,
+  updateChildCategoryDisplay
 } = require("../models/childCategory");
-
+const {updateGrandchildCategoryDisplayByParentId} = require('../models/grandChildCategory')
 const addChildCategory = async (req, res, next) => {
   try {
     const { entitle, artitle } = req.body;
@@ -19,17 +21,19 @@ const addChildCategory = async (req, res, next) => {
           {status:403,message:"you can not add a child category without entitle or artitle for it "}
         );
     } else {
-      let oldData = await getChildCategoryByTitleModel(req.body);
-      if (!oldData) {
-        let data = await addChildCategoryModel(req.body);
+      
+      let data = await addChildCategoryModel(req.body);
+      if (data.id) {
         let response = {
           status:200,
           message: "successfully added child category",
           data: data,
         };
         return res.json(response);
+      } else {
+        res.json({status:403,message:"something went wrong"});
+
       }
-      res.json({status:403,message:"the child category is not exist"});
     }
   } catch (error) {
     let response = {
@@ -41,9 +45,15 @@ const addChildCategory = async (req, res, next) => {
 };
 
 const removeChildCategory = async (req, res, next) => {
-  let id = req.body.id;
+  let {id} = req.params;
   try {
-    let data = await removeChildCategoryModel(id);
+    let data;
+    try {
+      data = await removeChildCategoryModel(id);   
+    } catch (error) {
+      data = await updateChildCategoryDisplay(id)
+      await updateGrandchildCategoryDisplayByParentId(id)
+    }
     let response = {
       status:200,
       message: "successfully remove child category",
@@ -59,12 +69,9 @@ const removeChildCategory = async (req, res, next) => {
   }
 };
 const updateChildCategory = async (req, res, next) => {
-  let id = req.body.id;
-
   try {
-    let oldData = await getChildCategoryByIdModel(id);
-    if (oldData) {
-      let data = await updateChildCategoryModel({ ...oldData, ...req.body });
+    let data = await updateChildCategoryModel(req.body );
+    if (data) {
       let response = {
         status:200,
         message: "successfully update child category",
@@ -121,6 +128,49 @@ const getChildCategoryByTitle = async (req, res, next) => {
   }
 };
 
+const getChildCategoriesHandler =  async (req,res) =>{
+  try {
+    let result = await getChildCategories({...req.query})
+    if(result.data) {
+      res.send({status: 200, data: result})
+    } else res.send({status:403, message: result})
+  } catch (error) {
+    res.send({status: 403, message: error})
+  }
+}
+
+const routes = [
+  {
+  fn: getChildCategoriesHandler,
+  auth: true,
+  path: '/category/child',
+  method: 'get',
+  type: 'admin'
+},
+{
+  fn: updateChildCategory,
+  auth: true,
+  path: '/category/child',
+  method: 'put',
+  type: 'admin'
+},
+{
+  fn: addChildCategory,
+  auth: true,
+  path: '/category/child',
+  method: 'post',
+  type: 'admin'
+},
+{
+  fn: removeChildCategory,
+  auth: true,
+  path: '/category/child/:id',
+  method: 'delete',
+  type: 'admin'
+},
+
+]
+
 module.exports = {
   addChildCategory,
   removeChildCategory,
@@ -128,4 +178,5 @@ module.exports = {
   getChildCategoryById,
   getAllChildCategory,
   getChildCategoryByTitle,
+  routes
 };

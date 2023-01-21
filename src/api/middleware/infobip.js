@@ -1,37 +1,78 @@
-let InfoBip = require('infobip-nodejs')
+const https = require("follow-redirects").https;
+const fs = require("fs");
+const axios = require("axios");
+const options = {
+  method: "POST",
+  url: "https://r5x5zm.api.infobip.com/sms/2/text/advanced",
+  headers: {
+    Authorization:
+      "App 6852e90c84b379c8750912438a48d136-604de995-dadf-4abb-97f4-11317ff18771",
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+};
 
-let APIKEY = 'f930f85a8f33e8952b94b5d50f2c6b0f-9836fef3-0a57-4242-9e77-4242f8e3d51d'
-const environment = process.env.NODE_ENV
-const isProduction = (environment === 'production')
+const sendMessage = async (req, res) => {
+  try {
+    let data = await axios({
+      ...options,
+      data: {
+        messages: [
+          {
+            destinations: [
+              {
+                to: "962797912421",
+              },
+              {
+                to: "962798257981",
+              },
+            ],
+            from: "Horizon",
+            text: "horizon test",
+          },
+        ],
+      },
+    });
+   
+    res.status(200).send('the message sent successfully');
+  } catch (error) {
+    res.status(403).send(error);
+  }
+};
 
-const infobip = new InfoBip(APIKEY, false, {
-  authType:'basic',
-  username:'emranaloul', // Infobip Username used for registration
-  password:'Emran@2134', // Infobip Password used for registration
-  encrypted:false,
-  baseHost: 'r546z1.api.infobip.com'
-})
+// var req = https.request(options, function (res) {
+//     var chunks = [];
 
-const sendSMS = async(req, res) => {
-    // infobip.engageMock()
+//     res.on("data", function (chunk) {
+//         chunks.push(chunk);
+//     });
 
-    let promise = infobip.sendVoice({
-        from: "ServiceSMS", // Sender ID
-        to: "+962798257891", // Airtel Number
-        language: "en",
-        voice: {
-          name: "Paul",
-          gender: "male"
-        },
-        text: "Just Saying Hello"
-      });
-    try {
-        let body = await promise
-        console.log("🚀 ~ file: infobip.js ~ line 29 ~ sendSMS ~ body", body)
-    } catch (error) {
-        console.error(error)
-    }
+//     res.on("end", function (chunk) {
+//         var body = Buffer.concat(chunks);
+//         console.log(body.toString());
+//     });
 
-}
+//     res.on("error", function (error) {
+//         console.error(error);
+//     });
+// });
 
-module.exports = sendSMS
+// var postData = JSON.stringify({
+//     "messages": [
+//         {
+//             "destinations": [
+//                 {
+//                     "to": "41793026727"
+//                 }
+//             ],
+//             "from": "InfoSMS",
+//             "text": "This is a sample message"
+//         }
+//     ]
+// });
+
+// req.write(postData);
+
+// req.end();
+
+module.exports = sendMessage;

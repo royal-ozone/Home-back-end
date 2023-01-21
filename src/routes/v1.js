@@ -183,7 +183,7 @@ const {
 const {
   createDiscountCodeHandler,
   updateActiveDiscountCodeHandler,
-  updateDisconnectHandler,
+  updateDiscountCodeHandler,
   removeDiscountHandler,
   getAllDiscountHandlers,
   checkCodeHandler,
@@ -318,7 +318,7 @@ router.get('/search/title/CG', upload.none(), getChildCategoryByTitle);
 
 router.post('/add/GCG', bearer, upload.none(), checkAuth, addGrandChildCategory);
 router.delete('/remove/GCG', bearer, upload.none(), checkAuth, removeGrandChildCategory);
-router.put('/update/GCG', bearer, upload.none(), checkAuth, updateGrandChildCategory);
+// router.put('/category/grandchild', bearer, upload.none(), checkAuth, updateGrandChildCategory);
 router.get('/get/GCG/:idGCG', upload.none(), checkAuth, getGrandChildCategoryById);
 router.get('/getAll/GCG', upload.none(), getAllGrandChildCategory);
 router.get('/search/title/GCG', upload.none(), getGrandChildCategoryByTitle);
@@ -353,10 +353,8 @@ router.delete('/store', bearer, checkAuth, upload.none(), deleteStoreHandler);
 router.get('/store/id/:id', upload.none(), getStoreHandler);
 router.get('/store', bearer, upload.none(), getStoreHandler);
 router.get('/store/name/:name', upload.none(), getStoreByNameHandler)
-router.get('/store/all', upload.none(), getAllStoresHandler)
-router.get('/store/status/:status', bearer, checkAuth, upload.none(), getStoreByStatusHandler)
+// router.get('/store/all', upload.none(), getAllStoresHandler)
 router.put('/store/name', bearer, checkStoreAuth, upload.none(), updateStoreNameHandler);
-router.put('/store/status', bearer, checkAuth, upload.none(), updateStoreStatusHandler);
 router.put('/store/picture', bearer, checkStoreAuth, uploadS3.single('image'), updateStorePictureHandler);
 router.delete('/store/picture', bearer, checkStoreAuth, upload.none(), deleteStorePictureHandler)
 router.post('/store/verifyEmail', upload.none(), checkVerificationCodeHandler)
@@ -415,7 +413,7 @@ router.put('/cart/update', bearer, upload.none(), updateCartHandler);
 
 router.post('/add/discount', bearer, upload.none(), checkAdmin, createDiscountCodeHandler);
 router.put('/update/active', bearer, upload.none(), checkAdmin, updateActiveDiscountCodeHandler); // AND not active === delete
-router.put('/update/discount', bearer, upload.none(), checkAdmin, updateDisconnectHandler);
+router.put('/update/discount', bearer, upload.none(), checkAdmin, updateDiscountCodeHandler);
 // router.delete('/remove/discount',bearer,upload.none(),checkAdmin,removeDiscountHandler);
 router.get('/getAll', bearer, upload.none(), checkAdmin, getAllDiscountHandlers);
 router.get('/getAll/promo', bearer, upload.none(), checkAdmin, getAllPromoHandler);

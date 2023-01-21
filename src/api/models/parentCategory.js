@@ -5,13 +5,8 @@ const client = require("../../db");
 const addParentCategoryModel = async (data) => {
   try {
     const { entitle, artitle, metaTitle, content } = data;
-
-    if (!data) {
-      res.status(304).send("the data is not exist");
-    }
-    let SQL =
-      "INSERT INTO parent_category(entitle,artitle,metaTitle,content) VALUES ($1,$2,$3,$4) RETURNING *;";
-    let safeValue = [entitle, artitle, metaTitle, content];
+    let SQL = "INSERT INTO parent_category(entitle,artitle,metaTitle,content) VALUES ($1,$2,$3,$4) RETURNING *;";
+    let safeValue = [entitle.trim(), artitle.trim(), metaTitle, content];
 
     let result = await client.query(SQL, safeValue);
 
@@ -94,6 +89,50 @@ const getAllParentCategoryModel = async () => {
   }
 };
 
+const getParentCategories = async (data) => {
+    try {
+      let { offset, limit } = data;
+      let safeValues = [offset, limit];
+      let _safeValues = []
+      delete data.limit;
+      delete data.offset;
+      const search = (params,array) => {
+        let x = [] ;
+         Object.keys(params).forEach((param) => {
+           if(param === 'title') {
+            let i = array.push(`%${params[param].trim().toLowerCase()}%`)  ; 
+            x.push( `lower(pc.entitle) like $${i} or pc.artitle like $${i}`);
+          } 
+        });
+        if(x.length){
+          return ` and ${x.join(' and ')}`
+        } else return ''
+  
+      };
+      let SQL = `SELECT * from parent_category pc where pc.display=true ${search(data,safeValues)} offset $1 limit $2`
+      let SQL2 = `SELECT count(*) from parent_category pc where pc.display=true ${search(data,_safeValues)}`
+      let {rows} = await client.query(SQL, safeValues)
+      if(limit &&  offset ){
+        let {rows: rows2} = await client.query(SQL2, _safeValues)
+        return { data: rows, count: Number(rows2[0]?.count) ?? 0 }
+      } else {
+        return {data:rows}
+      }
+    } catch (error) {
+      throw new Error(error)
+    }
+}
+
+const updateParentCategoryDisplay = async id=>{
+  try {
+    let SQL = `update parent_category set display=$2 where id=$1 RETURNING *;`
+    let { rows} = await client.query(SQL,[id,false])
+    return rows[0]
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 module.exports = {
   addParentCategoryModel,
   removeParentCategoryModel,
@@ -102,4 +141,6 @@ module.exports = {
   getParentCategoryByIdModel,
   getAllParentCategoryModel,
   updateDisplayParentCategoryModel,
+  getParentCategories,
+  updateParentCategoryDisplay
 };
