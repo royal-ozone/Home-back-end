@@ -54,7 +54,7 @@ app.use(express.static(path.join(__dirname,'../public')));
 app.use('/auth', authRouter);
 app.use('/api/v1', v1Router);
 app.use('/api/v1', storeRouter);
-app.use('/api/v1', adminRouter);
+app.use('/api/admin', adminRouter);
 app.use('/api/v1', userRouter);
 app.use('/api/v1', courierCompanyRouter);
 app.use('/api/v1', courierRouter);

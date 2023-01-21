@@ -2,7 +2,8 @@
 
 const client = require('../../db')
 
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { verify } = require('jsonwebtoken');
 
 const signup = async data => {
     try {
@@ -239,13 +240,40 @@ const getTokenByUserId = async (id) => {
     }
 }
 
-const getAllUsers = async token => {
+const getAllUsers = async data => {
     try {
-        let SQL = 'SELECT * FROM CLIENT;';
-        let result = await client.query(SQL);
-        return {users:result.rows};
+        let { offset, limit } = data;
+        let safeValues = [limit,offset];
+        let _safeValues = []
+        delete data.limit;
+        delete data.offset;
+        const search = (params,array) => {
+          let x = [] ;
+           Object.keys(params).forEach((param) => {
+             if(param === 'query') {
+              let i = array.push(`%${params[param].trim().toLowerCase()}%`)  ; 
+              x.push( `lower(c.email) like $${i} or lower(c.mobile) like $${i} or lower(p.first_name) like $${i} or lower(p.last_name) like $${i}`);
+            }  else if( ['status','verified'].includes(param)){
+                let i = array.push(params[param])
+                x.push(`${param} = $${i}`)
+            }
+          });
+          if(x.length){
+            return ` where ${x.join(' and ')}`
+          } else return ''
+    
+        };
+        let SQL = `select c.id, c.email , c.mobile ,c.verified, c.status, c.created_at ,p.id as profile_id, p.first_name , p.last_name ,p.city, p.country from client c inner join profile p on p.user_id = c.id ${search(data,safeValues)} limit $1 offset $2`
+        let SQL2 = `select count(*) from client c inner join profile p on p.user_id = c.id ${search(data,_safeValues)}`
+        let {rows} = await client.query(SQL, safeValues)
+        if(limit &&  offset ){
+          let {rows: rows2} = await client.query(SQL2, _safeValues)
+          return { data: rows, count: Number(rows2[0]?.count) ?? 0 }
+        } else {
+          return {data:rows}
+        }
     } catch (error) {
-        return error.message;
+        throw new Error( error.message);
     }
 }
 
@@ -551,6 +579,28 @@ const updateProfilePicture = async data => {
         throw new Error(error.message);
     }
 }
+
+const updateProfileByAdmin = async data =>{
+    try {
+        let {first_name, last_name, id} = data
+        let SQL =  `update profile set first_name=$1, last_name=$2 where id =$3 returning first_name, last_name`
+        let safeValues = [first_name, last_name, id]
+        const {rows} =  await client.query(SQL, safeValues)
+        return rows[0]
+    } catch (error) {
+        throw new Error(error.message); 
+    }
+}
+const updateUserByAdmin = async ({email, mobile, verified, status, id}) => {
+    try {
+        let SQL = `update client set email=$1, mobile=$2, verified=$3, status=$4 where id =$5 returning email, mobile, verified, status`
+        let safeValues = [email, mobile, verified, status, id]
+        const {rows} =  await client.query(SQL, safeValues)
+        return rows[0]
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 module.exports = {
     signup,
     signupGoogle,
@@ -595,6 +645,8 @@ module.exports = {
     updateNotification_city,
     updateResetToken,
     getUserByResetToken,
-    updateProfilePicture
+    updateProfilePicture,
+    updateProfileByAdmin,
+    updateUserByAdmin
 }
 

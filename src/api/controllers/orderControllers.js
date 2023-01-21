@@ -417,7 +417,7 @@ const orderStatuesHandler = async (req, res) => {
 
 setInterval(toBeReleasedItemsHandler, 10000)
 setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
-// setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
+setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
 
 const routes = [{
   fn: getOrderLogHandler,

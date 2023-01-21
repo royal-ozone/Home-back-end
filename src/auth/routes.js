@@ -69,7 +69,7 @@ authRouter.put('/user/password/change',upload.none(), updateUserResetPasswordHan
 
 authRouter.put('/user/email', bearer, upload.none(),updateUserEmailHandler);
 authRouter.put('/user/mobile', bearer, upload.none(),updateUserMobileHandler);
-authRouter.get('/user/all',bearer, checkAuth,upload.none(),getAllUsersHandler);
+authRouter.get('/user',bearer, checkAuth,upload.none(),getAllUsersHandler);
 authRouter.get('/profile', bearer, upload.none(),getProfileHandler);
 
 authRouter.put('/update/profile', bearer,upload.none(), updateProfilers);

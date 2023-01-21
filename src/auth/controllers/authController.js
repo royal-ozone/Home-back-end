@@ -30,7 +30,9 @@ const { signup,
     updateNotification_all,
     updateNotification_city,
     updateResetToken,
-    getUserByResetToken
+    getUserByResetToken,
+    updateProfileByAdmin,
+    updateUserByAdmin
 } = require('../models/user');
 const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -577,9 +579,9 @@ const getAllBannedUsersHandler = async (req, res) => {
 const getAllUsersHandler = async (req, res, next) => {
     try {
 
-        let users = await getAllUsers();
+        let users = await getAllUsers(req.query);
         if (users) {
-            res.json({ status: 200, users })
+            res.json({ status: 200, data:users })
 
         } else {
             res.json({
@@ -702,6 +704,42 @@ const resetPasswordByTokenHandler = async (req, res, next) => {
     res.send({ status: 403, error: error.message })
   }
 }
+
+const updateProfileByAdminHandler =  async (req,res) =>{
+  try {
+      let result  = await updateProfileByAdmin({...req.body, id: req.params.id})
+      res.send({status: 200, data: result})
+  } catch (error) {
+    res.send({ status: 403, error: error })
+  }
+}
+
+const updateUserByAdminHandler =  async (req,res) =>{
+  try {
+      let result  = await updateUserByAdmin({...req.body, id: req.params.id})
+      res.send({status: 200, data: result})
+  } catch (error) {
+    res.send({ status: 403, error: error })
+  }
+}
+
+const routes = [
+  {
+  fn: updateProfileByAdminHandler,
+  auth: true,
+  path: '/profile/:id',
+  method: 'put',
+  type: 'admin'
+},
+{
+  fn: updateUserByAdminHandler,
+  auth: true,
+  path: '/user/:id',
+  method: 'put',
+  type: 'admin'
+},
+]
+
 module.exports = {
     signupHandler,
     signInHandler,
@@ -729,5 +767,6 @@ module.exports = {
     refreshAccessToken,
     updateResetTokenHandler,
     resetPasswordByTokenHandler,
-    validateResetToken
+    validateResetToken,
+    routes
 }

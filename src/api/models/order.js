@@ -232,7 +232,6 @@ const updateOrderLog= async ()=>{
      let SQL = 'insert into order_log (order_id,status, at) values($1,$2,$3) returning *'
      let safeValues = [order.id, order.status, order.updated]
      let result = await client.query(SQL, safeValues)
-     console.log("🚀 ~ file: order.js ~ line 221 ~ updateOrderLog ~ result", result.rows[0])
     })
 
   } catch (error) {

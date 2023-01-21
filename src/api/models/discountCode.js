@@ -2,7 +2,7 @@
 const client = require('../../db')
 const createDiscountCodeModel =async (data)=>{
 try {
-    let {discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time} = data;
+    let {discount_code,expiry_date, min_order_amount ,max_counter,discount,max_discount = 0,number_of_time} = data;
     let SQL ='INSERT INTO discount_code(discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;';
     let safeValue = [discount_code,expiry_date, min_order_amount,max_counter,discount,max_discount,number_of_time];
     let result = await client.query(SQL,safeValue);
@@ -32,7 +32,7 @@ const updateActiveDiscountCodeByIdModel =async (bool,id) => {
         return error.message
     }
 }
-const updateDisconnectModel = async (data) =>{
+const updateDiscountModel = async (data) =>{
     try {
         let SQL ='UPDATE discount_code SET discount_code=$1,expiry_date=$2, min_order_amount=$3,max_counter=$4,discount=$5,max_discount=$9,active=$6,number_of_time=$7 WHERE id=$8 RETURNING *;';
         
@@ -54,11 +54,45 @@ const removeDisconnectModel = async (id) => {
         return error.message;
     }
 }
-const getAllDiscountModel = async ()=>{
+const getAllDiscountModel = async (data)=>{
     try {
-        let SQL ='SELECT * FROM discount_code ;';
-        let result = await client.query(SQL);
-        return result.rows;
+        let { limit, offset } = data;
+        let safeValues = [limit, offset];
+        let _safeValues = [];
+        delete data.limit;
+        delete data.offset;
+        const search = (params, array) => {
+          let x = [];
+          Object.keys(params).forEach((param) => {
+            if (param === "discount_code") {
+              let i = array.push(`%${params[param].trim().toLowerCase()}%`);
+              x.push(
+                `lower(discount_code) like $${i}`
+              );
+            } else if (param === 'active') {
+              let i = array.push(params[param]);
+            
+              x.push(`active = $${i}`);
+            } else if( param === 'expiry_date') {
+                 let i = array.push(params[param]);
+                 x.push(`expiry_date < $${i}`)
+            }
+          });
+          if (x.length) {
+            return ` where ${x.join(" and ")}`;
+          } else return "";
+        };
+        let SQL = `SELECT * FROM discount_code  ${search(data,safeValues)} order by created_at desc limit $1 offset $2 ;`;
+        let SQL2 = `SELECT count(*) FROM discount_code ${search(data,_safeValues)} ;`
+        let { rows } = await client.query(SQL, safeValues);
+        if (limit && offset) {
+          let { rows: rows2 } = await client.query(SQL2, _safeValues);
+          return { data: rows, count: Number(rows2[0]?.count) ?? 0 };
+        } else {
+          return { data: rows };
+        }
+       
+      
     } catch (error) {
         return error.message;
     }
@@ -141,7 +175,7 @@ module.exports = {
     createDiscountCodeModel,
     getDiscountCodeById,
     updateActiveDiscountCodeByIdModel,
-    updateDisconnectModel,
+    updateDiscountModel,
     removeDisconnectModel,
     getAllDiscountModel,
     checkCodeModel,

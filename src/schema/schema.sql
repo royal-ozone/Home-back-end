@@ -124,7 +124,7 @@ CREATE TABLE store(
   status VARCHAR(250) DEFAULT 'pending',
   rejected_reason TEXT DEFAULT '',
   verified_email BOOLEAN,
-  verification_code INT,
+  verification_code varchar(50),
   performance_rate float default 0,
   sales_rate float default 0, 
   created_at timestamp not null default current_timestamp,
@@ -151,7 +151,8 @@ CREATE TABLE child_category(
   artitle VARCHAR(75),
   metaTitle VARCHAR(100),
   content TEXT,
-   FOREIGN KEY (parent_id) REFERENCES parent_category(id),
+  display BOOLEAN DEFAULT TRUE,
+  FOREIGN KEY (parent_id) REFERENCES parent_category(id),
   created_at timestamp not null default current_timestamp
 );
 CREATE TABLE grandchild_category(
@@ -161,6 +162,7 @@ CREATE TABLE grandchild_category(
   artitle VARCHAR(75),
   metaTitle VARCHAR(100),
   content TEXT,
+  display BOOLEAN DEFAULT TRUE,
   FOREIGN KEY (parent_id) REFERENCES child_category(id),
   created_at timestamp not null default current_timestamp
 );

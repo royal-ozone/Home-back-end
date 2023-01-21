@@ -16,14 +16,14 @@ const { getStore } = require('../models/stores');
 
 const productSearchHandler = async (req, res) => {
   try {
-    const result = await productSearch(req.query)
-    let resultWithPics = await result.map(async (product) => {
+    const {data, count} = await productSearch(req.query)
+    let resultWithPics = await data.map(async (product) => {
       let pictures = await getProductPictureByProductId(product.id)
       product['pictures'] = pictures;
       
       return product;
     })
-    res.send(await Promise.all(resultWithPics))
+    res.json({ status:200,data: {data:await Promise.all(resultWithPics), count:count} })
   } catch (error) {
     res.send({status: 403, message: error.message});
   }
@@ -52,14 +52,14 @@ const getAllProductHandler = async (req, res) => {
   try {
     let offset = req.query.offset || 0;
     let limit = req.query.limit || 24;
-    let result = await getAllProduct(offset, limit)
-    let resultWithPics = await result.map(async (product) => {
+    let {data,count} = await getAllProduct(req.query)
+    let resultWithPics = await data.map(async (product) => {
       let pictures = await getProductPicturesById(product.id)
       product['pictures'] = pictures;
       delete product.pictures.product_id
       return product;
     })
-    res.json({ status:200,result: await Promise.all(resultWithPics) })
+    res.json({ status:200,data: {data:await Promise.all(resultWithPics), count:count} })
   } catch (error) {
     res.json({status:403,message:error.message})
   }

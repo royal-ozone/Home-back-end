@@ -72,7 +72,7 @@ const getPendingTasks = async ({ id, limit = 10, offset = 0, status }) => {
 
 const getOverviewTasks =async ({status,id, limit=10,offset=0}) => {
     try {
-        let SQL = `select ct.*,no2.delivery_date,  concat(a.first_name, ' ', a.last_name) as customer_name, a.country, a.city,a.street_name,a.building_number,a.apartment_number,a.region, a.mobile,a.lat,a.lng from courier_task ct inner join delivery_task dt on dt.id = ct.task_id inner join new_order no2 on dt.order_id =no2.id inner join address a on a.id=no2.address_id  where ct.status = $1  and ct.courier_id=$2 limit $3 offset $4`
+        let SQL = `select ct.*,no2.delivery_date,no2.customer_order_id,  concat(a.first_name, ' ', a.last_name) as customer_name, a.country, a.city,a.street_name,a.building_number,a.apartment_number,a.region, a.mobile,a.lat,a.lng from courier_task ct inner join delivery_task dt on dt.id = ct.task_id inner join new_order no2 on dt.order_id =no2.id inner join address a on a.id=no2.address_id  where ct.status = $1  and ct.courier_id=$2 limit $3 offset $4`
         let SQL2 = 'select count(*) from courier_task where status=$1 and courier_id=$2'
         let safeValues = [status?? 'accepted', id, limit,offset]
         let safeValues2 = [status?? 'accepted', id]
@@ -83,6 +83,8 @@ const getOverviewTasks =async ({status,id, limit=10,offset=0}) => {
         throw new Error(error) 
     }
 }
+
+
 
 
 module.exports = {

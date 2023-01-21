@@ -48,6 +48,7 @@
     "path": "^0.12.7",
     "pg": "^8.7.1",
     "postgres-interval": "^4.0.0",
+    "sequelize": "^6.25.7",
     "socket.io": "^4.3.2",
     "twilio": "^3.69.0",
     "uuid": "^8.3.2"

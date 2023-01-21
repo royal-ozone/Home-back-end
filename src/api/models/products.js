@@ -18,11 +18,44 @@ const addProduct = async data => {
     }
 };
 
-const getAllProduct = async (offset, limit) => {
+const getAllProduct = async (data) => {
     try {
+        let { limit, offset } = data;
+        let safeValues = [offset, limit, true];
+        let _safeValues = [];
+        delete data.limit;
+        delete data.offset;
+        const search = (params, array) => {
+          let x = [];
+          Object.keys(params).forEach((param) => {
+            if (param === "discount_code") {
+              let i = array.push(`%${params[param].trim().toLowerCase()}%`);
+              x.push(
+                `lower(discount_code) like $${i}`
+              );
+            } else if (param === 'active') {
+              let i = array.push(params[param]);
+            
+              x.push(`active = $${i}`);
+            } else if( param === 'expiry_date') {
+                 let i = array.push(params[param]);
+                 x.push(`expiry_date < $${i}`)
+            }
+          });
+          if (x.length) {
+            return ` where ${x.join(" and ")}`;
+          } else return "";
+        };
         let SQL = `select p.*, pc.entitle as p_entitle, pc.artitle as p_artitle, cc.entitle as c_entitle, cc.artitle as c_artitle, gc.entitle as g_entitle, gc.artitle as g_artitle from product p inner join parent_category pc ON pc.id = p.parent_category_id inner join child_category cc on cc.id = p.child_category_id left join grandchild_category gc on gc.id = p.grandchild_category_id WHERE p.display=$3 LIMIT $2 OFFSET $1;`
-        let result = await client.query(SQL, [offset, limit, true])
-        return result.rows
+        let SQL2 = `select p.*, pc.entitle as p_entitle, pc.artitle as p_artitle, cc.entitle as c_entitle, cc.artitle as c_artitle, gc.entitle as g_entitle, gc.artitle as g_artitle from product p inner join parent_category pc ON pc.id = p.parent_category_id inner join child_category cc on cc.id = p.child_category_id left join grandchild_category gc on gc.id = p.grandchild_category_id WHERE p.display=$3 ;`
+        let { rows } = await client.query(SQL, safeValues);
+        if (limit && offset) {
+          let { rows: rows2 } = await client.query(SQL2, _safeValues);
+          return { data: rows, count: Number(rows2[0]?.count) ?? 0 };
+        } else {
+          return { data: rows };
+        }
+       
     } catch (error) {
         throw new Error(error.message)
     }
@@ -257,7 +290,6 @@ const increaseSizeQuantity = async data => {
                 }
                 return val
             })
-            console.log("🚀 ~ file: products.js ~ line 259 ~ newSize ~ newSize", newSize)
 
             let newProduct = { ...product, quantity: newSize.reduce((p, c) => p + c.quantity, 0), size_and_color: JSON.stringify(newSize) }
 
@@ -277,26 +309,78 @@ const productSearch = async data => {
     try {
         let { key, store_id, parent_category_id: pc, child_category_id: cc, grandchild_category_id: gc, brand, price, limit = 20, offset = 0 } = data
         let sqlParameters = []
-        let safeValues = [true, limit, offset, 'approved']
-        let i = safeValues.length + 1
-        let baseQuery = `select p.*, s.store_name from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id left join grandchild_category gc on gc.id = p.grandchild_category_id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$4) and`
-        let keysSQL = []
-       
-        key && new Set([key, ...key?.split(' ')])?.forEach(val => {
-            keysSQL.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i++})`) && safeValues.push(`%${val}%`)
-        })
-        keysSQL.length > 0 && sqlParameters.push( keysSQL.join(` or `))
-        let storeQuery = []
-        store_id && store_id.split(',').map(value => storeQuery.push(`(store_id = $${i++})`) && safeValues.push(value)) && sqlParameters.push(`(${storeQuery.join(' or ')})`)
-        let brandQuery = []
-        brand && brand.split(',').map(value => brandQuery.push(`(brand_name = $${i++})`) && safeValues.push(value)) && sqlParameters.push(brandQuery.join(' or '))
-        price && sqlParameters.push(`(price between $${i++} and $${i++})`) && safeValues.push(price.split('-')[0]) && safeValues.push(price.split('-')[1])
-        gc && sqlParameters.push(`(grandchild_category_id=$${i})`) && safeValues.push(gc) || cc && sqlParameters.push(`(child_category_id=$${i})`) && safeValues.push(cc) || pc && sqlParameters.push(`(parent_category_id=$${i})`) && safeValues.push(pc)
-        let SQL = `${baseQuery} ${sqlParameters.length > 0 && sqlParameters.join(' and ')} limit $2 offset $3`
-        let result = await client.query(SQL, safeValues)
+        let safeValues = [limit, offset,true, 'approved']
+        let _safeValues = [true, 'approved']
+        delete data.limit;
+        delete data.offset;
+        const search = (params, array) => {
+            let x = [];
+            Object.keys(params).forEach((param,i) => {
+              if (param === "key") {
+                let w = []
+                new Set([key, ...key?.split(' ')])?.forEach(val => {
+                    let i = array.push(`%${val.trim().toLowerCase()}%`);
 
-        return result.rows
+                    w.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i})`)
+                })
+                x.push(w.join(' or '))
+              } else if (param === 'price') {
+                let i = array.push(params[param].split('-')[0]);
+                let _i = array.push(params[param].split('-')[1]);
+              
+                x.push(`p.price between $${i} and $${_i}`);
+              } else if( param === 'store_id' || param === 'brand_name' ) {
+                   let stores =  params[param].split(',')
+                   let remain = stores.map((store )=>{
+                    let i = array.push(store)
+                    return `$${i}`
+                   }).join(',')
+                   let storeQuery = `p.store_id in (${remain})` 
+                   x.push(storeQuery)
+              } else {
+                let i  =  array.push(params[param])
+                x.push(`p.${param} = $${i}`)
+              }
+            });
+            if (x.length) {
+              return ` and ${x.join(" and ")}`;
+            } else return "";
+          };
+        let baseQuery = `select p.*, s.store_name, avg(pr.rate) as rate from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id left join grandchild_category gc on gc.id = p.grandchild_category_id inner join store s on p.store_id = s.id left join order_item oi on oi.product_id = p.id left join product_review pr on pr.order_item_id = oi.id where (p.display=$3) and (p.status=$4)`
+        // let keysSQL = []
+       
+        // key && new Set([key, ...key?.split(' ')])?.forEach(val => {
+        //     keysSQL.push(`(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i++})`) && safeValues.push(`%${val}%`)
+        // })
+        // keysSQL.length > 0 && sqlParameters.push( keysSQL.join(` or `))
+        // let storeQuery = []
+        // store_id && store_id.split(',').map(value => storeQuery.push(`(store_id = $${i++})`) && safeValues.push(value)) && sqlParameters.push(`(${storeQuery.join(' or ')})`)
+        // let brandQuery = []
+        // brand && brand.split(',').map(value => brandQuery.push(`(brand_name = $${i++})`) && safeValues.push(value)) && sqlParameters.push(brandQuery.join(' or '))
+        // price && sqlParameters.push(`(price between $${i++} and $${i++})`) && safeValues.push(price.split('-')[0]) && safeValues.push(price.split('-')[1])
+        // gc && sqlParameters.push(`(grandchild_category_id=$${i})`) && safeValues.push(gc) || cc && sqlParameters.push(`(child_category_id=$${i})`) && safeValues.push(cc) || pc && sqlParameters.push(`(parent_category_id=$${i})`) && safeValues.push(pc)
+        let SQL = `${baseQuery} ${search(data,safeValues)} group by p.id,s.store_name limit $1 offset $2 `
+        let {rows} = await client.query(SQL, safeValues)
+        console.log("🚀 ~ file: products.js:363 ~ productSearch ~ SQL", SQL)
+        let SQL2 = `select count(p.*) from product p inner join parent_category pc on p.parent_category_id = pc.id inner join child_category cc on p.child_category_id = cc.id left join grandchild_category gc on gc.id = p.grandchild_category_id inner join store s on p.store_id = s.id where (p.display=$1) and (p.status=$2) ${search(data,_safeValues)}  `
+        let _key =key?.toLowerCase()?.trim()
+        rows.sort((a,b) => {
+             if(  (a.entitle.includes(_key) || a.artitle.includes(_key)  ) && !(b.entitle.includes(_key) || b.artitle.includes(_key))){
+                  return -1
+                } else if(!(a.entitle.includes(_key) || a.artitle.includes(_key)  ) && (b.entitle.includes(_key) || b.artitle.includes(_key))) return 1
+                
+               }
+        )
+        if (limit && offset) {
+            let {rows:_rows} = await client.query(SQL2, _safeValues)
+          
+
+            return { data: rows, count: Number(_rows[0]?.count) ?? 0 };
+          } else {
+            return { data: rows };
+          }
     } catch (error) {
+        console.log("🚀 ~ file: products.js:350 ~ productSearch ~ error", error)
         throw new Error(error.message)
     }
 }
