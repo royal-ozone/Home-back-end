@@ -12,10 +12,11 @@ const {routes: grandchildRoutes} = require('../api/controllers/grandChildCategor
 const {routes:userRoutes} =  require('../auth/controllers/authController')
 const {routes:storeRoutes} = require('../api/controllers/storesController')
 const {routes:discountCodeRoutes} = require('../api/controllers/discountCodeControllers')
+const {routes:productRoutes} = require('../api/controllers/productControllers')
 const bearer = require('../auth/middleware/bearer');
 const withdrawRoutes = require('../api/controllers/withdrawController')
 
-let routes = [...orderRoutes, ...addressRoutes,...withdrawRoutes,...parentRoutes,...childRoutes,...grandchildRoutes,...userRoutes,...storeRoutes,...discountCodeRoutes]
+let routes = [...orderRoutes, ...addressRoutes,...withdrawRoutes,...parentRoutes,...childRoutes,...grandchildRoutes,...userRoutes,...storeRoutes,...discountCodeRoutes,...productRoutes]
 const { checkAdmin,
     checkMod,
     checkSupervisor,
@@ -26,7 +27,7 @@ routes.map(({ method, path, auth, isUpload, uploadType, fn, uploadParams, type }
 
     if (type === 'admin') {
       if (method === 'get') {
-        router.get(path, auth ? bearer : next, checkAuth, upload.none(), fn)
+        router.get(path,  bearer , checkAuth, upload.none(), fn)
       } else if (method === 'post') {
         router.post(path, bearer, checkAuth, !isUpload ? upload.none() : uploadType === 'single' ? uploadS3.single(uploadParams) : uploadS3.array(uploadParams), fn)
       } else if (method === 'put') {
