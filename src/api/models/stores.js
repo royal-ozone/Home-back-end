@@ -508,11 +508,12 @@ const getALLStoreByProfileId = async (profile_id) => {
   }
 };
 
-const updateStoreRates = async ({ id, performanceRate, salesRate }) => {
+const updateStoreRates = async ({ id, performanceRate, salesRate, store_rating }) => {
+  console.log("🚀 ~ file: stores.js:512 ~ updateStoreRates ~ store_rating", store_rating)
   try {
     let SQL =
-      "UPDATE store set performance_rate =$1, sales_rate =$2 WHERE id =$3 returning *";
-    let safeValues = [performanceRate, salesRate, id];
+      "UPDATE store set performance_rate =$1, sales_rate =$2, store_rating=$4  WHERE id =$3 returning *";
+    let safeValues = [performanceRate, salesRate, id,Number(store_rating).toFixed(2)];
     let { rows } = await client.query(SQL, safeValues);
     return rows;
   } catch (error) {
@@ -528,20 +529,22 @@ const updateStoresRates = async () => {
     let { rows } = await client.query(SQL, [store.id]);
     let { fulfilled_orders, ontime_orders, overall_orders } = rows[0];
     let performanceRate = overall_orders
-      ? (
-          ((overall_orders - (fulfilled_orders - ontime_orders)) /
-            overall_orders) *
-          100
-        ).toFixed(2)
+    ? (
+      ((overall_orders - (fulfilled_orders - ontime_orders)) /
+      overall_orders) *
+      100
+      ).toFixed(2)
       : 0;
-    let SQL2 =
+      let SQL2 =
       "select avg(pr.rate) from product_review pr inner join order_item oi on pr.order_item_id= oi.id where oi.store_id = $1";
     let { rows: _rows } = await client.query(SQL2, [store.id]);
     let salesRate = Number(_rows[0].avg).toFixed(2) ?? 0;
+    const storeRating = Number(salesRate) > 0? (((Number(performanceRate)/20)+ Number(salesRate))/2).toFixed(2): (Number(performanceRate)/20).toFixed(2)
     await updateStoreRates({
       id: store.id,
       performanceRate: performanceRate,
       salesRate: salesRate,
+      store_rating: storeRating
     });
   });
 };
