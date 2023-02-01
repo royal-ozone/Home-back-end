@@ -209,20 +209,18 @@ const getProductsByCategoriesHandler = async (req, res) => {
 
 const updateProductHandler = async (req, res) => {
   try {
-    let id = req.body.id;
-    let data = await getProduct(id);
-    let result = await updateProduct({ ...data, ...req.body });
-    if (result) {
+    let result = await updateProduct({...req.body });
+    if (result.id) {
       res.json({
         message: "product has been updated successfully",
         result,
         status: 200,
       });
     } else {
-      res.send("something went wrong while updating the product");
+      res.send({message:"something went wrong while updating the product", status: 403});
     }
   } catch (error) {
-    res.send(error.message);
+    res.send({message: error.message, status : 403});
   }
 };
 
@@ -253,10 +251,10 @@ const updateDiscountHandler = async (req, res) => {
         status: 200,
       });
     } else {
-      res.send("something went wrong while updating the product");
+      res.send({message:"something went wrong while updating the product", status: 403});
     }
   } catch (error) {
-    res.send(error.message);
+    res.send({message:error.message, status: 403});
   }
 };
 
@@ -264,8 +262,8 @@ const deleteProductHandler = async (req, res) => {
   try {
     let id = req.body.id;
     await deleteProductReviewByProductId(id);
-    await deleteProductTagByProductId(id);
-    await deleteProductRatingByProductId(id);
+    // await deleteProductTagByProductId(id);
+    // await deleteProductRatingByProductId(id);
     let pictures = await getProductPicturesById(id);
     await pictures.map(async (file) => {
       await deleteRemoteFile(file.product_picture);
@@ -273,13 +271,13 @@ const deleteProductHandler = async (req, res) => {
     await deleteProductPictureByProductId(id);
     try {
       let result = await deleteProduct(id);
-      res.status(200).send("product was successfully deleted");
+      res.send({message:"product was successfully deleted", status: 200, data: result});
     } catch (error) {
-      updateProductDisplay(id),
-        res.status(200).send("product successfully deleted");
+      let result = await updateProductDisplay(id)
+        res.send({message:"product successfully deleted", status: 200, data: result});
     }
   } catch (error) {
-    res.send(error.message);
+    res.send({message: error.message, status: 403});
   }
 };
 
@@ -337,7 +335,7 @@ const addProductPictureHandler = async (req, res) => {
       res.send({ message: result, status: 403 });
     }
   } catch (error) {
-    res.send(error.message);
+    res.send({message:error.message, status: 403});
   }
 };
 
@@ -345,7 +343,7 @@ const deleteProductPictureHandler = async (req, res) => {
   try {
     let result = await deleteProductPictureById(req.body.picture_id);
     await deleteRemoteFile(result.product_picture);
-    res.send({ message: "picture has been deleted successfully", status: 200 });
+    res.send({ message: "picture has been deleted successfully", status: 200, data:result  });
   } catch (error) {
     res.send({ message: error, status: 403 });
   }
@@ -420,7 +418,52 @@ const routes = [
     fn: updateProductStatusHandler,
     type: 'admin',
     method: 'patch'
-  }
+  },
+  {
+    path: '/product/:id',
+    fn: getProductHandler,
+    type: 'admin',
+    method: 'get'
+  },
+  {
+    path: '/product',
+    fn: updateProductHandler,
+    type: 'admin',
+    method: 'put'
+  },
+  {
+    path: '/product/quantityandsize',
+    fn: updateSizeAndQuantityHandler,
+    type: 'admin',
+    method: 'patch'
+  },
+  {
+    path: '/product/discount',
+    fn: updateDiscountHandler,
+    type: 'admin',
+    method: 'patch'
+  },
+  {
+    path: '/product',
+    fn:   deleteProductHandler,
+    type: 'admin',
+    method: 'delete'
+  },
+  {
+    path: '/product/picture',
+    fn:   deleteProductPictureHandler,
+    type: 'admin',
+    method: 'delete'
+  },
+  {
+    path: '/product/picture',
+    fn:   addProductPictureHandler,
+    type: 'admin',
+    method: 'post',
+    isUpload: true,
+    uploadType: 'single',
+    uploadParams: 'image'
+  },
 ]
 module.exports = {
   getStoreProductsByStatusHandler,

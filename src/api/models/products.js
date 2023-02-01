@@ -227,11 +227,9 @@ const updateProduct = async (data) => {
       parent_category_id,
       child_category_id,
       grandchild_category_id,
-      size_and_color,
-      quantity,
     } = data;
     let SQL =
-      "UPDATE product SET enTitle=$1, metaTitle=$2, sku=$3, price=$4, brand_name=$5, endescription=$6, arTitle=$7,age=$8,ardescription=$9, status=$10,parent_category_id=$12,child_category_id=$13,grandchild_category_id=$14,size_and_color=$15, quantity=$16 WHERE id=$11 RETURNING *;";
+      "UPDATE product SET enTitle=$1, metaTitle=$2, sku=$3, price=$4, brand_name=$5, endescription=$6, arTitle=$7,age=$8,ardescription=$9, status=$10,parent_category_id=$12,child_category_id=$13,grandchild_category_id=$14 WHERE id=$11 RETURNING *;";
     let safeValues = [
       entitle,
       metaTitle,
@@ -247,8 +245,6 @@ const updateProduct = async (data) => {
       parent_category_id,
       child_category_id,
       grandchild_category_id,
-      size_and_color,
-      quantity,
     ];
     let result = await client.query(SQL, safeValues);
     return result.rows[0];

@@ -509,7 +509,6 @@ const getALLStoreByProfileId = async (profile_id) => {
 };
 
 const updateStoreRates = async ({ id, performanceRate, salesRate, store_rating }) => {
-  console.log("🚀 ~ file: stores.js:512 ~ updateStoreRates ~ store_rating", store_rating)
   try {
     let SQL =
       "UPDATE store set performance_rate =$1, sales_rate =$2, store_rating=$4  WHERE id =$3 returning *";
