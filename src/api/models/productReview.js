@@ -37,8 +37,8 @@ const deleteProductReview = async data => {
 
 const deleteProductReviewByProductId = async product_id => {
     try {
-        let SQL = 'DELETE FROM product_review WHERE product_id=$1 RETURNING *;';
-        let result = await client.query(SQL, [product_id])
+        let SQL = 'DELETE FROM product_review pr using order_item oi WHERE oi.id = pr.order_item_id and oi.product_id=$1 RETURNING *;';
+        let result = await client.query(SQL, [product_id.id?? product_id])
         return result.rows;
     } catch (error) {
         throw new Error(error.message)
