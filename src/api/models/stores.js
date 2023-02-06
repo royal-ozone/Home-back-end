@@ -159,7 +159,7 @@ const getAllStores = async (data) => {
         if (param === "query") {
           let i = array.push(`%${params[param].trim().toLowerCase()}%`);
           x.push(
-            `lower(c.email) like $${i} or s.mobile like $${i} or lower(s.store_name) like $${i}`
+            `(lower(c.email) like $${i} or s.mobile like $${i} or lower(s.store_name) like $${i})`
           );
         } else if (["performance_rate", "sales_rate"].includes(param)) {
           let i = array.push(params[param].split("-")[0]);

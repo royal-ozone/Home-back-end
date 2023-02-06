@@ -71,7 +71,7 @@ const getAllProduct = async (data) => {
             let i = array.push(`%${val.trim().toLowerCase()}%`);
 
             w.push(
-              `(p.entitle like $${i} or p.artitle like $${i} or p.endescription like $${i} or p.ardescription like $${i} or pc.entitle like $${i} or pc.artitle like $${i} or cc.entitle like $${i} or cc.artitle like $${i} or gc.entitle like $${i} or gc.artitle like $${i})`
+              `(p.entitle like $${i} or p.artitle like $${i})`
             );
           });
           x.push(w.join(" or "));
