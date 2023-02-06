@@ -252,7 +252,7 @@ const getAllUsers = async data => {
            Object.keys(params).forEach((param) => {
              if(param === 'query') {
               let i = array.push(`%${params[param].trim().toLowerCase()}%`)  ; 
-              x.push( `lower(c.email) like $${i} or lower(c.mobile) like $${i} or lower(p.first_name) like $${i} or lower(p.last_name) like $${i}`);
+              x.push( `(lower(c.email) like $${i} or lower(c.mobile) like $${i} or lower(p.first_name) like $${i} or lower(p.last_name) like $${i})`);
             }  else if( ['status','verified'].includes(param)){
                 let i = array.push(params[param])
                 x.push(`${param} = $${i}`)
@@ -265,6 +265,7 @@ const getAllUsers = async data => {
         };
         let SQL = `select c.id, c.email , c.mobile ,c.verified, c.status, c.created_at ,p.id as profile_id, p.first_name , p.last_name ,p.city, p.country from client c inner join profile p on p.user_id = c.id ${search(data,safeValues)} limit $1 offset $2`
         let SQL2 = `select count(*) from client c inner join profile p on p.user_id = c.id ${search(data,_safeValues)}`
+        console.log("🚀 ~ file: user.js:269 ~ getAllUsers ~ SQL", SQL)
         let {rows} = await client.query(SQL, safeValues)
         if(limit &&  offset ){
           let {rows: rows2} = await client.query(SQL2, _safeValues)

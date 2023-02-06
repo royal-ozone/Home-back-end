@@ -182,7 +182,6 @@ const updateStoreHandler = async (req, res) => {
 const updateStoreNameHandler = async (req, res) => {
   try {
     let id = req.params.id ?? req.user.store_id
-    console.log("🚀 ~ file: storesController.js:185 ~ updateStoreNameHandler ~ id", id)
     if (req.body.name_is_changed) {
       res.json({
         status: 403,
