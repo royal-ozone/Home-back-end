@@ -626,6 +626,7 @@ type VARCHAR(50),
 status VARCHAR(50) DEFAULT 'requested',
 updated timestamp,
 document text,
+rejection_reason varchar(255)
 created_at timestamp not null default current_timestamp,
 FOREIGN KEY (account_id) REFERENCES account(id),
 FOREIGN KEY (courier_id) REFERENCES courier_company(id),

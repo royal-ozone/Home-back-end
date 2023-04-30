@@ -13,7 +13,6 @@ const getProductRatingHandler = async (req, res) =>{
     try {
         let id = req.params.id;
         let result = await getProductRating(id);
-        console.log("🚀 ~ file: productRating.js ~ line 16 ~ getProductRatingHandler ~ result", result)
         res.status(200).json(result);
     } catch (error) {
         res.status(403).send(error.message)

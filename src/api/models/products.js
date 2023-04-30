@@ -47,9 +47,11 @@ const addProduct = async (data) => {
       discount_rate,
     ];
     let result = await client.query(SQL, safeValues);
+    console.log("🚀 ~ file: products.js:50 ~ addProduct ~ result", result)
     return result.rows[0];
   } catch (error) {
-    throw new Error(error.message);
+    console.log("🚀 ~ file: products.js:53 ~ addProduct ~ error", error)
+    throw new Error(error);
   }
 };
 
@@ -62,6 +64,7 @@ const getAllProduct = async (data) => {
     delete data.offset;
     delete data.display;
     delete data.status;
+    delete data.duration
     const search = (params, array) => {
       let x = [];
       Object.keys(params).forEach((param, i) => {
@@ -422,6 +425,7 @@ const productSearch = async (data) => {
     let _safeValues = [true, "approved"];
     delete data.limit;
     delete data.offset;
+    delete data.duration
     const search = (params, array) => {
       let x = [];
       Object.keys(params).forEach((param, i) => {

@@ -5,26 +5,6 @@ const { reset } = require('nodemon');
 
 const addProductReviewHandler = async (req, res) => {
     try {
-        // const result = await addProductReview({profile_id:req.user.profile_id,...req.body});
-        // if (result.id){
-        //     const result2 = await getProductRating(req.body.product_id)
-        //     let x = await getProductReview(req.body.product_id)
-        //     let sum = 0;
-        //     x.forEach(val=>{
-        //         sum += Number(val.rate);
-        //     })
-        //     let rating = (sum/x.length).toFixed(2)
-        //     if(result2){
-        //         await updateProductRating({product_id: req.body.product_id, rating: rating, votes: x.length}) 
-        //     } else{
-        //        await addProductRating({product_id: req.body.product_id, rating: rating, votes: x.length})
-        //     }
-        //     events.emit('productReview', result);
-        //     res.status(201).json(result);
-        // } else{
-        //     res.status(403).send('something went wrong while adding product review');
-        // }
-
         let result = await addProductReview(req.body)
         if (result) {
             let orderItem = await updateOrderItemRate(result.order_item_id);
@@ -90,6 +70,7 @@ const updateProductReviewHandler = async (req, res) => {
 const getProductReviewsHandler = async (req, res) => {
     try {
         let result = await getProductReviews({ id: req.params.id, ...req.query })
+        console.log("🚀 ~ file: productReviewController.js:73 ~ getProductReviewsHandler ~ result:", result)
         res.send({ status: 200, data: result })
     } catch (error) {
         res.send({ status: 403, message: error });
@@ -103,6 +84,12 @@ const routes = [
         auth: false,
         fn: getProductReviewsHandler,
         type: 'user'
+    },
+    {
+        path: '/product/reviews/:id',
+        method: 'get',
+        fn: getProductReviewsHandler,
+        type: 'admin'
     },
     {
         path: '/product/review',

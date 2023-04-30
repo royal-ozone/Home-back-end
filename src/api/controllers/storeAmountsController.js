@@ -32,7 +32,7 @@ const getRefundedAmountsHandler = async (req, res) => {
 
 const getSellerBTransactionsHandler = async (req, res) => {
     try {
-        let { result, count } = await getSellerBTransactions(req.user.store_id, req.query.limit ?? 20, req.query.offset ?? 0)
+        let { result, count } = await getSellerBTransactions({store_id: req.user?.store_id,...req.query})
         res.send({ status: 200, result: result, count: count })
     } catch (error) {
         res.send({ status: 403, message: error })

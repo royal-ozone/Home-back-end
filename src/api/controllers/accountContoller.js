@@ -11,7 +11,7 @@ const {
 const addStoreAccountHandler = async (req, res) => {
 
     try {
-        let result = await addAccount({ store_id: req.user.store_id, ...req.body })
+        let result = await addAccount({ store_id: req.user?.store_id, ...req.body })
         res.send({ status: 200, result: result })
     } catch (error) {
         res.send({ status: 403, message: error })

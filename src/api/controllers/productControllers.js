@@ -47,7 +47,7 @@ const productSearchHandler = async (req, res) => {
 };
 const addProductHandler = async (req, res) => {
   try {
-    let result = await addProduct({ store_id: req.user.store_id, ...req.body });
+    let result = await addProduct({ store_id: req.user?.store_id?? req.body?.store_id, ...req.body });
     let pictures = [];
     if (req.files) {
       pictures = await req.files.map(async (file) => {
@@ -68,7 +68,7 @@ const addProductHandler = async (req, res) => {
       res.json({ message: result.message, status: 403 });
     }
   } catch (error) {
-    res.send(error.message);
+    res.send({message:error.message, status: 403});
   }
 };
 
@@ -462,6 +462,14 @@ const routes = [
     method: 'post',
     isUpload: true,
     uploadType: 'single',
+    uploadParams: 'image'
+  },
+  {
+    path: '/product',
+    fn:   addProductHandler,
+    type: 'admin',
+    method: 'post',
+    isUpload: true,
     uploadParams: 'image'
   },
 ]

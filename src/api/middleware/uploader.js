@@ -11,6 +11,7 @@ const s3 = new aws.S3({
 
 
 const filerFilter = (req, file, cb) => {
+    console.log("🚀 ~ file: uploader.js:14 ~ filerFilter ~ req", req)
     if(file.mimetype === 'image.jpeg' || file.mimetype === 'image.png' || file.mimetype === 'image.pdf'){
         cb(null,true);
     } else {
