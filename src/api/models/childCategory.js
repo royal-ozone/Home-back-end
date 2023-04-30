@@ -4,10 +4,10 @@ const client = require("../../db");
 const {getParentCategoryByTitleModel} = require("./parentCategory")
 const addChildCategoryModel = async (data) => {
   try {
-      const {  entitle,artitle, metaTitle, content ,parent_id} = data;
+      const {  entitle,artitle, metaTitle, content ,parent_id,commission} = data;
         let SQL =
-        "INSERT INTO child_category(parent_id,entitle,artitle,metaTitle,content) VALUES ($1,$2,$3,$4,$5) RETURNING *;";
-        let safeValue = [parent_id,entitle,artitle, metaTitle, content];
+        "INSERT INTO child_category(parent_id,entitle,artitle,metaTitle,content, commission) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;";
+        let safeValue = [parent_id,entitle,artitle, metaTitle, content, commission];
         let result = await client.query(SQL, safeValue);
         return result.rows[0];    
   } catch (error) {
@@ -29,10 +29,10 @@ const removeChildCategoryModel = async (id) => {
 
 const updateChildCategoryModel = async (data) => {
     try {
-        const {  entitle,artitle, metatitle, content ,id} = data;
+        const {  entitle,artitle, metatitle, content ,id, commission} = data;
         let SQL =
-          " UPDATE child_category SET entitle = $1,artitle = $2, metatitle = $3, content = $4 WHERE id = $5 RETURNING *;";
-        let safeValue = [entitle,artitle, metatitle, content ,id];
+          " UPDATE child_category SET entitle = $1,artitle = $2, metatitle = $3, content = $4, commission =$6 WHERE id = $5 RETURNING *;";
+        let safeValue = [entitle,artitle, metatitle, content ,id,commission];
         let result2 = await client.query(SQL, safeValue);
         return result2.rows[0];
     } catch (error) {

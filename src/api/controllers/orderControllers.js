@@ -2,7 +2,7 @@
 
 
 const { addDeliveryTask } = require('../models/deliveryTask');
-const { getStoreProducts } = require('../models/products');
+const { getStoreProducts, getProduct } = require('../models/products');
 const { addOrderNotificationHandler } = require('./orderNotificationController');
 const { getOrderNotificationByOrderId } = require('../models/orderNotifications');
 const { addBTransaction } = require('../models/storeAmounts')
@@ -32,7 +32,8 @@ const {
   getOrdersByStatus,
   getOrderItemsByOrderIdAndStatus,
   toBeReleasedItems,
-  orderStatues
+  orderStatues,
+  bulkUpdateOrderStatus
 } = require("../models/order");
 const {
   getAddressById
@@ -64,23 +65,34 @@ const {
 const { addOrderLog, getOrderLog } = require("../models/orderLog")
 
 const { decreaseSizeQuantity, increaseSizeQuantity } = require("../models/products");
+
+const addOrderItemTransaction = async ({product_id, order_id, id, price, quantity, store_id}, status) =>{
+    try {
+      let statues = {pending: 'pending', canceled: 'canceled', delivered: 'released'}
+      let {commission, is_commission_included}   =  await getProduct(product_id)
+      await addBTransaction({ status: statues[status], order_id, store_id, type: 'credit', order_item_id: id, amount: price * quantity, description: 'order item' })
+      await addBTransaction({order_id, description: 'commission', type:'credit', status: statues[status], order_item_id: id, amount: price* quantity * commission})
+      is_commission_included && await addBTransaction({order_id, store_id , description: 'commission', type:'debit', status:  statues[status], order_item_id:id, amount: price* quantity * commission})
+    } catch (error) {
+      console.log("🚀 ~ file: orderControllers.js:77 ~ addOrderItemTransaction ~ error:", error)
+      throw new Error(error.message);
+    }
+}
+
 const addOrderHandler = async (req, res, next) => {
   try {
-    const { address_id, discount_id } = req.body
+    const { discount_id } = req.body
     let profile_id = req.user.profile_id;
     // let cartData = await getCartByProfileIdModel(profile_id);
     let cartItems = await getALLCartItemByCartId(req.user.cart_id)
     if (cartItems.length > 0) {
       let data = await addOrderModel({ profile_id: profile_id, ...req.body });
       if (data.id) {
-
+        await addBTransaction({order_id: data.id, amount: data.shipping, type:'credit', status: data.status, description: 'delivery'})
         let productArray = await cartItems.map(async (cartItem) => {
           let result = await addOrderItemModel({ ...cartItem, order_id: data.id, profile_id: req.user.profile_id, date_after_day: dateTimeTomorrow(), last_update: dateTimeNow() });
           await decreaseSizeQuantity({ id: cartItem.product_id, quantity: cartItem.quantity, size: cartItem.size, color: cartItem.color })
-          // if(cartItem.size){
-
-          // }
-          await addBTransaction({ ...result, status: 'pending', type: 'credit', order_item_id: result.id, amount: result.price * result.quantity })
+          await addOrderItemTransaction(result, data.status)
           return result;
         });
         if (productArray) {
@@ -154,9 +166,12 @@ const updateOrderStatusHandler = async (req, res, next) => {
       await pendingOrderItems.map(async item => {
         await updateOrderItemStatusModel({ ...item, status: 'canceled' }, dateTimeNow());
         await increaseSizeQuantity({ id: item.product_id, quantity: item.quantity, size: item.size, color: item.color })
+        await addOrderItemTransaction(item, data.status)
       })
     }
-
+    if(data.status === 'delivered'){
+      addBTransaction({amount: data.shipping, type: 'credit', status: 'released', description: 'delivery', order_id: data.id})
+    }
     let response = {
       message: `Successfully update status order to ${data.status}`,
       dataOrder: data,
@@ -305,12 +320,10 @@ const getOrderByStoreIdHandlerTwo = async (req, res) => {
 
 const getSellerOrdersByPendingStatus = async (req, res) => {
   try {
-    let limit = req.query.limit || 5;
-    let offset = req.query.offset || 0;
-    let { orders, count } = await getOrdersByPendingOrderItems({ id: req.user.store_id, status: req.body.status, limit: limit, offset: offset })
-    let sellerOrders = await orders.map(async ({ order_id }) => {
+    let { data, count } = await getOrdersByPendingOrderItems({ store_id: req.user?.store_id, ...req.query })
+    let sellerOrders = await data.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
-      let items = await getPendingOrderItemsByOrderId({ id: order_id, store_id: req.user.store_id })
+      let items = await getPendingOrderItemsByOrderId({ id: order_id, store_id: req.user?.store_id })
       let itemsWithPicture = await items.map(async value => {
         let pic = await getProductPictureByProductId(value.product_id)
         return { ...value, picture: pic?.product_picture }
@@ -318,7 +331,7 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
       detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.json({ orders: await Promise.all(sellerOrders), count: count })
+    res.json({status:200, orders: await Promise.all(sellerOrders), count: count , data :{data:await Promise.all(sellerOrders), count}})
   } catch (error) {
     res.json({ status: 403, message: error.message });
   }
@@ -326,20 +339,21 @@ const getSellerOrdersByPendingStatus = async (req, res) => {
 
 const getSellerOrdersByNotPendingStatus = async (req, res) => {
   try {
-    let limit = req.query.limit || 5;
-    let offset = req.query.offset || 0;
-    let { orders, count } = await getOrdersByNotPendingOrderItems({ id: req.user.store_id, status: req.query.status, limit: limit, offset: offset, order_id: req.query.order_id })
-    let sellerOrders = orders.map(async ({ order_id }) => {
+    let { data, count } = await getOrdersByNotPendingOrderItems({ store_id: req.user?.store_id, ...req.query })
+    let sellerOrders = data.map(async ({ order_id }) => {
       let detailedOrder = await getOrderByIdModel(order_id)
-      let items = await getNotOrderItemsByOrderId({ id: order_id, store_id: req.user.store_id })
+      let items = await getNotOrderItemsByOrderId({ id: order_id, store_id: req.user?.store_id })
       let itemsWithPicture = await items.map(async value => {
         let pic = await getProductPictureByProductId(value.product_id)
         return { ...value, picture: pic?.product_picture }
-      })
+      })  
+
+     let address =  await  getAddressById(detailedOrder.address_id)
+     detailedOrder['address'] = address
       detailedOrder['items'] = await Promise.all(itemsWithPicture)
       return detailedOrder
     })
-    res.json({ orders: await Promise.all(sellerOrders), count: count })
+    res.json({ status: 200, orders: await Promise.all(sellerOrders), count: count, data: {data:await Promise.all(sellerOrders), count } })
   } catch (error) {
     res.json({ status: 403, message: error });
   }
@@ -361,6 +375,9 @@ const automatedUpdateOrder = async ({ from, to }) => {
     if (to === 'ready to be shipped') {
       await addDeliveryTask({ order_id: order.id });
     }
+    if(to === 'delivered'){
+      await addBTransaction({order_id: order.id, status: order.status, amount: order.shipping, type: 'credit'})
+    }
     await addOrderLog({ id: order.id, status: to, at: new Date() })
   })
 
@@ -380,10 +397,20 @@ const toBeReleasedItemsHandler = async () => {
   try {
     let result = await toBeReleasedItems()
     result.map(async (item) => {
-      await addBTransaction({ ...item, status: 'released', type: 'credit', amount: item.price * item.quantity, order_item_id: item.id })
+      // await addBTransaction({ ...item, status: 'released', type: 'credit', amount: item.price * item.quantity, order_item_id: item.id })
+      await addOrderItemTransaction(item, 'delivered')
     })
   } catch (error) {
     throw new Error(error.message)
+  }
+}
+
+const bulkUpdateOrderStatusHandler =  async (req,res) =>{
+  try {
+      let data = await bulkUpdateOrderStatus(req.body)
+      res.send({status: 200, data: data})
+  } catch (error) {
+    res.send({status: 403, message: error.message})
   }
 }
 
@@ -408,16 +435,16 @@ const toBeReleasedItemsHandler = async () => {
 
 const orderStatuesHandler = async (req, res) => {
   try {
-    let result = await orderStatues(req.user.store_id)
+    let result = await orderStatues(req.user?.store_id)
     res.send({ status: 200, data: result })
   } catch (error) {
     res.send({ status: 403, message: error })
   }
 }
 
-setInterval(toBeReleasedItemsHandler, 10000)
-setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), 5000)
-setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), 1000000)
+setInterval(toBeReleasedItemsHandler, daysToMs(1/24))
+setInterval(() => automatedUpdateOrder({ from: 'accepted', to: 'ready to be shipped' }), daysToMs(1/24))
+setInterval(() => automatedUpdateOrder({ from: 'ready to be shipped', to: 'delivered' }), daysToMs(1/24))
 
 const routes = [{
   fn: getOrderLogHandler,
@@ -434,7 +461,40 @@ const routes = [{
   path: '/order/statues',
   method: 'get',
   type: 'store'
-}]
+},
+{
+  fn: getSellerOrdersByPendingStatus,
+  path: '/order/pending',
+  method: 'get',
+  type: 'admin'
+}
+,
+{
+  fn: getSellerOrdersByNotPendingStatus,
+  path: '/order/notPending',
+  method: 'get',
+  type: 'admin'
+}
+,
+{
+  fn: updateOrderItemStatusHandler,
+  path: '/order/item',
+  method: 'patch',
+  type: 'admin'
+},
+{
+  fn: orderStatuesHandler,
+  path: '/order/statues',
+  method: 'get',
+  type: 'admin'
+},
+{
+  fn: bulkUpdateOrderStatusHandler,
+  path: '/order/bulk',
+  method: 'patch',
+  type: 'admin'
+},
+]
 module.exports = {
   addOrderHandler,
   updateOrderStatusHandler,

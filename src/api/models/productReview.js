@@ -69,11 +69,17 @@ const updateOrderItemRate = async (id) => {
     }
 }
 
-const getProductReviews = async ({ id, offset = 0, limit = 10 }) => {
+const getProductReviews = async ({ id, offset , limit  }) => {
     try {
-        let SQL = `select pr.*, p.first_name , p.last_name , p.profile_picture  from product_review pr inner join order_item oi  on pr.order_item_id = oi.id inner join profile p on oi.profile_id = p.id where oi.product_id = $1 order by pr.created_at desc limit $2 offset $3`
+        let SQL = `select pr.*, p.first_name , p.last_name , p.profile_picture  from product_review pr inner join order_item oi  on pr.order_item_id = oi.id inner join profile p on oi.profile_id = p.id where oi.product_id = $1 group by pr.created_at,pr.id, p.first_name , p.last_name , p.profile_picture order by pr.created_at desc  limit $2 offset $3`
+        let SQL2 = `select count(pr.*)  from product_review pr inner join order_item oi  on pr.order_item_id = oi.id inner join profile p on oi.profile_id = p.id where oi.product_id = $1 group by pr.created_at order by pr.created_at desc `
         let { rows } = await client.query(SQL, [id, limit, offset])
-        return rows
+        if(limit &&  offset ){
+            let {rows: rows2} = await client.query(SQL2, [id])
+            return { data: rows, count: Number(rows2[0]?.count) ?? 0 }
+          } else {
+            return {data:rows}
+          }
     } catch (error) {
         throw new Error(error)
     }
