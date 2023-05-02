@@ -38,7 +38,7 @@ const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
 const { addProfilePicture } = require('../../api/models/profilePicture')
 const { createToken, deleteToken, updateTokens, getTokenRecord } = require('../models/jwt')
-const { validateEmail, validatePassword, checkPassword } = require('./helpers');
+const { validateEmail, validatePassword, checkPassword } = require('../models/helpers');
 
 
 const signupHandler = async (req, res, next) => {
