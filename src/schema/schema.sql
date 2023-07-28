@@ -285,7 +285,6 @@ CREATE TABLE store_review_2(
   FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
-
 CREATE TABLE address(
    id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
    profile_id uuid NOT NULL,
@@ -675,11 +674,11 @@ create table order_log(
 
 
 
--- idea : add count interaction to post tabel
+-- idea : add count interaction to post table
 -- TD:fix seed and add inserts for interaction table done
 -- TD: update endpoint.md done
 -- TD:add end point for interaction with its handler   *** do it like follow done
--- TD:interaction tabel done
+-- TD:interaction table done
 -- TD:fix insert password and insert a real hash password not yet
--- idea: add acl on verefy :check if the client is vrified and give him the access depend on it
+-- idea: add acl on verify :check if the client is verified and give him the access depend on it
 -- delete test folder?!

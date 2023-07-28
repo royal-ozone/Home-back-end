@@ -106,9 +106,10 @@ events.on('storeReview',(data)=>{
 });
 
 
-// io.on('connection', (socket)=>{
-//     console.log('a user connected on localhost  ')
-// })
+io.on('connection', (socket)=>{
+    console.log('a user connected on localhost  ')
+        
+})
 
 
 // client.query('select * from company',(err,res)=>{

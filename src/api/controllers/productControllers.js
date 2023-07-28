@@ -14,6 +14,7 @@ const {
   getProductsByCategories,
   updateSizeAndColorWithQuantity,
   productSearch,
+  getProductsCount,
 } = require("../models/products");
 const { deleteProductReviewByProductId } = require("../models/productReview");
 const { deleteProductTagByProductId } = require("../models/productTag");
@@ -405,11 +406,25 @@ const increaseSizeQuantity = async (req, res) => {
   }
 };
 
+const getProductsCountHandler = async (req,res) =>{
+  try {
+    const count = await getProductsCount()
+    res.send({status: 200, count})
+  } catch (error) {
+    res.send({ message: error.message, status: 403 });
+  }
+}
 
 const routes = [
   {
     path: '/product',
     fn: getAllProductHandler,
+    type: 'admin',
+    method: 'get'
+  },
+  {
+    path: '/products/count',
+    fn: getProductsCountHandler,
     type: 'admin',
     method: 'get'
   },

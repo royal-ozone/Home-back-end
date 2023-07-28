@@ -1,7 +1,6 @@
 'use strict';
 
 const client = require('../../db');
-const jwt = require('jsonwebtoken');
 const {getToken} = require('./helpers');
 
 
