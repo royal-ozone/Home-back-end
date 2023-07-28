@@ -3,7 +3,6 @@ const client = require("../../db");
 const { calculation } = require("../controllers/helper");
 const orderId = require('order-id')('key');
 const { daysToMs } = require('../controllers/helper')
-var parse = require('postgres-interval');
 const { addBTransaction } = require("./storeAmounts");
 
 const addOrderModel = async (data) => {
@@ -96,6 +95,7 @@ const getAllOrderProfileIdModel = async (id, limit, offset) => {
     throw new Error(error.message)
   }
 }
+
 const updateOrderItemStatusModel = async (data, dateTimeNow) => {
   try {
     let { id, order_id, product_id, status, cancellation_reason } = data;
@@ -245,7 +245,6 @@ const getOrdersByNotPendingOrderItems = async data => {
       return { data: rows };
     }
   } catch (error) {
-    console.log("🚀 ~ file: order.js:231 ~ getOrdersByNotPendingOrderItems ~ error", error)
     throw new Error(error.message)
   }
 }
@@ -344,6 +343,19 @@ const addItemsTransactions = async () =>{
   }
 }
 
+const getOrdersCount = async ({status}) =>{
+  try {
+    let safeValues =[]
+    const SQL = `select count(*) from new_order ${status? `where status =$${safeValues.push(status)}`: ''} `
+    const _SQL = `select sum(quantity) from order_item where status =$1`
+    const {rows} = await client.query(SQL,safeValues)
+    const {rows:_rows} = await client.query(_SQL,['accepted'])
+    return {orderCount:Number(rows[0].count) ?? 0, itemsSoldCount:Number(_rows[0].sum) ?? 0 }
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
 // setTimeout(() =>addItemsTransactions(), 10000)
 module.exports = {
   addOrderModel,
@@ -363,5 +375,6 @@ module.exports = {
   getOrderItemsByOrderIdAndStatus,
   toBeReleasedItems,
   orderStatues,
-  bulkUpdateOrderStatus
+  bulkUpdateOrderStatus,
+  getOrdersCount
 };

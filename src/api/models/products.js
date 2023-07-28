@@ -47,10 +47,8 @@ const addProduct = async (data) => {
       discount_rate,
     ];
     let result = await client.query(SQL, safeValues);
-    console.log("🚀 ~ file: products.js:50 ~ addProduct ~ result", result)
     return result.rows[0];
   } catch (error) {
-    console.log("🚀 ~ file: products.js:53 ~ addProduct ~ error", error)
     throw new Error(error);
   }
 };
@@ -58,8 +56,8 @@ const addProduct = async (data) => {
 const getAllProduct = async (data) => {
   try {
     let { key, limit = 20, offset = 0, display, status } = data;
-    let safeValues = [limit, offset, display??true, status??"approved"];
-    let _safeValues = [display??true, status??"approved"];
+    let safeValues = [limit, offset, display ?? true, status ?? "approved"];
+    let _safeValues = [display ?? true, status ?? "approved"];
     delete data.limit;
     delete data.offset;
     delete data.display;
@@ -318,7 +316,7 @@ const updateProductStatus = async (data) => {
   try {
     let { id, status, rejection_reason } = data;
     let SQL = `UPDATE product SET status=$1, rejection_reason =$3 WHERE id=$2 RETURNING *;`;
-    let safeValue = [status, id,rejection_reason];
+    let safeValue = [status, id, rejection_reason];
     let result = await client.query(SQL, safeValue);
     return result.rows[0];
   } catch (error) {
@@ -498,6 +496,16 @@ const productSearch = async (data) => {
   }
 };
 
+const getProductsCount = async () => {
+  try {
+    const SQL = `select count(*) from product where display = true`
+    const { rows } = await client.query(SQL)
+    return Number(rows[0].count) ?? 0
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 module.exports = {
   addProduct,
   getAllProduct,
@@ -518,4 +526,5 @@ module.exports = {
   getProductsByCategories,
   productSearch,
   updateSizeAndColorWithQuantity,
+  getProductsCount
 };

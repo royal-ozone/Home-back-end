@@ -3,36 +3,37 @@ const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const clientForVerification = require('twilio')(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 const { signup,
-    getUserById,
-    getUserByEmail,
-    getUserByMobile,
-    getUserIdFromToken,
-    getAllUsers,
-    getProfileById,
-    getProfilePictureByProfileId,
-    createProfile,
-    addAdmin,
-    addMod,
-    removeMod,
-    banUser,
-    unbanUser,
-    updateUserPassword,
-    updateUserEmail,
-    updateUserMobile,
-    updateProfilersModel,
-    updateUserModel,
-    updateProfileMobile,
-    getTokenByUserId,
-    deactivateAccount,
-    getAllBannedUsers,
-    updateProfileEmail,
-    updateNotification_store,
-    updateNotification_all,
-    updateNotification_city,
-    updateResetToken,
-    getUserByResetToken,
-    updateProfileByAdmin,
-    updateUserByAdmin
+  getUserById,
+  getUserByEmail,
+  getUserByMobile,
+  getUserIdFromToken,
+  getAllUsers,
+  getProfileById,
+  getProfilePictureByProfileId,
+  createProfile,
+  addAdmin,
+  addMod,
+  removeMod,
+  banUser,
+  unbanUser,
+  updateUserPassword,
+  updateUserEmail,
+  updateUserMobile,
+  updateProfilersModel,
+  updateUserModel,
+  updateProfileMobile,
+  getTokenByUserId,
+  deactivateAccount,
+  getAllBannedUsers,
+  updateProfileEmail,
+  updateNotification_store,
+  updateNotification_all,
+  updateNotification_city,
+  updateResetToken,
+  getUserByResetToken,
+  updateProfileByAdmin,
+  updateUserByAdmin,
+  getUsersCount
 } = require('../models/user');
 const { addCartModel } = require('../../api/models/cart')
 const { authenticateWithToken, getToken } = require('../models/helpers')
@@ -103,7 +104,7 @@ const signupHandler = async (req, res, next) => {
     } else {
       let result = await signup(req.body);
 
-      let result2 = await createProfile({...result, profile_picture: req.file?.location ?? process.env.DEFAULT_PROFILE_PICTURE});
+      let result2 = await createProfile({ ...result, profile_picture: req.file?.location ?? process.env.DEFAULT_PROFILE_PICTURE });
       // if (req.file) {
       //   await addProfilePicture({
       //     profile_id: result2.id,
@@ -135,7 +136,7 @@ const getProfileHandler = async (req, res, next) => {
     if (user) {
       delete user.id;
       delete user.user_id;
-     delete user.created_at
+      delete user.created_at
     }
     // let picture = await getProfilePictureByProfileId(id);
     // if (picture) {
@@ -164,21 +165,21 @@ const updateProfilers = async (req, res, next) => {
   try {
     let id = req.user.id;
     let profile_id = req.user.profile_id;
-    let result = await updateProfilersModel({...req.body},profile_id);
-    
-    if(result?.id){
+    let result = await updateProfilersModel({ ...req.body }, profile_id);
+
+    if (result?.id) {
       let response = {
-      status: 200,
-      user: {...result},
-        
+        status: 200,
+        user: { ...result },
+
       };
       res.send(response);
 
-    } else{
-      res.send({status: 403, message: result});
+    } else {
+      res.send({ status: 403, message: result });
     }
   } catch (error) {
-    res.send({status: 403, message: error.message});
+    res.send({ status: 403, message: error.message });
   }
 };
 
@@ -218,12 +219,12 @@ const updateUserPasswordHandler = async (req, res, next) => {
     let user = await getUserById(req.user.id);
     const valid = await checkPassword(oldPassword, user.user_password);
 
-    if (!oldPassword || !newPassword ) {
+    if (!oldPassword || !newPassword) {
       res.json({
         status: 403,
         message: "Missing parameters, please enter all required fields!",
       });
-    } else if (!valid){
+    } else if (!valid) {
       const response = {
         status: 403,
         message: "Old password is incorrect!",
@@ -232,14 +233,15 @@ const updateUserPasswordHandler = async (req, res, next) => {
     } else if (!validatePassword(newPassword)) {
       res.json({
         status: 403,
-        message:{ 
-          title: `Invalid password format, password should have at least:`, details :[
-          `One capital letter.`,
-          `One small letter.`,
-          `One special character.`,
-          `One number.`,
-          `Characters between 6-16.`,
-          `ex:Ax@123`]}
+        message: {
+          title: `Invalid password format, password should have at least:`, details: [
+            `One capital letter.`,
+            `One small letter.`,
+            `One special character.`,
+            `One number.`,
+            `Characters between 6-16.`,
+            `ex:Ax@123`]
+        }
       });
     } else if (valid) {
       user = await updateUserPassword(user.id, newPassword);
@@ -248,8 +250,8 @@ const updateUserPasswordHandler = async (req, res, next) => {
         message: "Password updated successfully",
       };
       res.json(response);
-    }  else {
-      res.send({status: 403, message:'something went wrong, please try again'})
+    } else {
+      res.send({ status: 403, message: 'something went wrong, please try again' })
     }
   } catch (e) {
     next(e);
@@ -312,7 +314,7 @@ const updateUserEmailHandler = async (req, res, next) => {
   try {
     const email = req.body.email;
     let id = req.user.id;
-    // let user = await getUserById(req.user.id);
+
 
     if (!email) {
       res.json({
@@ -320,11 +322,11 @@ const updateUserEmailHandler = async (req, res, next) => {
         message: "Missing parameters, email",
       });
     } else {
-      let {email, mobile} = await updateUserEmail(id, req.body);
-     
+      let { email, mobile } = await updateUserEmail(id, req.body);
+
       const response = {
         status: 200,
-        user: {email:email, mobile: mobile}
+        user: { email: email, mobile: mobile }
       };
       res.json(response);
     }
@@ -434,26 +436,26 @@ const codePasswordHandler = async (req, res, next) => {
 };
 
 const refreshHandler = async (req, res, next) => {
-    try {
+  try {
 
-        const user = await authenticateWithToken(req.headers.authorization.split(' ').pop(), 'refresh');
-        const tokenRecord = await getTokenRecord(req.headers.authorization.split(' ').pop(),req.headers.session_id, 'refresh')
-        if (user && tokenRecord) {
-            // await deleteToken(user.session_id);
-            const newTokens = await updateTokens(user.id,req.headers.session_id );
-            delete newTokens.id;
-            delete newTokens.user_id;
-            res.json({ status: 200, ...newTokens });
-        } else {
-            res.json({
-                status: 403,
-                message: 'Invalid user refresh token or session_id!',
-            });
-        }
-    } catch (e) {
-        next(e);
+    const user = await authenticateWithToken(req.headers.authorization.split(' ').pop(), 'refresh');
+    const tokenRecord = await getTokenRecord(req.headers.authorization.split(' ').pop(), req.headers.session_id, 'refresh')
+    if (user && tokenRecord) {
+      // await deleteToken(user.session_id);
+      const newTokens = await updateTokens(user.id, req.headers.session_id);
+      delete newTokens.id;
+      delete newTokens.user_id;
+      res.json({ status: 200, ...newTokens });
+    } else {
+      res.json({
+        status: 403,
+        message: 'Invalid user refresh token or session_id!',
+      });
     }
-  
+  } catch (e) {
+    next(e);
+  }
+
 };
 
 const addAdminHandler = async (req, res, next) => {
@@ -577,28 +579,28 @@ const getAllBannedUsersHandler = async (req, res) => {
 };
 
 const getAllUsersHandler = async (req, res, next) => {
-    try {
+  try {
 
-        let users = await getAllUsers(req.query);
-        if (users) {
-            res.json({ status: 200, data:users })
+    let users = await getAllUsers(req.query);
+    if (users) {
+      res.json({ status: 200, data: users })
 
-        } else {
-            res.json({
-                status: 403,
-                message: 'Something went wrong!',
-            });
-        }
-    } catch (e) {
-        next(e);
+    } else {
+      res.json({
+        status: 403,
+        message: 'Something went wrong!',
+      });
     }
-  
+  } catch (e) {
+    next(e);
+  }
+
 };
 
 const deactivateAccountHandler = async (req, res, next) => {
   try {
     let result = await deactivateAccount(req.user.id);
-    res.send({status:200,message:"your account has been deactivated"});
+    res.send({ status: 200, message: "your account has been deactivated" });
   } catch (error) {
     next(error);
   }
@@ -616,52 +618,52 @@ const updateNotification_allHandler = async (req, res) => {
   }
 };
 const updateNotification_storeHandler = async (req, res) => {
-    try {
-        let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
-        res.send({ status: 200, data });
-    } catch (error) {
-        res.send({ status: 403, error: error.message })
-    }
+  try {
+    let data = await updateNotification_store({ profile_id: req.user.profile_id, boolean: req.body.boolean });
+    res.send({ status: 200, data });
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
 }
 const updateNotification_cityHandler = async (req, res) => {
-    try {
-        let data = await updateNotification_city({ profile_id: req.user.profile_id, boolean: req.body.boolean });
-        res.status(200).send(data);
-    } catch (error) {
-        res.send({ status: 403, error: error.message })
-    }
+  try {
+    let data = await updateNotification_city({ profile_id: req.user.profile_id, boolean: req.body.boolean });
+    res.status(200).send(data);
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
 }
 
 const refreshAccessToken = async (req, res, next) => {
-    try {
-        let token = req.headers.authorization.split(' ').pop();
-        let resfreshToken =  await getTokenRecord(token, 'refresh')
-        let result = await updateTokens(resfreshToken.user_id);
-        res.send({ status: 200, result })
-    } catch (error) {
-        res.send(error.message)
-    }
+  try {
+    let token = req.headers.authorization.split(' ').pop();
+    let resfreshToken = await getTokenRecord(token, 'refresh')
+    let result = await updateTokens(resfreshToken.user_id);
+    res.send({ status: 200, result })
+  } catch (error) {
+    res.send(error.message)
+  }
 }
 const updateResetTokenHandler = async (req, res, next) => {
   try {
-    const result = await updateResetToken({reference: req.body.reference, token:uuidv4()})
-    if (result?.id){
-      req.emailDetails = ({ message:'token has been updated successfully' , email: result.email,template: 'resetPassword', context: {token:`${process.env.UI_URL}/resetPassword/${result.password_reset_token}`}})
+    const result = await updateResetToken({ reference: req.body.reference, token: uuidv4() })
+    if (result?.id) {
+      req.emailDetails = ({ message: 'token has been updated successfully', email: result.email, template: 'resetPassword', context: { token: `${process.env.UI_URL}/resetPassword/${result.password_reset_token}` } })
       next()
     } else {
-      res.send({status: 403, message: 'no account with provided reference'})
+      res.send({ status: 403, message: 'no account with provided reference' })
     }
   } catch (error) {
     res.send({ status: 403, error: error.message })
   }
 }
-const validateResetToken= async (req, res) =>{
+const validateResetToken = async (req, res) => {
   try {
     const result = await getUserByResetToken(req.body.token)
-    if ((new Date() - new Date(result.reset_token_date) )/(1000*60*60)/24 > 1 || !result) {
-      res.send({message: 'expired token', status: 403})
+    if ((new Date() - new Date(result.reset_token_date)) / (1000 * 60 * 60) / 24 > 1 || !result) {
+      res.send({ message: 'expired token', status: 403 })
     } else {
-      res.send({message: 'valid token', status: 200})
+      res.send({ message: 'valid token', status: 200 })
     }
   } catch (error) {
     res.send({ status: 403, error: error.message })
@@ -670,34 +672,35 @@ const validateResetToken= async (req, res) =>{
 
 const resetPasswordByTokenHandler = async (req, res, next) => {
   try {
-    const {token, password} = req.body
+    const { token, password } = req.body
     const result = await getUserByResetToken(token)
-    if(result?.id && (new Date() - new Date(result?.reset_token_date) )/(1000*60*60)/24 <= 1 && validatePassword(password) ){
+    if (result?.id && (new Date() - new Date(result?.reset_token_date)) / (1000 * 60 * 60) / 24 <= 1 && validatePassword(password)) {
       let user = await updateUserPassword(result.id, password);
       const response = {
         status: 200,
         message: "Password reset successfully",
       };
       res.json(response);
-    } 
-    else if ((new Date() - new Date(result?.reset_token_date) )/(1000*60*60)/24 > 1 || !result) {
-    res.send({message: 'expired token', status: 403})
+    }
+    else if ((new Date() - new Date(result?.reset_token_date)) / (1000 * 60 * 60) / 24 > 1 || !result) {
+      res.send({ message: 'expired token', status: 403 })
     }
     else if (!validatePassword(password)) {
       res.json({
         status: 403,
-        message:{ 
-          title: `Invalid password format, password should have at least:`, details :[
-          `One capital letter.`,
-          `One small letter.`,
-          `One special character.`,
-          `One number.`,
-          `Characters between 6-16.`,
-          `ex:Ax@123`]}
-        
+        message: {
+          title: `Invalid password format, password should have at least:`, details: [
+            `One capital letter.`,
+            `One small letter.`,
+            `One special character.`,
+            `One number.`,
+            `Characters between 6-16.`,
+            `ex:Ax@123`]
+        }
+
       });
     } else {
-      res.send({message: 'something went wrong', status: 403})
+      res.send({ message: 'something went wrong', status: 403 })
     }
 
   } catch (error) {
@@ -705,68 +708,83 @@ const resetPasswordByTokenHandler = async (req, res, next) => {
   }
 }
 
-const updateProfileByAdminHandler =  async (req,res) =>{
+const updateProfileByAdminHandler = async (req, res) => {
   try {
-      let result  = await updateProfileByAdmin({...req.body, id: req.params.id})
-      res.send({status: 200, data: result})
+    let result = await updateProfileByAdmin({ ...req.body, id: req.params.id })
+    res.send({ status: 200, data: result })
   } catch (error) {
     res.send({ status: 403, error: error })
   }
 }
 
-const updateUserByAdminHandler =  async (req,res) =>{
+const updateUserByAdminHandler = async (req, res) => {
   try {
-      let result  = await updateUserByAdmin({...req.body, id: req.params.id})
-      res.send({status: 200, data: result})
+    let result = await updateUserByAdmin({ ...req.body, id: req.params.id })
+    res.send({ status: 200, data: result })
   } catch (error) {
     res.send({ status: 403, error: error })
   }
 }
 
+const getUsersCountHandler = async (req, res) => {
+  try {
+    const count = await getUsersCount()
+    res.send({ status: 200, count })
+  } catch (error) {
+    res.send({ status: 403, error: error.message })
+  }
+}
 const routes = [
   {
-  fn: updateProfileByAdminHandler,
-  auth: true,
-  path: '/profile/:id',
-  method: 'put',
-  type: 'admin'
-},
-{
-  fn: updateUserByAdminHandler,
-  auth: true,
-  path: '/user/:id',
-  method: 'put',
-  type: 'admin'
-},
+    fn: updateProfileByAdminHandler,
+    auth: true,
+    path: '/profile/:id',
+    method: 'put',
+    type: 'admin'
+  },
+  {
+    fn: getUsersCountHandler,
+    auth: true,
+    path: '/users/count',
+    method: 'get',
+    type: 'admin'
+  },
+  {
+    fn: updateUserByAdminHandler,
+    auth: true,
+    path: '/user/:id',
+    method: 'put',
+    type: 'admin'
+  },
 ]
 
 module.exports = {
-    signupHandler,
-    signInHandler,
-    signOutHandler,
-    addAdminHandler,
-    addModHandler,
-    removeModHandler,
-    banUserHandler,
-    removeBanUserHandler,
-    updateUserPasswordHandler,
-    updateUserResetPasswordHandler,
-    updateUserEmailHandler,
-    updateUserMobileHandler,
-    resetPasswordHandler,
-    refreshHandler,
-    getAllUsersHandler,
-    getProfileHandler,
-    updateProfilers,
-    deactivateAccountHandler,
-    codePasswordHandler,
-    getAllBannedUsersHandler,
-    updateNotification_storeHandler,
-    updateNotification_allHandler,
-    updateNotification_cityHandler,
-    refreshAccessToken,
-    updateResetTokenHandler,
-    resetPasswordByTokenHandler,
-    validateResetToken,
-    routes
+  signupHandler,
+  signInHandler,
+  signOutHandler,
+  addAdminHandler,
+  addModHandler,
+  removeModHandler,
+  banUserHandler,
+  removeBanUserHandler,
+  updateUserPasswordHandler,
+  updateUserResetPasswordHandler,
+  updateUserEmailHandler,
+  updateUserMobileHandler,
+  resetPasswordHandler,
+  refreshHandler,
+  getAllUsersHandler,
+  getProfileHandler,
+  updateProfilers,
+  deactivateAccountHandler,
+  codePasswordHandler,
+  getAllBannedUsersHandler,
+  updateNotification_storeHandler,
+  updateNotification_allHandler,
+  updateNotification_cityHandler,
+  refreshAccessToken,
+  updateResetTokenHandler,
+  resetPasswordByTokenHandler,
+  validateResetToken,
+  routes
 }

@@ -37,6 +37,7 @@ const {
   updateVerificationCode,
   updateVerifiedEmail,
   getFollowedStores,
+  getStoresCount,
 } = require("../models/stores");
 
 const { getProfileByEmail, getProfileById } = require("../../auth/models/user");
@@ -73,7 +74,7 @@ const createStoreHandler = async (req, res, next) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -94,7 +95,7 @@ const checkVerificationCodeHandler = async (req, res) => {
       res.send({ status: 403, message: "wrong verification code" });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -115,7 +116,7 @@ const updateVerificationCodeHandler = async (req, res, next) => {
     // req.store = { email: profile.email, ...result }
     next();
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 const addStoreReview2 = async (req, res, next) => {
@@ -132,7 +133,7 @@ const addStoreReview2 = async (req, res, next) => {
       next();
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -154,7 +155,7 @@ const getStoreHandler = async (req, res) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -175,7 +176,7 @@ const updateStoreHandler = async (req, res) => {
       });
     }
   } catch (error) {
-    res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -197,7 +198,7 @@ const updateStoreNameHandler = async (req, res) => {
       });
     }
   } catch (error) {
-    res.send({message: error, status: 403});
+    res.send({ message: error, status: 403 });
   }
 };
 
@@ -217,7 +218,7 @@ const deleteStoreHandler = async (req, res) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -229,7 +230,7 @@ const getAllStoresHandler = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    res.send({ status: 403,message: error.message });
+    res.send({ status: 403, message: error.message });
   }
 };
 
@@ -253,7 +254,7 @@ const getStoreByNameHandler = async (req, res) => {
       data: response,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -266,7 +267,7 @@ const updateStoreStatusHandler = async (req, res) => {
       data: response,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -280,7 +281,7 @@ const getAllStoreReviewHandler = async (req, res) => {
       reviews: allStoreReviews,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -294,7 +295,7 @@ const getStoreReviewHandler = async (req, res) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -316,7 +317,7 @@ const createStoreReviewHandler = async (req, res) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -337,7 +338,7 @@ const updateStoreReviewHandler = async (req, res) => {
     }
     res.json({ message: "You store review for this store does not exist!" });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -356,7 +357,7 @@ const deleteStoreReviewHandler = async (req, res) => {
       message: "Your review for this store has been deleted successfully",
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -396,7 +397,7 @@ const getAllStorefollowersHandler = async (req, res) => {
       followers: allStoreFollowers,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -410,7 +411,7 @@ const getStorefollowersHandler = async (req, res) => {
       });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -451,7 +452,7 @@ const createStorefollowerHandler = async (req, res) => {
       result: storeFollower,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -473,7 +474,7 @@ const deleteStorefollowerHandler = async (req, res) => {
       res.send({ message: "you not follow this store", status: 403 });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -489,7 +490,7 @@ const updateStorePictureHandler = async (req, res) => {
     }
     res.send("yon do not have any store");
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -502,7 +503,7 @@ const deleteStorePictureHandler = async (req, res) => {
       result: result,
     });
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
@@ -515,15 +516,30 @@ const getFollowedStoresHandler = async (req, res) => {
       res.send({ status: 403, message: result });
     }
   } catch (error) {
-     res.send({message: error.message, status: 403});
+    res.send({ message: error.message, status: 403 });
   }
 };
 
+const getStoresCountHandler = async (req, res) => {
+  try {
+    const { count, ratedStores } = await getStoresCount(req.query)
+    res.send({ status: 200, count, ratedStores })
+  } catch (error) {
+    res.send({ message: error.message, status: 403 });
+  }
+}
 const routes = [
   {
     fn: getStoreByStatusHandler,
     auth: true,
     path: "/store/status",
+    method: "get",
+    type: "admin",
+  },
+  {
+    fn: getStoresCountHandler,
+    auth: true,
+    path: "/stores/count",
     method: "get",
     type: "admin",
   },

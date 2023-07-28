@@ -516,7 +516,7 @@ const updateStoreRates = async ({ id, performanceRate, salesRate, store_rating }
     let { rows } = await client.query(SQL, safeValues);
     return rows;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error.message);
   }
 };
 
@@ -547,6 +547,21 @@ const updateStoresRates = async () => {
     });
   });
 };
+
+const getStoresCount = async ({status}) =>{
+  try {
+    let safeValues = [status??'approved']
+    const SQL = `select count(*) from store where status = $1`
+    const _SQL = `select store_name,id, store_rating, store_picture from store order by store_rating desc limit 3`
+
+    const {rows} = await client.query(SQL, safeValues)
+    const {rows: _rows} = await client.query(_SQL)
+    
+    return {count:Number(rows[0].count) ?? 0, ratedStores: _rows}
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 setInterval(updateStoresRates, daysToMs(1 / 24));
 
@@ -587,4 +602,5 @@ module.exports = {
   updateVerificationCode,
   updateVerifiedEmail,
   getFollowedStores,
+  getStoresCount
 };

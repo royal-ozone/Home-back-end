@@ -602,6 +602,17 @@ const updateUserByAdmin = async ({email, mobile, verified, status, id}) => {
         throw new Error(error.message);
     }
 }
+
+const getUsersCount =  async ()=>{
+    try {
+        const SQL = `select count(*) from client where status = $1`
+        const safeValues = ['active']
+        const {rows} = await client.query(SQL,safeValues)
+        return parseInt(rows[0].count)
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 module.exports = {
     signup,
     signupGoogle,
@@ -648,6 +659,7 @@ module.exports = {
     getUserByResetToken,
     updateProfilePicture,
     updateProfileByAdmin,
-    updateUserByAdmin
+    updateUserByAdmin,
+    getUsersCount
 }
 
